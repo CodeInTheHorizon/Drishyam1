@@ -694,20 +694,21 @@ class CrimeRepository {
     }
 
     async createAuditTrailRecord(auditData = {}) {
+        const empId = Number(auditData.employeeId || auditData.EmployeeID || auditData.employeeID || 101);
         const auditRow = {
             AuditID: Date.now(),
-            EmployeeID: Number(auditData.employeeId || 101),
-            OfficerName: String(auditData.officerName || "Inspector Rajesh Sharma"),
-            KGID: String(auditData.kgid || "MPP-2026-901"),
-            Action: String(auditData.action || "BIOMETRIC_AUTH"),
-            TargetTable: String(auditData.targetTable || "CaseMaster"),
-            TargetRecordID: String(auditData.targetRecordId || `AUTH-${Date.now()}`),
-            DeviceID: String(auditData.deviceId || "ESP32-BHOPAL-01"),
-            FingerprintVerified: Boolean(auditData.fingerprintVerified ?? true),
-            OTPUsed: String(auditData.otpUsed || "948212"),
-            IPAddress: String(auditData.ipAddress || "127.0.0.1"),
+            EmployeeID: isNaN(empId) ? 101 : empId,
+            OfficerName: String(auditData.officerName || auditData.OfficerName || "Inspector Rajesh Sharma"),
+            KGID: String(auditData.kgid || auditData.KGID || "MPP-2026-901"),
+            Action: String(auditData.action || auditData.Action || "BIOMETRIC_AUTH"),
+            TargetTable: String(auditData.targetTable || auditData.TargetTable || "CaseMaster"),
+            TargetRecordID: String(auditData.targetRecordId || auditData.TargetRecordID || `AUTH-${Date.now()}`),
+            DeviceID: String(auditData.deviceId || auditData.DeviceID || "ESP32-BHOPAL-01"),
+            FingerprintVerified: Boolean(auditData.fingerprintVerified ?? auditData.FingerprintVerified ?? true),
+            OTPUsed: String(auditData.otpUsed || auditData.OTPUsed || "948212"),
+            IPAddress: String(auditData.ipAddress || auditData.IPAddress || "127.0.0.1"),
             AuditTimestamp: new Date().toISOString().replace('T', ' ').split('.')[0],
-            ChangesSummary: String(auditData.changesSummary || "Biometric authentication verified").slice(0, 500)
+            ChangesSummary: String(auditData.changesSummary || auditData.ChangesSummary || "Biometric authentication verified").slice(0, 500)
         };
 
         try {

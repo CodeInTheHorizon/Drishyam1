@@ -106,7 +106,7 @@ module.exports = async (req, res) => {
             new QuickMLService(app);
 
         const response =
-            await quickml.generate(prompt);
+            await quickml.generate(prompt, analytics, message);
 
         const answer =
             parseResponse(response);

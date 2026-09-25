@@ -3,7 +3,7 @@ import { FaComments, FaTimes, FaPaperPlane, FaBrain, FaUser, FaTrash, FaTerminal
 import { assistantService } from "../../services/assistantService";
 
 const translations = {
-  "bengaluru city crime analytics summary": `### भोपाल / इंदौर नगर अपराध विश्लेषण सारांश (2026)
+  "bhopal / indore crime analytics summary": `### भोपाल / इंदौर नगर अपराध विश्लेषण सारांश (2026)
 
 कुल पंजीकृत प्राथमिकी (FIR) मामले: **1,482** (वर्ष-दर-वर्ष **4.2%** की वृद्धि)।
 
@@ -50,18 +50,18 @@ const translations = {
 
 अधिकारी प्रोफाइल विश्लेषण:
 
-* **एसीपी राजेश्वरी एन. (बैज ACP88)**
+* **एसपी कार्तिक सिंघल (बैज SP01)**
   * प्रमुख क्षेत्र: साइबर अपराध एवं क्रिप्टोग्राफी
   * कार्यभार: अनुकूल (18 सक्रिय / 142 कुल)
-  * मामले: 124 निस्तारित | सुलझाने की दर: **92%**
-* **इंस्पेक्टर रवि कुमार (बैज IN74)**
-  * प्रमुख क्षेत्र: नारकोटिक्स एवं फील्ड ऑपरेशंस
-  * कार्यभार: उच्च (32 सक्रिय / 198 कुल)
-  * मामले: 166 निस्तारित | सुलझाने की दर: **89%**
-* **डीएसपी शरणप्पा के. (बैज DSP11)**
-  * प्रमुख क्षेत्र: कॉर्पोरेट धोखाधड़ी एवं शेल जांच
-  * कार्यभार: अनुकूल (14 सक्रिय / 215 कुल)
-  * मामले: 201 निस्तारित | सुलझाने की दर: **95%**`,
+  * मामले: 124 निस्तारित | सुलझाने की दर: **94%**
+* **डीएसपी मेधावी अग्रवाल (बैज DSP24)**
+  * प्रमुख क्षेत्र: आर्थिक अपराध एवं फील्ड ऑपरेशंस
+  * कार्यभार: संतुलित (14 सक्रिय / 198 कुल)
+  * मामले: 166 निस्तारित | सुलझाने की दर: **91%**
+* **निरीक्षक हितेश संघी (बैज IN74)**
+  * प्रमुख क्षेत्र: संपत्ति अपराध एवं जांच
+  * कार्यभार: अनुकूल (12 सक्रिय / 115 कुल)
+  * मामले: 101 निस्तारित | सुलझाने की दर: **88%**`,
 
   "district crime comparison": `### जिला अपराध तुलना: भोपाल और इंदौर
 
@@ -368,10 +368,11 @@ const FloatingChatWidget = () => {
   };
 
   const suggestions = [
-    { label: "Bengaluru Crime Summary", query: "Summarize crimes in Bengaluru City" },
-    { label: "High-Risk Districts", query: "Show high-risk districts" },
-    { label: "Cyber Fraud Trends", query: "Explain recent cyber fraud trends" },
-    { label: "Officer Profiles", query: "Generate officer performance summary" }
+    { label: "Bhopal vs Indore Crime", query: "Summarize crime distribution across Bhopal & Indore" },
+    { label: "MP Crime Hotspots", query: "Show high-risk crime hotspots and patrol deployment zones" },
+    { label: "Cyber Fraud Vectors", query: "Explain recent cyber fraud vectors and prevention roadmap" },
+    { label: "Officer Performance", query: "Evaluate officer caseload and investigation clearance rates" },
+    { label: "DGP Executive Brief", query: "Draft an executive crime briefing for DGP" }
   ];
 
   return (
