@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
 import { officerService } from "../../services/officerService";
+import HardwareBiometricAuthModal from "../../components/hardware/HardwareBiometricAuthModal";
 import {
   FaLock,
   FaKey,
@@ -157,7 +158,38 @@ const Settings = () => {
     }
   }, [currentUser]);
 
+  // Hardware Biometric 2FA State
+  const [isHwAuthOpen, setIsHwAuthOpen] = useState(false);
+  const [hwAuthData, setHwAuthData] = useState({
+    title: "",
+    type: "UPDATE_OFFICER",
+    targetId: "",
+    summary: "",
+    onSuccess: () => {}
+  });
+
+  const requestHardwareAuth = (title, actionType, targetId, summary, callback) => {
+    setHwAuthData({
+      title,
+      type: actionType,
+      targetId,
+      summary,
+      onSuccess: callback
+    });
+    setIsHwAuthOpen(true);
+  };
+
   // Handle Admin Security PIN Change
+  const executePinUpdate = (cleanPin) => {
+    try {
+      const updated = updatePin(cleanPin);
+      setPinSuccess(`Records Security PIN successfully updated to '${updated}'!`);
+      setNewPin("");
+    } catch (err) {
+      setPinError(err.message || "Failed to update Security PIN.");
+    }
+  };
+
   const handlePinUpdate = (e) => {
     e.preventDefault();
     setPinSuccess("");
@@ -169,16 +201,50 @@ const Settings = () => {
       return;
     }
 
-    try {
-      const updated = updatePin(cleanPin);
-      setPinSuccess(`Records Security PIN successfully updated to '${updated}'!`);
-      setNewPin("");
-    } catch (err) {
-      setPinError(err.message || "Failed to update Security PIN.");
-    }
+    requestHardwareAuth(
+      "Update Records Security PIN",
+      "UPDATE_SECURITY_PIN",
+      "ADMIN_PIN",
+      "Modifying administrative master override security PIN",
+      () => executePinUpdate(cleanPin)
+    );
   };
 
   // Handle Officer Profile & Credentials Update
+  const executeProfileUpdate = () => {
+    try {
+      const updatedUser = updateUserProfile({
+        name: profileForm.name,
+        username: profileForm.username,
+        phone: profileForm.phone,
+        address: profileForm.address,
+        avatar: profileForm.avatar,
+        unit: profileForm.unit,
+        password: profileForm.newPassword || undefined
+      });
+
+      // Also sync avatar & details to officerService if badge matches
+      if (currentUser?.badge || currentUser?.kgid) {
+        const badge = currentUser.badge || currentUser.kgid;
+        const existingProf = officerService.getOfficerProfile(badge);
+        if (existingProf) {
+          officerService.addOfficer({
+            ...existingProf,
+            name: updatedUser.name,
+            unit: updatedUser.unit,
+            avatar: updatedUser.avatar,
+            badgeNumber: badge
+          });
+        }
+      }
+
+      setProfileSuccess("Officer profile and access credentials updated successfully!");
+      setProfileForm((prev) => ({ ...prev, newPassword: "", confirmPassword: "" }));
+    } catch (err) {
+      setProfileError(err.message || "Failed to update profile.");
+    }
+  };
+
   const handleProfileUpdate = (e) => {
     e.preventDefault();
     setProfileSuccess("");
@@ -224,57 +290,18 @@ const Settings = () => {
       }
     }
 
-    try {
-      const updatedUser = updateUserProfile({
-        name: profileForm.name,
-        username: profileForm.username,
-        phone: profileForm.phone,
-        address: profileForm.address,
-        avatar: profileForm.avatar,
-        unit: profileForm.unit,
-        password: profileForm.newPassword || undefined
-      });
-
-      // Also sync avatar & details to officerService if badge matches
-      if (currentUser?.badge || currentUser?.kgid) {
-        const badge = currentUser.badge || currentUser.kgid;
-        const existingProf = officerService.getOfficerProfile(badge);
-        if (existingProf) {
-          officerService.addOfficer({
-            ...existingProf,
-            name: updatedUser.name,
-            unit: updatedUser.unit,
-            avatar: updatedUser.avatar,
-            badgeNumber: badge
-          });
-        }
-      }
-
-      setProfileSuccess("Officer profile and access credentials updated successfully!");
-      setProfileForm((prev) => ({ ...prev, newPassword: "", confirmPassword: "" }));
-    } catch (err) {
-      setProfileError(err.message || "Failed to update profile.");
-    }
+    requestHardwareAuth(
+      "Modify Officer Profile & Credentials",
+      "UPDATE_OWN_PROFILE",
+      currentUser?.badge || currentUser?.kgid || currentUser?.username || "OFFICER",
+      `Updating personal officer profile and authentication credentials for ${currentUser?.name || 'Officer'}`,
+      () => executeProfileUpdate()
+    );
   };
 
   // Handle Admin Password Reset for Officers directly in live database
-  const handleOfficerPasswordReset = async (e) => {
-    e.preventDefault();
-    setOfficerPwdSuccess("");
-    setOfficerPwdError("");
-
-    if (!selectedUserId) {
-      setOfficerPwdError("Please select an officer account.");
-      return;
-    }
-
-    if (!officerNewPassword || officerNewPassword.length < 4) {
-      setOfficerPwdError("Password must be at least 4 characters long.");
-      return;
-    }
-
+  const executeOfficerPasswordReset = async (targetUser) => {
     try {
-      const targetUser = usersList.find((u) => u.id === selectedUserId || u.badge === selectedUserId || u.kgid === selectedUserId);
       const officerIdentifier = targetUser?.ROWID || targetUser?.badge || selectedUserId;
 
       // 1. Direct database API update
@@ -309,6 +336,31 @@ const Settings = () => {
     } catch (err) {
       setOfficerPwdError(err.message || "Failed to reset officer password.");
     }
+  };
+
+  const handleOfficerPasswordReset = async (e) => {
+    e.preventDefault();
+    setOfficerPwdSuccess("");
+    setOfficerPwdError("");
+
+    if (!selectedUserId) {
+      setOfficerPwdError("Please select an officer account.");
+      return;
+    }
+
+    if (!officerNewPassword || officerNewPassword.length < 4) {
+      setOfficerPwdError("Password must be at least 4 characters long.");
+      return;
+    }
+
+    const targetUser = usersList.find((u) => u.id === selectedUserId || u.badge === selectedUserId || u.kgid === selectedUserId);
+    requestHardwareAuth(
+      `Modify Passphrase for Officer ${targetUser?.name || selectedUserId}`,
+      "UPDATE_OFFICER_PASSWORD",
+      targetUser?.badge || targetUser?.kgid || selectedUserId,
+      `Administrative credential reset for officer account: ${targetUser?.name || ''} (${targetUser?.username || ''})`,
+      () => executeOfficerPasswordReset(targetUser)
+    );
   };
 
   // Filter officers directory
@@ -1048,6 +1100,21 @@ const Settings = () => {
         </div>
       )}
 
+      {/* ESP32 Hardware Biometric 2FA Verification Modal */}
+      <HardwareBiometricAuthModal
+        isOpen={isHwAuthOpen}
+        onClose={() => setIsHwAuthOpen(false)}
+        onSuccess={() => {
+          setIsHwAuthOpen(false);
+          if (hwAuthData.onSuccess) {
+            hwAuthData.onSuccess();
+          }
+        }}
+        actionTitle={hwAuthData.title}
+        actionType={hwAuthData.type}
+        targetRecordId={hwAuthData.targetId}
+        changesSummary={hwAuthData.summary}
+      />
     </div>
   );
 };

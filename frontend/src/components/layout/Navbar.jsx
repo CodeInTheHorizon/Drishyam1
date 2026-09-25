@@ -5,6 +5,7 @@ import { FaUserShield, FaUserCheck, FaSignOutAlt } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import NotificationDropdown from "./NotificationDropdown";
+import HardwareStatusIndicator from "../hardware/HardwareStatusIndicator";
 import kspLogo from "../../assets/images/ksp-emblem.png";
 
 function Navbar({ onToggleMobileMenu }) {
@@ -83,6 +84,9 @@ function Navbar({ onToggleMobileMenu }) {
             <FiMoon className="text-lg sm:text-xl text-indigo-500 hover:text-indigo-600 transition-transform duration-300 group-hover:-rotate-12" />
           )}
         </button>
+
+        {/* ESP32 Hardware Status Badge & Modal Trigger */}
+        <HardwareStatusIndicator />
 
         {/* Interactive Notification Bell Dropdown */}
         <NotificationDropdown />

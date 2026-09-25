@@ -12,14 +12,21 @@ import {
   FaClock
 } from "react-icons/fa";
 import FIRFormModal from "../records/FIRFormModal";
-import PINVerificationModal from "../records/PINVerificationModal";
+import HardwareBiometricAuthModal from "../hardware/HardwareBiometricAuthModal";
 import { triggerAction } from "../../services/dashboardService";
 import { recordService } from "../../services/recordService";
 
 const QuickActionsPanel = () => {
   const [runningAction, setRunningAction] = useState(null);
   const [isFirModalOpen, setIsFirModalOpen] = useState(false);
-  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [isHwAuthOpen, setIsHwAuthOpen] = useState(false);
+  const [hwAuthData, setHwAuthData] = useState({
+    title: "",
+    type: "CRUD_OPERATION",
+    targetId: "",
+    summary: "",
+    onSuccess: () => {}
+  });
 
   const [consoleLogs, setConsoleLogs] = useState([
     { timestamp: "14:26:00", level: "INFO", text: "CCTNS Core Application Software (CAS) v4.2 client initialized." },
@@ -38,13 +45,30 @@ const QuickActionsPanel = () => {
 
   const handleActionClick = async (actionId, label) => {
     if (actionId === "manage_records") {
-      setIsFirModalOpen(true);
-      addLog("Opening CCTNS Live FIR Registration Modal...", "INIT");
+      setHwAuthData({
+        title: "Biometric 2FA: Register New FIR",
+        type: "CREATE_FIR",
+        targetId: "NEW_FIR",
+        summary: "Initiating new live FIR registration into online CaseMaster",
+        onSuccess: () => {
+          setIsFirModalOpen(true);
+          addLog("Biometric + OLED 2FA verified. Opening CCTNS Live FIR Registration Modal...", "SUCCESS");
+        }
+      });
+      setIsHwAuthOpen(true);
       return;
     }
     if (actionId === "settings") {
-      setIsPinModalOpen(true);
-      addLog("Prompting Officer PIN Security Override...", "INIT");
+      setHwAuthData({
+        title: "Biometric 2FA: Security Override",
+        type: "SETTINGS_ACCESS",
+        targetId: "SYSTEM_SETTINGS",
+        summary: "Authorized administrative credentials security override",
+        onSuccess: () => {
+          addLog("Hardware 2FA override successful.", "SUCCESS");
+        }
+      });
+      setIsHwAuthOpen(true);
       return;
     }
     if (actionId === "reports") {
@@ -88,11 +112,6 @@ const QuickActionsPanel = () => {
     } catch (err) {
       addLog(`Failed registering FIR: ${err.message}`, "ERROR");
     }
-  };
-
-  const handlePinSuccess = () => {
-    addLog("Officer Security PIN Authorization verified successfully.", "SUCCESS");
-    setIsPinModalOpen(false);
   };
 
   const actions = [
@@ -237,11 +256,19 @@ const QuickActionsPanel = () => {
         onSave={handleSaveFir}
       />
 
-      <PINVerificationModal
-        isOpen={isPinModalOpen}
-        onClose={() => setIsPinModalOpen(false)}
-        onSuccess={handlePinSuccess}
-        actionTitle="Security Credentials Authorization"
+      <HardwareBiometricAuthModal
+        isOpen={isHwAuthOpen}
+        onClose={() => setIsHwAuthOpen(false)}
+        onSuccess={() => {
+          setIsHwAuthOpen(false);
+          if (hwAuthData.onSuccess) {
+            hwAuthData.onSuccess();
+          }
+        }}
+        actionTitle={hwAuthData.title}
+        actionType={hwAuthData.type}
+        targetRecordId={hwAuthData.targetId}
+        changesSummary={hwAuthData.summary}
       />
     </div>
   );

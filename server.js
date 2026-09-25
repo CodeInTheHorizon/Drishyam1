@@ -36,6 +36,7 @@ process.env.QUICKML_ACCESS_TOKEN = process.env.QUICKML_ACCESS_TOKEN || "";
 const chatHandler = require("./datathon-chatbot/functions/chat/index.js");
 const insightsHandler = require("./datathon-chatbot/functions/insights/index.js");
 const CrimeRepository = require("./datathon-chatbot/functions/chat/datastore.js");
+const hardwareManager = require("./backend/hardwareManager.js");
 
 const PORT = process.env.PORT || 3000;
 
@@ -277,6 +278,113 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: false, error: "Internal server error: " + err.message }));
         }
+    } else if (pathname === "/api/hardware/status" && req.method === "GET") {
+        try {
+            const status = hardwareManager.getStatus();
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, data: status }));
+        } catch (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+    } else if (pathname === "/api/hardware/toggle-connection" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const parsed = body ? JSON.parse(body) : {};
+                const newStatus = hardwareManager.setDeviceConnected(parsed.connected !== false);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: newStatus }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/esp32-poll" && (req.method === "GET" || req.method === "POST")) {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const parsedBody = body ? JSON.parse(body) : {};
+                const pollResp = hardwareManager.handleEsp32Poll(parsedBody);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify(pollResp));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ status: "ERROR", error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/enroll" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const officerData = body ? JSON.parse(body) : {};
+                const result = hardwareManager.startEnrollment(officerData);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/confirm-enroll" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const enrollData = body ? JSON.parse(body) : {};
+                const result = hardwareManager.confirmEnrollment(enrollData);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/request-auth" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const actionData = body ? JSON.parse(body) : {};
+                const session = hardwareManager.requestAuth(actionData);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: session }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/scan-biometric" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const scanData = body ? JSON.parse(body) : {};
+                const result = hardwareManager.scanBiometric(scanData.sessionId, scanData);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/verify-otp" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const verifyData = body ? JSON.parse(body) : {};
+                const result = await hardwareManager.verifyOtp(verifyData, repo);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
     } else {
         // Serve static frontend build assets and single-page application fallback
         serveStaticFile(req, res, pathname);

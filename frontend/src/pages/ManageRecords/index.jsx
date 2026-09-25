@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PageHeader from "../../components/dashboard/PageHeader";
 import FIRFormModal from "../../components/records/FIRFormModal";
 import FIRDetailModal from "../../components/records/FIRDetailModal";
-import PINVerificationModal from "../../components/records/PINVerificationModal";
+import HardwareBiometricAuthModal from "../../components/hardware/HardwareBiometricAuthModal";
 import { recordService } from "../../services/recordService";
 import { crimeService } from "../../services/crimeService";
 import {
@@ -37,15 +37,21 @@ const ManageRecords = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // PIN Authorization States
-  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
-  const [pinActionCallback, setPinActionCallback] = useState(null);
-  const [pinActionTitle, setPinActionTitle] = useState("");
+  // Hardware 2FA Authorization States (ESP32 + OLED + Biometrics)
+  const [isHwAuthModalOpen, setIsHwAuthModalOpen] = useState(false);
+  const [hwAuthCallback, setHwAuthCallback] = useState(null);
+  const [hwAuthTitle, setHwAuthTitle] = useState("");
+  const [hwAuthType, setHwAuthType] = useState("MANAGE_RECORD");
+  const [hwAuthTargetId, setHwAuthTargetId] = useState("RECORD");
+  const [hwAuthSummary, setHwAuthSummary] = useState("");
 
-  const requestPinAuth = (title, callback) => {
-    setPinActionTitle(title);
-    setPinActionCallback(() => callback);
-    setIsPinModalOpen(true);
+  const requestHardwareAuth = (title, actionType, targetId, summary, callback) => {
+    setHwAuthTitle(title);
+    setHwAuthType(actionType);
+    setHwAuthTargetId(targetId);
+    setHwAuthSummary(summary);
+    setHwAuthCallback(() => callback);
+    setIsHwAuthModalOpen(true);
   };
 
   // Load records on mount & filter change
@@ -84,19 +90,31 @@ const ManageRecords = () => {
     });
   };
 
-  // Handlers for CRUD with PIN protection
+  // Handlers for CRUD with Hardware Biometric 2FA protection
   const handleOpenCreateModal = () => {
-    requestPinAuth("Register New FIR Record", () => {
-      setSelectedRecord(null);
-      setIsFormOpen(true);
-    });
+    requestHardwareAuth(
+      "Register New FIR Record",
+      "CREATE_FIR",
+      "NEW_FIR",
+      "Initiating new FIR registration into online CaseMaster",
+      () => {
+        setSelectedRecord(null);
+        setIsFormOpen(true);
+      }
+    );
   };
 
   const handleOpenEditModal = (record) => {
-    requestPinAuth(`Edit FIR ${record.crimeNo}`, () => {
-      setSelectedRecord(record);
-      setIsFormOpen(true);
-    });
+    requestHardwareAuth(
+      `Edit FIR ${record.crimeNo}`,
+      "UPDATE_FIR",
+      record.crimeNo,
+      `Modifying FIR record details for case ${record.crimeNo}`,
+      () => {
+        setSelectedRecord(record);
+        setIsFormOpen(true);
+      }
+    );
   };
 
   const handleOpenDetailModal = (record) => {
@@ -119,20 +137,32 @@ const ManageRecords = () => {
     const rec = recordService.getRecordById(id);
     const actionText = rec?.status === "Case Closed / Completed" ? "Re-open Case Investigation" : "Mark Case Closed / Completed";
 
-    requestPinAuth(`${actionText} for ${rec?.crimeNo || 'FIR'}`, () => {
-      recordService.toggleCaseClosed(id);
-      reloadRecords();
-      if (selectedRecord && selectedRecord.id === id) {
-        setSelectedRecord(recordService.getRecordById(id));
+    requestHardwareAuth(
+      `${actionText} for ${rec?.crimeNo || 'FIR'}`,
+      "UPDATE_STATUS",
+      rec?.crimeNo || String(id),
+      `${actionText} status update for FIR ${rec?.crimeNo}`,
+      () => {
+        recordService.toggleCaseClosed(id);
+        reloadRecords();
+        if (selectedRecord && selectedRecord.id === id) {
+          setSelectedRecord(recordService.getRecordById(id));
+        }
       }
-    });
+    );
   };
 
   const handleDeletePrompt = (id) => {
     const rec = recordService.getRecordById(id);
-    requestPinAuth(`Delete FIR ${rec?.crimeNo || ''}`, () => {
-      setDeleteConfirmId(id);
-    });
+    requestHardwareAuth(
+      `Delete FIR ${rec?.crimeNo || ''}`,
+      "DELETE_FIR",
+      rec?.crimeNo || String(id),
+      `Permanent deletion authorization for FIR ${rec?.crimeNo}`,
+      () => {
+        setDeleteConfirmId(id);
+      }
+    );
   };
 
   const handleDeleteRecord = (id) => {
@@ -515,12 +545,15 @@ const ManageRecords = () => {
         </div>
       )}
 
-      {/* PIN Authorization Modal */}
-      <PINVerificationModal
-        isOpen={isPinModalOpen}
-        onClose={() => setIsPinModalOpen(false)}
-        onSuccess={pinActionCallback}
-        actionTitle={pinActionTitle}
+      {/* Hardware 2-Factor Biometric + OLED OTP Authorization Modal */}
+      <HardwareBiometricAuthModal
+        isOpen={isHwAuthModalOpen}
+        onClose={() => setIsHwAuthModalOpen(false)}
+        onSuccess={hwAuthCallback}
+        actionTitle={hwAuthTitle}
+        actionType={hwAuthType}
+        targetRecordId={hwAuthTargetId}
+        changesSummary={hwAuthSummary}
       />
 
       {/* Form Modal (Create / Edit) */}
