@@ -5,6 +5,8 @@ import Sidebar from "./Sidebar";
 import FloatingChatWidget from "../assistant/FloatingChatWidget";
 import ShapeGrid from "../backgrounds/ShapeGrid";
 import { recordService } from "../../services/recordService";
+import { officerService } from "../../services/officerService";
+import { authService } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 
 import {
@@ -95,12 +97,18 @@ function Layout() {
     };
   }, [mobileMenuOpen]);
 
-  // Fetch remote records from backend on app startup so all pages have data
+  // Fetch remote records and officers from database on app startup so all pages have real-time live data
   useEffect(() => {
     recordService.fetchRemoteRecords().then((records) => {
-      console.log(`[Layout] Fetched ${records?.length || 0} records from backend into localStorage.`);
+      console.log(`[Layout] Fetched ${records?.length || 0} live FIR records directly from database.`);
     }).catch((err) => {
       console.warn("[Layout] fetchRemoteRecords failed:", err);
+    });
+
+    officerService.fetchRemoteOfficers().then(() => {
+      authService.syncOnlineOfficers();
+    }).catch((err) => {
+      console.warn("[Layout] fetchRemoteOfficers failed:", err);
     });
   }, []);
 

@@ -46,9 +46,9 @@ const templates = [
 ];
 
 const mockRecentReports = [
-  { id: "rep-101", title: "Bengaluru_Cyber_Briefing_Q2.pdf", date: "2026-07-17 14:15", size: "1.4 MB", type: "PDF" },
-  { id: "rep-102", title: "NDPS_Mangaluru_Raid_Dossier.csv", date: "2026-07-16 11:22", size: "842 KB", type: "EXCEL" },
-  { id: "rep-103", title: "Officer_Performance_Audit_Belagavi.pdf", date: "2026-07-15 09:30", size: "2.1 MB", type: "PDF" },
+  { id: "rep-101", title: "Bhopal_Cyber_Briefing_Q2.pdf", date: "2026-07-17 14:15", size: "1.4 MB", type: "PDF" },
+  { id: "rep-102", title: "Indore_Financial_Cyber_Dossier.csv", date: "2026-07-16 11:22", size: "842 KB", type: "EXCEL" },
+  { id: "rep-103", title: "Officer_Performance_Audit_Jabalpur.pdf", date: "2026-07-15 09:30", size: "2.1 MB", type: "PDF" },
   { id: "rep-104", title: "Madhya_Pradesh_Annual_FIR_Summary.csv", date: "2026-07-14 17:45", size: "4.8 MB", type: "EXCEL" }
 ];
 

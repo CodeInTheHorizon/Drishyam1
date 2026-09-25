@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { authService } from "../../services/authService";
 import { FaUserShield, FaUserCheck, FaLock, FaKey, FaExclamationCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
 import LetterGlitch from "../../components/backgrounds/LetterGlitch";
@@ -19,6 +20,11 @@ const Login = () => {
 
   const from = location.state?.from?.pathname || "/";
 
+  // Pre-sync live officers from database on login mount
+  useEffect(() => {
+    authService.syncOnlineOfficers().catch(() => {});
+  }, []);
+
   const handleTabSwitch = (tab) => {
     setActiveTab(tab);
     setError("");
@@ -26,8 +32,8 @@ const Login = () => {
       setUsername("admin");
       setPassword("admin");
     } else {
-      setUsername("ksp.ramesh");
-      setPassword("Officer@123");
+      setUsername("mpp.kartiksinghal");
+      setPassword("password");
     }
   };
 

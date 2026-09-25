@@ -58,34 +58,23 @@ const sanitizeRecordCategories = (list) => {
   });
 };
 
+// Clear any legacy cached mock/offline records from browser localStorage
+try {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem("abhedya_cctns_fir_records_v103_demo");
+  localStorage.removeItem("abhedya_cctns_fir_records_v102");
+} catch (e) {}
+
 const loadStorage = () => {
   if (cachedMemoryRecords !== null && Array.isArray(cachedMemoryRecords)) {
     return sanitizeRecordCategories(cachedMemoryRecords);
   }
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        cachedMemoryRecords = sanitizeRecordCategories(deduplicateRecords(parsed));
-        return cachedMemoryRecords;
-      }
-    }
-  } catch (err) {
-    console.warn("Error reading localStorage:", err);
-  }
-  cachedMemoryRecords = [];
   return [];
 };
 
 const saveStorage = (records) => {
   const cleanRecords = deduplicateRecords(records || []);
   cachedMemoryRecords = cleanRecords;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanRecords));
-  } catch (err) {
-    console.warn("FIR storage quota full, keeping data in active memory:", err.message);
-  }
   notifySubscribers();
 };
 

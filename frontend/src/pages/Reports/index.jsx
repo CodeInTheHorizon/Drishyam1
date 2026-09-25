@@ -34,7 +34,7 @@ const Reports = () => {
     reportService.generateReport("exec_summary", {
       district: "Bhopal",
       category: "Cyber Crimes",
-      officerName: "ACP Rajeshwari N.",
+      officerName: "",
       startDate: "2026-06-01",
       endDate: "2026-07-17",
       format: "PDF",

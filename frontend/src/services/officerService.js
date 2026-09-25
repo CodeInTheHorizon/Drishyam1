@@ -15,46 +15,27 @@ const officersDatabase = {};
 
 const OFFICERS_STORAGE_KEY = "mpp_custom_officers_v7";
 
+// Clean up any legacy offline caches
+try {
+  localStorage.removeItem(OFFICERS_STORAGE_KEY);
+  localStorage.removeItem("ksp_custom_officers_v5_pinterest_photos");
+} catch (e) {}
+
+let cachedOfficersMap = {};
+
 const loadCustomOfficers = () => {
-  try {
-    let raw = localStorage.getItem(OFFICERS_STORAGE_KEY);
-    let map = raw ? JSON.parse(raw) : null;
-    if (!map || Object.keys(map).length === 0) {
-      const oldRaw = localStorage.getItem("ksp_custom_officers_v5_pinterest_photos");
-      if (oldRaw) {
-        map = JSON.parse(oldRaw);
-      }
-    }
-    return map || {};
-  } catch (err) {
-    return {};
-  }
+  return cachedOfficersMap;
 };
 
 const saveCustomOfficers = (customMap) => {
-  try {
-    localStorage.setItem(OFFICERS_STORAGE_KEY, JSON.stringify(customMap));
-  } catch (err) {
-    console.error("Failed saving custom officers:", err);
-  }
+  cachedOfficersMap = customMap || {};
 };
 
 import { recordService } from "./recordService";
 
 const getAuthUserByBadgeOrName = (badgeNumber, name) => {
-  try {
-    const raw = localStorage.getItem("mpp_auth_users_v7") || localStorage.getItem("ksp_auth_users_v6_pinterest_avatars");
-    if (!raw) return null;
-    const users = JSON.parse(raw);
-    return users.find(
-      (u) =>
-        u.badge === badgeNumber ||
-        u.kgid === badgeNumber ||
-        (u.name && name && u.name.toLowerCase().trim() === name.toLowerCase().trim())
-    );
-  } catch (err) {
-    return null;
-  }
+  const off = cachedOfficersMap[badgeNumber];
+  return off || null;
 };
 
 export const officerService = {
@@ -64,10 +45,11 @@ export const officerService = {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          const customMap = loadCustomOfficers();
+          const freshMap = {};
           json.data.forEach((emp, idx) => {
             const badge = emp.badgeNumber || `MPP-${emp.ROWID || emp.EmployeeID}`;
-            customMap[badge] = {
+            const cleanName = (emp.name || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+            freshMap[badge] = {
               badgeNumber: badge,
               name: emp.name,
               rank: emp.rank || "Police Inspector",
@@ -78,7 +60,9 @@ export const officerService = {
               avatar: emp.avatar || OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length],
               ROWID: emp.ROWID || badge,
               EmployeeID: emp.EmployeeID || badge,
-              kpis: customMap[badge]?.kpis || {
+              username: emp.username || `mpp.${cleanName}`,
+              password: emp.password || "password",
+              kpis: {
                 totalCases: 0,
                 activeCases: 0,
                 closedCases: 0,
@@ -86,8 +70,8 @@ export const officerService = {
                 avgInvestigationTime: 30,
                 detectionRate: 90
               },
-              workload: customMap[badge]?.workload || { highPriority: [], pending: [], hearings: [], recent: [] },
-              summary: customMap[badge]?.summary || {
+              workload: { highPriority: [], pending: [], hearings: [], recent: [] },
+              summary: {
                 strongArea: "Jurisdictional Crime Investigation & Case Management",
                 workloadStatus: "Optimal",
                 rating: "5.0 / 5.0",
@@ -96,14 +80,14 @@ export const officerService = {
               }
             };
           });
-          saveCustomOfficers(customMap);
-          return customMap;
+          cachedOfficersMap = freshMap;
+          return freshMap;
         }
       }
     } catch (err) {
       console.warn("[officerService] Online officer fetch exception:", err.message);
     }
-    return loadCustomOfficers();
+    return cachedOfficersMap;
   },
 
   getOfficers: () => {

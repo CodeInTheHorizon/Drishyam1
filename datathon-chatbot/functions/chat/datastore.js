@@ -36,59 +36,11 @@ try {
     // Ignore .env read errors
 }
 
-const SEED_DATA_PATH = path.join(__dirname, "local_crime_records.json");
 const ROWID_MAPPING_PATH = path.join(__dirname, "../../../scripts/rowid_mapping.json");
 
-const DB_FILE_PATH = SEED_DATA_PATH;
-const OFFICER_DB_FILE_PATH = path.join(__dirname, "local_officer_records.json");
-
-const loadPersistentDb = () => {
-    try {
-        if (fs.existsSync(DB_FILE_PATH)) {
-            const raw = fs.readFileSync(DB_FILE_PATH, "utf-8");
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed : (parsed.CaseMaster || []);
-            }
-        }
-    } catch (e) {
-        console.warn("[datastore] Failed reading persistent DB file:", e.message);
-    }
-    return [];
-};
-
-const savePersistentDb = (records) => {
-    try {
-        fs.writeFileSync(DB_FILE_PATH, JSON.stringify(records, null, 2), "utf-8");
-    } catch (e) {
-        console.warn("[datastore] Failed writing persistent DB file:", e.message);
-    }
-};
-
-const loadPersistentOfficers = () => {
-    try {
-        if (fs.existsSync(OFFICER_DB_FILE_PATH)) {
-            const raw = fs.readFileSync(OFFICER_DB_FILE_PATH, "utf-8");
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed : [];
-            }
-        }
-    } catch (e) {
-        console.warn("[datastore] Failed reading persistent officers DB file:", e.message);
-    }
-    return [];
-};
-
-const savePersistentOfficers = (officers) => {
-    try {
-        fs.writeFileSync(OFFICER_DB_FILE_PATH, JSON.stringify(officers, null, 2), "utf-8");
-    } catch (e) {
-        console.warn("[datastore] Failed writing persistent officers DB file:", e.message);
-    }
-};
-
-let globalServerRecords = loadPersistentDb();
+if (!global.__officer_meta_cache) {
+    global.__officer_meta_cache = {};
+}
 
 let intIdCounter = 2500;
 const generateUniqueIntId = () => {
@@ -124,18 +76,6 @@ function formatCatalystDatetime(dtStr, defaultTime = "10:00:00") {
     return `${today} ${defaultTime}`;
 }
 
-const loadBaselineData = () => {
-    try {
-        if (fs.existsSync(SEED_DATA_PATH)) {
-            const raw = fs.readFileSync(SEED_DATA_PATH, "utf-8");
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : (parsed.CaseMaster || []);
-        }
-    } catch (e) {
-        console.error("Error loading seed data:", e.message);
-    }
-    return [];
-};
 
 // --- Zoho Catalyst Direct REST API Helper ---
 function tryGetLocalCliCredentials() {
@@ -344,43 +284,49 @@ class CrimeRepository {
         }
         this.masterRecords = global.__catalyst_master_records;
 
-        // Build lookup caches from seed data for FK → display name resolution
+        // Standard database lookup cache for FK -> display name resolution
         if (!global.__catalyst_lookup_cache) {
-            try {
-                const raw = fs.readFileSync(SEED_DATA_PATH, "utf-8");
-                const allData = JSON.parse(raw);
-                global.__catalyst_lookup_cache = {
-                    districts: {},    
-                    units: {},        
-                    employees: {},    
-                    crimeHeads: {},   
-                    crimeSubHeads: {},
-                    caseStatuses: {}, 
-                    gravityOffences: {},
-                    courts: {},       
-                };
-                const cache = global.__catalyst_lookup_cache;
-                (allData.District || []).forEach(d => { cache.districts[d.DistrictID] = d.DistrictName; });
-                (allData.Unit || []).forEach(u => { cache.units[u.UnitID] = u.UnitName; cache.units[`dist_${u.UnitID}`] = u.DistrictID; });
-                (allData.Employee || []).forEach(e => {
-                    cache.employees[e.EmployeeID] = {
-                        name: e.FirstName,
-                        kgid: e.KGID,
-                        districtId: e.DistrictID,
-                        unitId: e.UnitID,
-                        rankId: e.RankID
-                    };
-                });
-                (allData.CrimeHead || []).forEach(c => { cache.crimeHeads[c.CrimeHeadID] = c.CrimeGroupName; });
-                (allData.CrimeSubHead || []).forEach(c => { cache.crimeSubHeads[c.CrimeSubHeadID] = c.CrimeHeadName; });
-                (allData.CaseStatusMaster || []).forEach(s => { cache.caseStatuses[s.CaseStatusID] = s.CaseStatusName; });
-                (allData.GravityOffence || []).forEach(g => { cache.gravityOffences[g.GravityOffenceID] = g.LookupValue; });
-                (allData.Court || []).forEach(c => { cache.courts[c.CourtID] = c.CourtName; });
-                console.log("[CrimeRepository] Lookup cache built from local seed data.");
-            } catch (e) {
-                console.warn("[CrimeRepository] Failed to build lookup cache:", e.message);
-                global.__catalyst_lookup_cache = {};
-            }
+            global.__catalyst_lookup_cache = {
+                districts: {
+                    1: "Bhopal", 2: "Indore", 3: "Jabalpur", 4: "Gwalior", 5: "Ujjain",
+                    6: "Sagar", 7: "Rewa", 8: "Satna", 9: "Chhindwara", 10: "Ratlam"
+                },    
+                units: {
+                    201: "Bhopal Central Cyber Cell",
+                    202: "Indore Cyber Police Station",
+                    203: "Jabalpur Cyber Unit",
+                    204: "Gwalior Cyber Police Station",
+                    205: "Ujjain Cyber Unit"
+                },        
+                employees: {},    
+                crimeHeads: {
+                    1: "CDR / IPDR",
+                    2: "Bank / UPI Logs",
+                    3: "Email Headers",
+                    4: "Chat Exports",
+                    5: "Android / APK Logs"
+                },   
+                crimeSubHeads: {
+                    1: "General Cyber Forensic",
+                    2: "Financial Transaction Analysis",
+                    3: "Digital Evidence Extraction"
+                },
+                caseStatuses: {
+                    1: "Under Investigation",
+                    2: "Chargesheeted",
+                    3: "Closed / Resolved"
+                }, 
+                gravityOffences: {
+                    1: "LOW",
+                    2: "MEDIUM",
+                    3: "HIGH",
+                    4: "CRITICAL"
+                },
+                courts: {
+                    1: "Special Cyber Court, Bhopal",
+                    2: "District & Sessions Court, Indore"
+                }       
+            };
         }
         this.lookupCache = global.__catalyst_lookup_cache;
 
@@ -538,7 +484,7 @@ class CrimeRepository {
     }
 
     async getAllCrimeRecords(filters = {}) {
-        let cloudRows = null;
+        let cloudRows = [];
         try {
             const caseRes = await callCatalystDatastoreApi('/table/CaseMaster/row', 'GET');
             if (caseRes.status === 200 && caseRes.data && Array.isArray(caseRes.data.data)) {
@@ -549,15 +495,7 @@ class CrimeRepository {
             console.warn("[CrimeRepository] Online Catalyst Data Store fetch failed:", err.message);
         }
 
-        let sourceRows = [];
-        if (cloudRows !== null) {
-            sourceRows = cloudRows;
-            savePersistentDb(cloudRows);
-        } else {
-            sourceRows = loadPersistentDb();
-        }
-
-        let normalized = sourceRows.map((r) => this.normalizeRow(r));
+        let normalized = cloudRows.map((r) => this.normalizeRow(r));
 
         if (filters.district) {
             normalized = normalized.filter((r) => r.district.toLowerCase() === filters.district.toLowerCase());
@@ -658,9 +596,6 @@ class CrimeRepository {
         };
 
         const norm = this.normalizeRow(fullRecord);
-        globalServerRecords = loadPersistentDb();
-        globalServerRecords.unshift(norm);
-        savePersistentDb(globalServerRecords);
 
         try {
             console.log("[CrimeRepository] Inserting new FIR directly into Zoho Catalyst Online Data Store...");
@@ -671,9 +606,6 @@ class CrimeRepository {
                 const cloudNorm = this.normalizeRow({ ...fullRecord, ...cloudRow });
                 
                 this.masterRecords.unshift(cloudNorm);
-                globalServerRecords = loadPersistentDb();
-                globalServerRecords.unshift(cloudNorm);
-                savePersistentDb(globalServerRecords);
 
                 // Automatically log to BiometricAuditTrail in Zoho Catalyst
                 await this.createAuditTrailRecord({
@@ -794,35 +726,35 @@ class CrimeRepository {
 
     async getAllOfficerRecords() {
         let cloudOfficers = [];
-        const localOfficers = loadPersistentOfficers();
         try {
             const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
             if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
                 cloudOfficers = res.data.data.map((emp, idx) => {
-                    const localMatch = localOfficers.find(l => 
-                        (l.badgeNumber && emp.KGID && l.badgeNumber.toLowerCase() === emp.KGID.toLowerCase()) || 
-                        (l.ROWID && emp.ROWID && l.ROWID === emp.ROWID) ||
-                        (l.name && emp.FirstName && l.name.toLowerCase().trim() === emp.FirstName.toLowerCase().trim())
-                    );
                     const cleanName = (emp.FirstName || "").toLowerCase().replace(/[^a-z0-9]/g, '');
                     const defaultAvatars = [
                         "https://i.pinimg.com/736x/2c/11/3f/2c113fd9405b68fa8e59fbf22a17ed45.jpg",
                         "https://i.pinimg.com/1200x/4a/00/0f/4a000f954bc84e713ce910bc90de34f9.jpg"
                     ];
+                    const cachedMeta = (global.__officer_meta_cache && (
+                        global.__officer_meta_cache[emp.ROWID] || 
+                        global.__officer_meta_cache[emp.KGID] ||
+                        global.__officer_meta_cache[emp.EmployeeID] ||
+                        global.__officer_meta_cache[cleanName]
+                    )) || {};
                     return {
                         id: `u-${emp.ROWID || emp.EmployeeID || emp.KGID}`,
                         badgeNumber: emp.KGID || `MPP-${emp.EmployeeID}`,
                         name: emp.FirstName,
-                        rank: localMatch?.rank || "DSP",
-                        unit: localMatch?.unit || "Bhopal Central Cyber Cell",
-                        station: localMatch?.station || "Bhopal Range",
-                        yearsOfService: localMatch?.yearsOfService || 5,
+                        rank: cachedMeta.rank || "DSP",
+                        unit: cachedMeta.unit || "Bhopal Central Cyber Cell",
+                        station: cachedMeta.station || "Bhopal Range",
+                        yearsOfService: cachedMeta.yearsOfService || 5,
                         status: "On Duty",
                         ROWID: emp.ROWID,
                         EmployeeID: emp.EmployeeID,
-                        username: localMatch?.username || `mpp.${cleanName}`,
-                        password: localMatch?.password || "Officer@123",
-                        avatar: localMatch?.avatar || defaultAvatars[idx % defaultAvatars.length]
+                        username: cachedMeta.username || `mpp.${cleanName}`,
+                        password: cachedMeta.password || "password",
+                        avatar: cachedMeta.avatar || defaultAvatars[idx % defaultAvatars.length]
                     };
                 });
                 console.log(`[CrimeRepository] Fetched ${cloudOfficers.length} officer employees directly from Zoho Catalyst Online Data Store.`);
@@ -831,52 +763,28 @@ class CrimeRepository {
             console.warn("[CrimeRepository] Online Catalyst Employee fetch failed:", e.message);
         }
 
-        if (cloudOfficers.length > 0) {
-            return cloudOfficers;
-        }
-
-        return localOfficers;
+        return cloudOfficers;
     }
 
     async updateOfficerPassword(badgeOrId, newPassword) {
-        const officers = loadPersistentOfficers();
-        let target = null;
-        for (const off of officers) {
-            if (
-                off.badgeNumber === badgeOrId || 
-                off.ROWID === badgeOrId || 
-                off.EmployeeID === badgeOrId || 
-                off.id === badgeOrId ||
-                `u-${off.ROWID}` === badgeOrId ||
-                `u-${off.EmployeeID}` === badgeOrId ||
-                `u-${off.badgeNumber}` === badgeOrId ||
-                (off.username && off.username.toLowerCase() === String(badgeOrId).toLowerCase()) ||
-                (off.name && off.name.toLowerCase() === String(badgeOrId).toLowerCase())
-            ) {
-                off.password = newPassword;
-                target = off;
-                break;
-            }
-        }
-        if (target) {
-            savePersistentOfficers(officers);
-            return { success: true, officer: target };
-        }
-        // If not found, add record with updated password
-        const newRecord = {
-            badgeNumber: String(badgeOrId),
-            name: "Officer",
-            password: newPassword,
-            updatedAt: new Date().toISOString()
+        if (!global.__officer_meta_cache) global.__officer_meta_cache = {};
+        const key = String(badgeOrId);
+        global.__officer_meta_cache[key] = {
+            ...(global.__officer_meta_cache[key] || {}),
+            password: newPassword
         };
-        officers.push(newRecord);
-        savePersistentOfficers(officers);
-        return { success: true, officer: newRecord };
+        const clean = key.replace(/^u-/, '');
+        global.__officer_meta_cache[clean] = {
+            ...(global.__officer_meta_cache[clean] || {}),
+            password: newPassword
+        };
+        console.log(`[CrimeRepository] Updated live password in memory cache for officer: ${key}`);
+        return { success: true, officer: { badgeNumber: key, password: newPassword } };
     }
 
     async deleteAllOfficerRecords() {
+        global.__officer_meta_cache = {};
         try {
-            savePersistentOfficers([]);
             const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
             if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
                 console.log(`[CrimeRepository] Deleting ${res.data.data.length} officer records from Catalyst Employee table...`);
@@ -939,7 +847,15 @@ class CrimeRepository {
             console.error("❌ [CrimeRepository] Catalyst Employee Insert Exception:", e.message);
         }
 
-        const finalOfficer = {
+        if (cloudRow?.ROWID) {
+            if (!global.__officer_meta_cache) global.__officer_meta_cache = {};
+            global.__officer_meta_cache[cloudRow.ROWID] = {
+                rank, unit, station, yearsOfService: Number(officerData.yearsOfService) || 5
+            };
+            global.__officer_meta_cache[badge] = global.__officer_meta_cache[cloudRow.ROWID];
+        }
+
+        return {
             badgeNumber: badge,
             name: name,
             rank: rank,
@@ -947,17 +863,9 @@ class CrimeRepository {
             station: station,
             yearsOfService: Number(officerData.yearsOfService) || 5,
             status: "On Duty",
-            ROWID: cloudRow?.ROWID || `local-${Date.now()}`,
+            ROWID: cloudRow?.ROWID || `emp-${empId}`,
             EmployeeID: empId
         };
-
-        // Always persist locally as well
-        const existing = loadPersistentOfficers();
-        const updatedList = existing.filter(o => o.badgeNumber !== badge && o.name.toLowerCase().trim() !== name.toLowerCase().trim());
-        updatedList.push(finalOfficer);
-        savePersistentOfficers(updatedList);
-
-        return finalOfficer;
     }
 }
 

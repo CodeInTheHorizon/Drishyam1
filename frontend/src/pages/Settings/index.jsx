@@ -110,7 +110,7 @@ const Settings = () => {
       const res = await fetch('/api/officers');
       if (res.ok) {
         const json = await res.json();
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        if (json.success && Array.isArray(json.data)) {
           const defaultAvatars = [
             "https://i.pinimg.com/736x/2c/11/3f/2c113fd9405b68fa8e59fbf22a17ed45.jpg",
             "https://i.pinimg.com/1200x/4a/00/0f/4a000f954bc84e713ce910bc90de34f9.jpg"
@@ -124,7 +124,7 @@ const Settings = () => {
             badge: off.badgeNumber || off.KGID,
             badgeNumber: off.badgeNumber || off.KGID,
             username: off.username || `mpp.${(off.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')}`,
-            password: off.password || "Officer@123",
+            password: off.password || "password",
             unit: off.unit || "Bhopal Central Cyber Cell",
             avatar: off.avatar || defaultAvatars[idx % defaultAvatars.length],
             role: "OFFICER"

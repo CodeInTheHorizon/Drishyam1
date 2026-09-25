@@ -37,7 +37,13 @@ const INITIAL_USERS = [
   }
 ];
 
-// Load Users with automated recovery across storage keys
+// Clean up legacy fallback keys
+try {
+  localStorage.removeItem("ksp_auth_users_v6_pinterest_avatars");
+  localStorage.removeItem("ksp_custom_officers_v5_pinterest_photos");
+} catch (e) {}
+
+// Load Users strictly from live user accounts
 const loadUsers = () => {
   try {
     const raw = localStorage.getItem(USERS_STORAGE_KEY);
@@ -45,57 +51,6 @@ const loadUsers = () => {
     if (!users || !Array.isArray(users) || users.length === 0) {
       users = [...INITIAL_USERS];
     }
-
-    // Check if any officers are present in current users
-    const hasOfficers = users.some((u) => u.role === "OFFICER");
-    if (!hasOfficers) {
-      // Recovery 1: Check prior version keys
-      try {
-        const oldAuth = localStorage.getItem("ksp_auth_users_v6_pinterest_avatars");
-        if (oldAuth) {
-          const parsedOld = JSON.parse(oldAuth);
-          const oldOfficers = parsedOld.filter((u) => u.role === "OFFICER");
-          if (oldOfficers.length > 0) {
-            users = [...users, ...oldOfficers];
-          }
-        }
-      } catch (e) {}
-
-      // Recovery 2: Check custom officers storage
-      try {
-        const rawCustom = localStorage.getItem("mpp_custom_officers_v7") || localStorage.getItem("ksp_custom_officers_v5_pinterest_photos");
-        if (rawCustom) {
-          const customMap = JSON.parse(rawCustom);
-          Object.values(customMap).forEach((co, idx) => {
-            const badge = co.badgeNumber || `MPP-${idx + 1}`;
-            const cleanName = (co.name || "officer").toLowerCase().replace(/[^a-z0-9]/g, "");
-            const exists = users.some(
-              (u) =>
-                u.badge === badge ||
-                u.kgid === badge ||
-                (u.name && u.name.toLowerCase().trim() === (co.name || "").toLowerCase().trim())
-            );
-            if (!exists) {
-              users.push({
-                id: `u-${co.ROWID || badge}`,
-                username: co.username || `mpp.${cleanName}`,
-                password: "Officer@123",
-                name: co.name,
-                role: "OFFICER",
-                rank: co.rank || "Police Inspector",
-                kgid: badge,
-                badge: badge,
-                unit: co.unit || "General Unit",
-                avatar: co.avatar || OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length]
-              });
-            }
-          });
-        }
-      } catch (e) {}
-
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-    }
-
     return users;
   } catch (err) {
     console.error("Failed loading users from storage:", err);
@@ -164,7 +119,7 @@ export const authService = {
       const res = await fetch('/api/officers');
       if (res.ok) {
         const json = await res.json();
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        if (json.success && Array.isArray(json.data)) {
           const currentUsers = loadUsers();
           const adminUsers = currentUsers.filter((u) => u.role === "ADMIN");
 
@@ -179,13 +134,14 @@ export const authService = {
             const existing = currentUsers.find(
               (u) =>
                 (u.badge && badge && u.badge.toLowerCase() === badge.toLowerCase()) ||
+                (u.id && emp.ROWID && u.id === emp.ROWID) ||
                 (u.name && emp.name && u.name.toLowerCase().trim() === emp.name.toLowerCase().trim())
             );
 
             return {
               id: emp.ROWID || badge,
               username: emp.username || existing?.username || `mpp.${cleanName}`,
-              password: emp.password || existing?.password || "Officer@123",
+              password: emp.password || existing?.password || "password",
               name: emp.name,
               role: "OFFICER",
               rank: emp.rank || existing?.rank || "DSP",
