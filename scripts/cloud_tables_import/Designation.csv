@@ -1,0 +1,4 @@
+DesignationID,DesignationName,Active,SortOrder
+1,Investigating Officer (IO),1,1
+2,Station House Officer (SHO),1,2
+3,Crime Inspector,1,3

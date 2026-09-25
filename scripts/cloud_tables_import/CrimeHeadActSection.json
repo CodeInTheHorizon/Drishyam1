@@ -1,0 +1,27 @@
+[
+  {
+    "CrimeHeadID": 1,
+    "ActCode": "IPC",
+    "SectionCode": "Sec 379"
+  },
+  {
+    "CrimeHeadID": 1,
+    "ActCode": "IPC",
+    "SectionCode": "Sec 395"
+  },
+  {
+    "CrimeHeadID": 2,
+    "ActCode": "IPC",
+    "SectionCode": "Sec 302"
+  },
+  {
+    "CrimeHeadID": 3,
+    "ActCode": "IT Act",
+    "SectionCode": "Sec 66D"
+  },
+  {
+    "CrimeHeadID": 5,
+    "ActCode": "NDPS",
+    "SectionCode": "Sec 20(b)"
+  }
+]

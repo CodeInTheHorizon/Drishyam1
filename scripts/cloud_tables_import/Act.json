@@ -1,0 +1,26 @@
+[
+  {
+    "ActCode": "IPC",
+    "ActDescription": "Indian Penal Code",
+    "ShortName": "IPC",
+    "Active": 1
+  },
+  {
+    "ActCode": "NDPS",
+    "ActDescription": "Narcotic Drugs & Psychotropic Substances Act",
+    "ShortName": "NDPS",
+    "Active": 1
+  },
+  {
+    "ActCode": "IT Act",
+    "ActDescription": "Information Technology Act",
+    "ShortName": "IT Act",
+    "Active": 1
+  },
+  {
+    "ActCode": "POCSO",
+    "ActDescription": "Protection of Children from Sexual Offences Act",
+    "ShortName": "POCSO",
+    "Active": 1
+  }
+]

@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "./styles/theme.css";
+
+.font-space {
+  font-family: 'Space Grotesk', 'Space Grotesk fallback', sans-serif;
+}
+
+.font-inter {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+.font-jakarta {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+.font-outfit {
+  font-family: 'Outfit', 'Space Grotesk', sans-serif;
+}
+
+.bg-blueprint {
+  background: transparent;
+}
+
+/* ====================================================
+   Layout Workspace Framing & Side Margins
+   ==================================================== */
+.main-workspace-layout {
+  flex: 1 1 0%;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 24px 20px 60px 20px !important;
+}
+
+@media (min-width: 768px) {
+  .main-workspace-layout {
+    padding: 28px 28px 70px 28px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-workspace-layout {
+    padding: 30px 36px 80px 36px !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  .main-workspace-layout {
+    padding: 32px 48px 80px 48px !important;
+  }
+}
+
+.main-content-boundary {
+  width: 100%;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* ====================================================
+   Custom Overrides for Dark-themed Leaflet Popups
+   ==================================================== */
+.dark-popup .leaflet-popup-content-wrapper {
+  background-color: #0f172a !important;
+  /* bg-slate-900 */
+  color: #f8fafc !important;
+  /* text-slate-50 */
+  border: 1px solid #334155 !important;
+  /* border-slate-700 */
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  padding: 4px !important;
+}
+
+.dark-popup .leaflet-popup-tip {
+  background-color: #0f172a !important;
+  border-left: 1px solid #334155 !important;
+  border-bottom: 1px solid #334155 !important;
+}
+
+.dark-popup .leaflet-popup-close-button {
+  color: #94a3b8 !important;
+  font-size: 14px !important;
+  padding: 8px !important;
+}
+
+.dark-popup .leaflet-popup-close-button:hover {
+  color: #ffffff !important;
+}
+
+/* ====================================================
+   Custom Overrides for Dark-themed Leaflet Tooltips
+   ==================================================== */
+.dark-tooltip.leaflet-tooltip {
+  background: rgba(2, 6, 23, 0.96) !important;
+  border: 1px solid rgba(51, 65, 85, 0.8) !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+.dark-tooltip.leaflet-tooltip::before {
+  border-top-color: rgba(51, 65, 85, 0.8) !important;
+  border-bottom-color: rgba(51, 65, 85, 0.8) !important;
+}
+
+/* ====================================================
+   Print & Save-to-PDF Styles
+   ==================================================== */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  header,
+  nav,
+  aside,
+  button,
+  select,
+  input,
+  .no-print {
+    display: none !important;
+  }
+
+  table {
+    color: #000000 !important;
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #cbd5e1 !important;
+    color: #000000 !important;
+    padding: 6px !important;
+  }
+}
+
+/* ====================================================
+   Settings Page Grainient Redesign Styles
+   ==================================================== */
+.settings-active .min-h-screen {
+  background: transparent !important;
+}
+
+.settings-active .bg-blueprint {
+  background: transparent !important;
+}
+
+.settings-active aside {
+  position: relative !important;
+  z-index: 40 !important;
+  background-color: rgba(11, 18, 32, 0.45) !important;
+  backdrop-filter: blur(12px) !important;
+  border-right: 1px solid rgba(96, 165, 250, 0.12) !important;
+}
+
+.settings-active header {
+  position: sticky !important;
+  z-index: 50 !important;
+  background-color: rgba(8, 18, 32, 0.45) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.12) !important;
+}
+
+.settings-active main {
+  position: relative !important;
+  z-index: 30 !important;
+}
+
+.settings-grainient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.settings-dark-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(5, 10, 18, 0.45);
+  z-index: 2;
+  pointer-events: none;
+}

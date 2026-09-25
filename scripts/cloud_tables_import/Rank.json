@@ -1,0 +1,32 @@
+[
+  {
+    "RankID": 1,
+    "RankName": "Police Sub-Inspector (PSI)",
+    "Hierarchy": 3,
+    "Active": 1
+  },
+  {
+    "RankID": 2,
+    "RankName": "Police Inspector (PI)",
+    "Hierarchy": 2,
+    "Active": 1
+  },
+  {
+    "RankID": 3,
+    "RankName": "Deputy Superintendent of Police (DySP)",
+    "Hierarchy": 1,
+    "Active": 1
+  },
+  {
+    "RankID": 4,
+    "RankName": "Assistant Commissioner of Police (ACP)",
+    "Hierarchy": 1,
+    "Active": 1
+  },
+  {
+    "RankID": 5,
+    "RankName": "Head Constable (HC)",
+    "Hierarchy": 4,
+    "Active": 1
+  }
+]

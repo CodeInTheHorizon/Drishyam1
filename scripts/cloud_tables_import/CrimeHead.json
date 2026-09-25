@@ -1,0 +1,32 @@
+[
+  {
+    "CrimeHeadID": 1,
+    "CrimeGroupName": "Property Offences",
+    "Active": 1
+  },
+  {
+    "CrimeHeadID": 2,
+    "CrimeGroupName": "Offences Against Body",
+    "Active": 1
+  },
+  {
+    "CrimeHeadID": 3,
+    "CrimeGroupName": "Cyber Crimes",
+    "Active": 1
+  },
+  {
+    "CrimeHeadID": 4,
+    "CrimeGroupName": "Financial Fraud",
+    "Active": 1
+  },
+  {
+    "CrimeHeadID": 5,
+    "CrimeGroupName": "Narcotics",
+    "Active": 1
+  },
+  {
+    "CrimeHeadID": 6,
+    "CrimeGroupName": "Crimes Against Women",
+    "Active": 1
+  }
+]

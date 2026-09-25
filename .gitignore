@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+datathon-chatbot/*/node_modules/
+
+# Production / Build
+dist/
+dist-ssr/
+build/
+
+# Environment / Secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Deployment & Scratch
+*.zip
+scratch/

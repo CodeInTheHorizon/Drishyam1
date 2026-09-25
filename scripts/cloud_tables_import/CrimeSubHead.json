@@ -1,0 +1,38 @@
+[
+  {
+    "CrimeSubHeadID": 101,
+    "CrimeHeadID": 1,
+    "CrimeHeadName": "Commercial Dacoity & Theft",
+    "SeqID": 1
+  },
+  {
+    "CrimeSubHeadID": 102,
+    "CrimeHeadID": 2,
+    "CrimeHeadName": "Homicide & Assault",
+    "SeqID": 1
+  },
+  {
+    "CrimeSubHeadID": 103,
+    "CrimeHeadID": 3,
+    "CrimeHeadName": "Financial Cyber Fraud",
+    "SeqID": 1
+  },
+  {
+    "CrimeSubHeadID": 104,
+    "CrimeHeadID": 4,
+    "CrimeHeadName": "Corporate Embezzlement",
+    "SeqID": 1
+  },
+  {
+    "CrimeSubHeadID": 105,
+    "CrimeHeadID": 5,
+    "CrimeHeadName": "Commercial NDPS Seizure",
+    "SeqID": 1
+  },
+  {
+    "CrimeSubHeadID": 106,
+    "CrimeHeadID": 6,
+    "CrimeHeadName": "Harassment & Stalking",
+    "SeqID": 1
+  }
+]

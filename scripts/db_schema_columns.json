@@ -1,0 +1,881 @@
+{
+  "Designation": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "DesignationID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "DesignationName",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "mandatory": false
+    },
+    {
+      "name": "SortOrder",
+      "type": "int",
+      "mandatory": false
+    }
+  ],
+  "Employee": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "EmployeeID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "DistrictID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "UnitID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "RankID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "DesignationID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "KGID",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "FirstName",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "EmployeeDOB",
+      "type": "date",
+      "mandatory": false
+    },
+    {
+      "name": "GenderlD",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "BloodGroupID",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "PhysicallyChallenged",
+      "type": "boolean",
+      "mandatory": false
+    },
+    {
+      "name": "AppointmentDate",
+      "type": "date",
+      "mandatory": false
+    }
+  ],
+  "CaseCategory": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CaseCategoryID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "LookupValue",
+      "type": "varchar",
+      "mandatory": false
+    }
+  ],
+  "GravityOffence": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "GravityOffenceID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "LookupValue",
+      "type": "varchar",
+      "mandatory": false
+    }
+  ],
+  "CrimeHead": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CrimeHeadID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeGroupName",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "mandatory": false
+    }
+  ],
+  "CrimeSubHead": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CrimeSubHeadID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeHeadID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeHeadName",
+      "type": "varchar",
+      "mandatory": true
+    },
+    {
+      "name": "SeqlD",
+      "type": "int",
+      "mandatory": true
+    }
+  ],
+  "CaseStatusMaster": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CaseStatusID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CaseStatusName",
+      "type": "varchar",
+      "mandatory": true
+    }
+  ],
+  "Court": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CourtID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CourtName",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "DistrictID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "StateID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "mandatory": false
+    }
+  ],
+  "Act": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "ActCode",
+      "type": "varchar",
+      "mandatory": true
+    },
+    {
+      "name": "ShortName",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "ActDescription",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "mandatory": false
+    }
+  ],
+  "Section": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "ActCode",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "SectionCode",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "SectionDescription",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "mandatory": false
+    }
+  ],
+  "CaseMaster": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeNo",
+      "type": "varchar",
+      "mandatory": true
+    },
+    {
+      "name": "CaseNo",
+      "type": "varchar",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeRegisteredDate",
+      "type": "date",
+      "mandatory": true
+    },
+    {
+      "name": "PolicePersonID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "PoliceStationID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CaseCategoryID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "GravityOffenceID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeMajorHeadID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CrimeMinorHeadID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CaseStatusID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CourtID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "IncidentFromDate",
+      "type": "datetime",
+      "mandatory": true
+    },
+    {
+      "name": "IncidentToDate",
+      "type": "datetime",
+      "mandatory": true
+    },
+    {
+      "name": "InfoReceivedPSDate",
+      "type": "datetime",
+      "mandatory": true
+    },
+    {
+      "name": "latiutude",
+      "type": "double",
+      "mandatory": false
+    },
+    {
+      "name": "longitude",
+      "type": "double",
+      "mandatory": true
+    },
+    {
+      "name": "BriefFacts",
+      "type": "varchar",
+      "mandatory": true
+    }
+  ],
+  "ComplainantDetails": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "ComplainantID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "ComplainantName",
+      "type": "varchar",
+      "mandatory": true
+    },
+    {
+      "name": "AgeYear",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "OccupationID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "ReligionID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "CastelD",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "GenderlD",
+      "type": "int",
+      "mandatory": false
+    }
+  ],
+  "Victim": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "VictimMasterID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "AgeYear",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "GenderlD",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "VictimPolice",
+      "type": "varchar",
+      "mandatory": false
+    }
+  ],
+  "Accused": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "AccusedMasterID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "AccusedName",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "AgeYear",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "GenderlD",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "PersonID",
+      "type": "varchar",
+      "mandatory": false
+    }
+  ],
+  "ActSectionAssociation": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "ActID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "SectionID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "ActOrderlD",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "SectionOrderlD",
+      "type": "int",
+      "mandatory": false
+    }
+  ],
+  "ArrestSurrender": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "ArrestSurrenderID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "foreign key",
+      "mandatory": true
+    },
+    {
+      "name": "ArrestSurrenderDate",
+      "type": "date",
+      "mandatory": true
+    },
+    {
+      "name": "ArrestSurrenderTypelD",
+      "type": "int",
+      "mandatory": false
+    },
+    {
+      "name": "ArrestSurrenderStateld",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "ArrestSurrenderDistrictld",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "PoliceStationID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "IOID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "CourtID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "AccusedMasterID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "IsAccused",
+      "type": "boolean",
+      "mandatory": false
+    },
+    {
+      "name": "IsComplainantAccused",
+      "type": "boolean",
+      "mandatory": false
+    }
+  ],
+  "ChargesheetDetails": [
+    {
+      "name": "ROWID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATORID",
+      "type": "bigint",
+      "mandatory": false
+    },
+    {
+      "name": "CREATEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "MODIFIEDTIME",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "CSID",
+      "type": "int",
+      "mandatory": true
+    },
+    {
+      "name": "CaseMasterID",
+      "type": "foreign key",
+      "mandatory": false
+    },
+    {
+      "name": "csdate",
+      "type": "datetime",
+      "mandatory": false
+    },
+    {
+      "name": "cstype",
+      "type": "varchar",
+      "mandatory": false
+    },
+    {
+      "name": "PolicePersonID",
+      "type": "foreign key",
+      "mandatory": false
+    }
+  ]
+}

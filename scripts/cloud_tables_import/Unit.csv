@@ -1,0 +1,13 @@
+UnitID,UnitName,TypeID,ParentUnit,NationalityID,StateID,DistrictID,Active
+301,Bengaluru Central PS,1,0,1,29,101,1
+302,Mysuru Central PS,1,0,1,29,102,1
+303,Mangaluru Central PS,1,0,1,29,103,1
+304,Hubli-Dharwad Central PS,1,0,1,29,104,1
+305,Belagavi Central PS,1,0,1,29,105,1
+306,Kalaburagi Central PS,1,0,1,29,106,1
+307,Shivamogga Central PS,1,0,1,29,107,1
+308,Udupi Central PS,1,0,1,29,108,1
+309,Davanagere Central PS,1,0,1,29,109,1
+310,Tumakuru Central PS,1,0,1,29,110,1
+311,Ballari Central PS,1,0,1,29,111,1
+312,Chikkamagaluru Central PS,1,0,1,29,112,1

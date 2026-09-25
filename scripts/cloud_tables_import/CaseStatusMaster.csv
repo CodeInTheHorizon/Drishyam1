@@ -1,0 +1,5 @@
+CaseStatusID,CaseStatusName
+1,Under Investigation
+2,Suspect Apprehended
+3,Charge-sheet Submitted
+4,Case Closed / Completed

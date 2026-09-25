@@ -1,0 +1,1256 @@
+/* ============================
+   Police Command Center Theme
+============================ */
+
+:root {
+  /* Backgrounds */
+  --color-background: #020617;
+  --color-surface: #0f172a;
+  --color-sidebar: #111827;
+  --color-navbar: #0b1220;
+  --color-card: #1e293b;
+
+  /* Text */
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+
+  /* Brand */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+
+  /* Status */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* Border */
+  --color-border: #334155;
+  --color-border-subtle: rgba(51, 65, 85, 0.25);
+  --color-border-faint: rgba(51, 65, 85, 0.15);
+
+  /* Radius */
+  --radius-card: 16px;
+
+  /* Shadow */
+  --shadow-card: 0 10px 25px rgba(0, 0, 0, 0.25);
+  --shadow-panel: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ====================================================
+   Light Theme System (Default is Dark Mode)
+   ==================================================== */
+[data-theme="light"],
+.light-theme {
+  /* Backgrounds */
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-sidebar: #ffffff;
+  --color-navbar: #ffffff;
+  --color-card: #ffffff;
+
+  /* Text */
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+
+  /* Brand */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+
+  /* Status */
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+
+  /* Border */
+  --color-border: #e2e8f0;
+  --color-border-subtle: rgba(226, 232, 240, 0.8);
+  --color-border-faint: rgba(226, 232, 240, 0.5);
+
+  /* Radius */
+  --radius-card: 16px;
+
+  /* Shadow */
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-panel: 0 2px 12px rgba(0, 0, 0, 0.07);
+  --shadow-lift: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: Inter, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ============================
+   Leaflet Mini-Map Tooltip (Karnataka Overview)
+============================ */
+.leaflet-tooltip-dark {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border: 1px solid rgba(51, 65, 85, 0.45) !important;
+  color: #cbd5e1 !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border-radius: 4px !important;
+  padding: 3px 7px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  white-space: nowrap !important;
+}
+
+.leaflet-tooltip-dark::before {
+  border-top-color: rgba(51, 65, 85, 0.45) !important;
+}
+
+/* ── Dark-theme Leaflet zoom control ─────────────────────────────────── */
+.leaflet-control-zoom {
+  border: 1px solid rgba(51, 65, 85, 0.3) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: rgba(6, 13, 26, 0.92) !important;
+  color: #64748b !important;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.2) !important;
+  font-size: 15px !important;
+  line-height: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  backdrop-filter: blur(8px);
+  transition: background 0.15s, color 0.15s;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: rgba(30, 41, 59, 0.95) !important;
+  color: #93c5fd !important;
+}
+
+.leaflet-control-zoom-in {
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.leaflet-control-zoom-out {
+  border-radius: 0 0 8px 8px !important;
+  border-bottom: none !important;
+}
+
+/* Ping animation for mini-map hotspot markers */
+@keyframes ping {
+
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Slow pulse for high-severity district clusters */
+@keyframes ping-slow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+
+/* ============================
+   Entrance Animations
+============================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s ease both;
+}
+
+/* Stagger delays for grid children */
+.stagger-children>*:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.stagger-children>*:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.stagger-children>*:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.stagger-children>*:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.stagger-children>*:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+/* ============================
+   Scrollbar Utilities
+============================ */
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(51, 65, 85, 0.4) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(51, 65, 85, 0.4);
+  border-radius: 999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.6);
+}
+
+/* ============================
+   Panel Hover Lift
+============================ */
+
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* ============================
+   Intel Table Rows
+============================ */
+
+.intel-row {
+  border-bottom: 1px solid rgba(51, 65, 85, 0.12);
+  transition: background-color 0.15s ease;
+}
+
+.intel-row:hover {
+  background-color: rgba(30, 41, 59, 0.35);
+}
+
+/* ============================
+   Status Chip Base
+============================ */
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-family: monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============================
+   Situation Room — Map Overlays
+============================ */
+
+/* Soft critical pulse — enterprise grade, not neon */
+@keyframes situationPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35);
+  }
+
+  50% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+}
+
+.situation-pulse {
+  animation: situationPulse 2.4s ease-in-out infinite;
+}
+
+/* Floating map panel base */
+.map-float-panel {
+  position: absolute;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Command toolbar (filter row) */
+.cmd-toolbar {
+  background: rgba(6, 13, 26, 0.85);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  border-left: 2px solid rgba(37, 99, 235, 0.4);
+  border-radius: 0px;
+}
+
+.cmd-toolbar select,
+.cmd-toolbar input {
+  background: rgba(2, 6, 23, 0.85) !important;
+  border: 1px solid rgba(51, 65, 85, 0.25) !important;
+  color: #f1f5f9 !important;
+  font-family: 'Space Grotesk', sans-serif !important;
+  font-size: 11px !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  transition: border-color 0.15s ease;
+}
+
+.cmd-toolbar input.pl-7 {
+  padding-left: 30px !important;
+}
+
+.cmd-toolbar select:focus,
+.cmd-toolbar input:focus {
+  outline: none !important;
+  border-color: rgba(59, 130, 246, 0.45) !important;
+}
+
+.cmd-toolbar select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+/* Map severity legend float */
+.map-severity-legend {
+  background: rgba(6, 13, 26, 0.88);
+  border: 1px solid rgba(51, 65, 85, 0.25);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Leaflet attribution bar dark style */
+.leaflet-control-attribution {
+  background: rgba(2, 6, 23, 0.75) !important;
+  color: #475569 !important;
+  font-size: 8px !important;
+  backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(51, 65, 85, 0.2) !important;
+}
+
+.leaflet-control-attribution a {
+  color: #64748b !important;
+}
+
+/* Intelligence card section header accent */
+.intel-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.2);
+}
+
+.intel-section-header::before {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 12px;
+  border-radius: 2px;
+  background: #3b82f6;
+  flex-shrink: 0;
+}
+
+/* Hotspot rank badge */
+.hotspot-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ============================
+   Premium Map Markers — Polish
+============================ */
+
+/* Individual incident markers: smooth scale on hover */
+.custom-leaflet-marker {
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+
+.custom-leaflet-marker:hover {
+  transform: scale(1.55);
+  z-index: 9999 !important;
+}
+
+/* Cluster markers: smooth expand on hover */
+.custom-cluster-icon {
+  transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1), filter 0.2s ease;
+  cursor: pointer;
+}
+
+.custom-cluster-icon:hover {
+  transform: scale(1.12);
+  filter: brightness(1.15);
+  z-index: 9999 !important;
+}
+
+/* Soft radial glow keyframe — used only for critical markers */
+@keyframes criticalGlow {
+
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.2;
+    transform: scale(1.8);
+  }
+}
+
+.critical-glow-ring {
+  animation: criticalGlow 2.6s ease-in-out infinite;
+}
+
+/* Live status indicator dot */
+@keyframes liveBlink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.live-dot {
+  animation: liveBlink 2s ease-in-out infinite;
+}
+
+/* Timeline feed entry: fade-in stagger support */
+@keyframes feedSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.feed-entry {
+  animation: feedSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.feed-entry:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.feed-entry:nth-child(2) {
+  animation-delay: 50ms;
+}
+
+.feed-entry:nth-child(3) {
+  animation-delay: 100ms;
+}
+
+/* ====================================================
+   EXECUTIVE LIGHT THEME (POLICE COMMAND CENTER)
+   Strictly scoped to [data-theme="light"] / .light-theme
+   Dark theme remains 100% default & untouched
+   ==================================================== */
+
+/* ── 1. Page Background & Architecture Grid ─────────── */
+[data-theme="light"] body,
+.light-theme body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .bg-blueprint,
+.light-theme .bg-blueprint {
+  background-color: #f8fafc !important;
+  background-image: 
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px) !important;
+  background-size: 28px 28px !important;
+}
+
+/* ── 2. Navigation Header (Top Bar) ─────────────────── */
+[data-theme="light"] header,
+.light-theme header {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02) !important;
+}
+
+[data-theme="light"] header h1,
+.light-theme header h1 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] header p,
+.light-theme header p {
+  color: #2563eb !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] header .bg-slate-900\/90,
+.light-theme header .bg-slate-900\/90 {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* ── 3. Sidebar Navigation ──────────────────────────── */
+[data-theme="light"] aside,
+.light-theme aside {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] aside nav .text-cyan-500\/90,
+.light-theme aside nav .text-cyan-500\/90 {
+  color: #0369a1 !important;
+  border-bottom-color: #f1f5f9 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] aside nav .bg-cyan-400\/80,
+.light-theme aside nav .bg-cyan-400\/80 {
+  background-color: #0284c7 !important;
+}
+
+[data-theme="light"] aside a.text-slate-300,
+.light-theme aside a.text-slate-300 {
+  color: #475569 !important;
+}
+
+[data-theme="light"] aside a.text-slate-300:hover,
+.light-theme aside a.text-slate-300:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] aside .bg-blue-600\/25,
+.light-theme aside .bg-blue-600\/25 {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-left: 4px solid #2563eb !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.08) !important;
+}
+
+[data-theme="light"] aside .bg-\[\#040711\],
+.light-theme aside .bg-\[\#040711\] {
+  background-color: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] aside .border-slate-800\/80,
+.light-theme aside .border-slate-800\/80,
+[data-theme="light"] aside .border-slate-800\/40,
+.light-theme aside .border-slate-800\/40 {
+  border-color: #e2e8f0 !important;
+}
+
+/* ── 4. Main Cards, Panels & Elevated Surfaces ──────── */
+[data-theme="light"] .bg-slate-950,
+.light-theme .bg-slate-950,
+[data-theme="light"] .bg-slate-950\/98,
+.light-theme .bg-slate-950\/98,
+[data-theme="light"] .bg-slate-950\/97,
+.light-theme .bg-slate-950\/97,
+[data-theme="light"] .bg-slate-950\/90,
+.light-theme .bg-slate-950\/90,
+[data-theme="light"] .bg-slate-950\/80,
+.light-theme .bg-slate-950\/80,
+[data-theme="light"] .bg-slate-950\/70,
+.light-theme .bg-slate-950\/70,
+[data-theme="light"] .bg-slate-900,
+.light-theme .bg-slate-900,
+[data-theme="light"] .bg-slate-900\/90,
+.light-theme .bg-slate-900\/90,
+[data-theme="light"] .bg-slate-900\/85,
+.light-theme .bg-slate-900\/85,
+[data-theme="light"] .bg-slate-900\/80,
+.light-theme .bg-slate-900\/80,
+[data-theme="light"] .bg-slate-900\/70,
+.light-theme .bg-slate-900\/70,
+[data-theme="light"] .bg-slate-900\/60,
+.light-theme .bg-slate-900\/60,
+[data-theme="light"] .bg-slate-900\/50,
+.light-theme .bg-slate-900\/50,
+[data-theme="light"] .bg-slate-900\/40,
+.light-theme .bg-slate-900\/40,
+[data-theme="light"] .bg-\[\#060b18\],
+.light-theme .bg-\[\#060b18\],
+[data-theme="light"] .bg-\[\#070d1a\],
+.light-theme .bg-\[\#070d1a\],
+[data-theme="light"] .bg-\[\#050a12\],
+.light-theme .bg-\[\#050a12\],
+[data-theme="light"] .bg-\[\#0b1220\],
+.light-theme .bg-\[\#0b1220\],
+[data-theme="light"] .bg-\[\#0a0f1d\],
+.light-theme .bg-\[\#0a0f1d\],
+[data-theme="light"] .bg-\[\#0c1425\],
+.light-theme .bg-\[\#0c1425\],
+[data-theme="light"] .bg-\[\#0c1425\]\/90,
+.light-theme .bg-\[\#0c1425\]\/90,
+[data-theme="light"] .bg-\[\#080d19\],
+.light-theme .bg-\[\#080d19\],
+[data-theme="light"] .bg-\[\#050814\],
+.light-theme .bg-\[\#050814\],
+[data-theme="light"] .bg-\[\#0d1627\],
+.light-theme .bg-\[\#0d1627\],
+[data-theme="light"] .bg-\[\#09101f\],
+.light-theme .bg-\[\#09101f\],
+[data-theme="light"] .bg-\[\#0a1628\],
+.light-theme .bg-\[\#0a1628\],
+[data-theme="light"] .bg-\[\#0e1726\],
+.light-theme .bg-\[\#0e1726\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Secondary Panels / Inner Nested Boxes */
+[data-theme="light"] .bg-slate-800,
+.light-theme .bg-slate-800,
+[data-theme="light"] .bg-slate-800\/90,
+.light-theme .bg-slate-800\/90,
+[data-theme="light"] .bg-slate-800\/80,
+.light-theme .bg-slate-800\/80,
+[data-theme="light"] .bg-slate-800\/60,
+.light-theme .bg-slate-800\/60,
+[data-theme="light"] .bg-slate-800\/50,
+.light-theme .bg-slate-800\/50,
+[data-theme="light"] .bg-slate-800\/40,
+.light-theme .bg-slate-800\/40,
+[data-theme="light"] .bg-slate-800\/30,
+.light-theme .bg-slate-800\/30,
+[data-theme="light"] .bg-slate-950\/50,
+.light-theme .bg-slate-950\/50,
+[data-theme="light"] .bg-slate-950\/60,
+.light-theme .bg-slate-950\/60,
+[data-theme="light"] .bg-slate-950\/40,
+.light-theme .bg-slate-950\/40,
+[data-theme="light"] .bg-slate-950\/30,
+.light-theme .bg-slate-950\/30,
+[data-theme="light"] .bg-slate-950\/20,
+.light-theme .bg-slate-950\/20 {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* ── Always Preserve White Text for Solid Colored Buttons / Badges ── */
+[data-theme="light"] .bg-blue-600,
+.light-theme .bg-blue-600,
+[data-theme="light"] .bg-blue-700,
+.light-theme .bg-blue-700,
+[data-theme="light"] .bg-blue-600 *,
+.light-theme .bg-blue-600 *,
+[data-theme="light"] .bg-blue-700 *,
+.light-theme .bg-blue-700 *,
+[data-theme="light"] button.bg-blue-600,
+.light-theme button.bg-blue-600,
+[data-theme="light"] button.bg-blue-600 *,
+.light-theme button.bg-blue-600 *,
+[data-theme="light"] .bg-emerald-600,
+.light-theme .bg-emerald-600,
+[data-theme="light"] .bg-emerald-600 *,
+.light-theme .bg-emerald-600 *,
+[data-theme="light"] .bg-rose-600,
+.light-theme .bg-rose-600,
+[data-theme="light"] .bg-rose-600 *,
+.light-theme .bg-rose-600 *,
+[data-theme="light"] .bg-indigo-600,
+.light-theme .bg-indigo-600,
+[data-theme="light"] .bg-indigo-600 *,
+.light-theme .bg-indigo-600 * {
+  color: #ffffff !important;
+}
+
+/* ── 5. Universal Borders ───────────────────────────── */
+[data-theme="light"] .border-slate-800,
+.light-theme .border-slate-800,
+[data-theme="light"] .border-slate-800\/90,
+.light-theme .border-slate-800\/90,
+[data-theme="light"] .border-slate-800\/80,
+.light-theme .border-slate-800\/80,
+[data-theme="light"] .border-slate-800\/70,
+.light-theme .border-slate-800\/70,
+[data-theme="light"] .border-slate-800\/60,
+.light-theme .border-slate-800\/60,
+[data-theme="light"] .border-slate-800\/50,
+.light-theme .border-slate-800\/50,
+[data-theme="light"] .border-slate-800\/40,
+.light-theme .border-slate-800\/40,
+[data-theme="light"] .border-slate-800\/30,
+.light-theme .border-slate-800\/30,
+[data-theme="light"] .border-slate-800\/20,
+.light-theme .border-slate-800\/20,
+[data-theme="light"] .border-slate-700,
+.light-theme .border-slate-700,
+[data-theme="light"] .border-slate-700\/80,
+.light-theme .border-slate-700\/80,
+[data-theme="light"] .border-slate-700\/70,
+.light-theme .border-slate-700\/70,
+[data-theme="light"] .border-slate-700\/60,
+.light-theme .border-slate-700\/60,
+[data-theme="light"] .border-slate-700\/50,
+.light-theme .border-slate-700\/50,
+[data-theme="light"] .border-slate-700\/40,
+.light-theme .border-slate-700\/40,
+[data-theme="light"] .border-slate-700\/30,
+.light-theme .border-slate-700\/30,
+[data-theme="light"] .border-slate-900\/60,
+.light-theme .border-slate-900\/60,
+[data-theme="light"] .border-slate-900\/40,
+.light-theme .border-slate-900\/40,
+[data-theme="light"] .border-slate-900\/20,
+.light-theme .border-slate-900\/20 {
+  border-color: #e2e8f0 !important;
+}
+
+/* ── 6. Typography & High-Contrast Readability ──────── */
+[data-theme="light"] .text-white,
+.light-theme .text-white,
+[data-theme="light"] .text-slate-50,
+.light-theme .text-slate-50,
+[data-theme="light"] .text-slate-100,
+.light-theme .text-slate-100,
+[data-theme="light"] .text-slate-200,
+.light-theme .text-slate-200 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .text-slate-300,
+.light-theme .text-slate-300 {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .text-slate-400,
+.light-theme .text-slate-400 {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .text-slate-500,
+.light-theme .text-slate-500,
+[data-theme="light"] .text-slate-600,
+.light-theme .text-slate-600 {
+  color: #64748b !important;
+}
+
+/* ── 7. Rich, Authoritative High-Contrast Accent Tokens ── */
+
+/* Blue Accents & Pills */
+[data-theme="light"] .text-blue-400,
+.light-theme .text-blue-400,
+[data-theme="light"] .text-blue-300,
+.light-theme .text-blue-300 {
+  color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .bg-blue-500\/5,
+.light-theme .bg-blue-500\/5,
+[data-theme="light"] .bg-blue-500\/8,
+.light-theme .bg-blue-500\/8,
+[data-theme="light"] .bg-blue-500\/10,
+.light-theme .bg-blue-500\/10,
+[data-theme="light"] .bg-blue-500\/12,
+.light-theme .bg-blue-500\/12,
+[data-theme="light"] .bg-blue-500\/15,
+.light-theme .bg-blue-500\/15,
+[data-theme="light"] .bg-blue-500\/20,
+.light-theme .bg-blue-500\/20,
+[data-theme="light"] .bg-blue-950\/20,
+.light-theme .bg-blue-950\/20,
+[data-theme="light"] .bg-blue-950\/40,
+.light-theme .bg-blue-950\/40 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+
+[data-theme="light"] .border-blue-500\/10,
+.light-theme .border-blue-500\/10,
+[data-theme="light"] .border-blue-500\/12,
+.light-theme .border-blue-500\/12,
+[data-theme="light"] .border-blue-500\/15,
+.light-theme .border-blue-500\/15,
+[data-theme="light"] .border-blue-500\/20,
+.light-theme .border-blue-500\/20,
+[data-theme="light"] .border-blue-500\/30,
+.light-theme .border-blue-500\/30,
+[data-theme="light"] .border-blue-900\/40,
+.light-theme .border-blue-900\/40 {
+  border-color: #bfdbfe !important;
+}
+
+/* Emerald / Green Accents & Pills */
+[data-theme="light"] .text-emerald-400,
+.light-theme .text-emerald-400,
+[data-theme="light"] .text-emerald-300,
+.light-theme .text-emerald-300,
+[data-theme="light"] .text-green-400,
+.light-theme .text-green-400 {
+  color: #15803d !important;
+}
+
+[data-theme="light"] .bg-emerald-500\/5,
+.light-theme .bg-emerald-500\/5,
+[data-theme="light"] .bg-emerald-500\/8,
+.light-theme .bg-emerald-500\/8,
+[data-theme="light"] .bg-emerald-500\/10,
+.light-theme .bg-emerald-500\/10,
+[data-theme="light"] .bg-emerald-500\/12,
+.light-theme .bg-emerald-500\/12,
+[data-theme="light"] .bg-emerald-500\/15,
+.light-theme .bg-emerald-500\/15,
+[data-theme="light"] .bg-emerald-500\/20,
+.light-theme .bg-emerald-500\/20,
+[data-theme="light"] .bg-emerald-950\/40,
+.light-theme .bg-emerald-950\/40 {
+  background-color: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+[data-theme="light"] .border-emerald-500\/10,
+.light-theme .border-emerald-500\/10,
+[data-theme="light"] .border-emerald-500\/12,
+.light-theme .border-emerald-500\/12,
+[data-theme="light"] .border-emerald-500\/15,
+.light-theme .border-emerald-500\/15,
+[data-theme="light"] .border-emerald-500\/20,
+.light-theme .border-emerald-500\/20 {
+  border-color: #bbf7d0 !important;
+}
+
+/* Amber / Warning Accents & Pills */
+[data-theme="light"] .text-amber-400,
+.light-theme .text-amber-400,
+[data-theme="light"] .text-amber-300,
+.light-theme .text-amber-300,
+[data-theme="light"] .text-yellow-400,
+.light-theme .text-yellow-400 {
+  color: #b45309 !important;
+}
+
+[data-theme="light"] .bg-amber-500\/5,
+.light-theme .bg-amber-500\/5,
+[data-theme="light"] .bg-amber-500\/8,
+.light-theme .bg-amber-500\/8,
+[data-theme="light"] .bg-amber-500\/10,
+.light-theme .bg-amber-500\/10,
+[data-theme="light"] .bg-amber-500\/12,
+.light-theme .bg-amber-500\/12,
+[data-theme="light"] .bg-amber-500\/15,
+.light-theme .bg-amber-500\/15,
+[data-theme="light"] .bg-amber-500\/20,
+.light-theme .bg-amber-500\/20,
+[data-theme="light"] .bg-amber-950\/40,
+.light-theme .bg-amber-950\/40 {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  color: #b45309 !important;
+}
+
+[data-theme="light"] .border-amber-500\/10,
+.light-theme .border-amber-500\/10,
+[data-theme="light"] .border-amber-500\/12,
+.light-theme .border-amber-500\/12,
+[data-theme="light"] .border-amber-500\/15,
+.light-theme .border-amber-500\/15,
+[data-theme="light"] .border-amber-500\/20,
+.light-theme .border-amber-500\/20,
+[data-theme="light"] .border-amber-500\/30,
+.light-theme .border-amber-500\/30 {
+  border-color: #fde68a !important;
+}
+
+/* Red / Rose / Critical Accents & Pills */
+[data-theme="light"] .text-rose-400,
+.light-theme .text-rose-400,
+[data-theme="light"] .text-rose-300,
+.light-theme .text-rose-300,
+[data-theme="light"] .text-red-400,
+.light-theme .text-red-400,
+[data-theme="light"] .text-red-300,
+.light-theme .text-red-300 {
+  color: #b91c1c !important;
+}
+
+[data-theme="light"] .bg-rose-500\/5,
+.light-theme .bg-rose-500\/5,
+[data-theme="light"] .bg-rose-500\/8,
+.light-theme .bg-rose-500\/8,
+[data-theme="light"] .bg-rose-500\/10,
+.light-theme .bg-rose-500\/10,
+[data-theme="light"] .bg-rose-500\/15,
+.light-theme .bg-rose-500\/15,
+[data-theme="light"] .bg-rose-500\/20,
+.light-theme .bg-rose-500\/20,
+[data-theme="light"] .bg-rose-950\/40,
+.light-theme .bg-rose-950\/40,
+[data-theme="light"] .bg-red-500\/5,
+.light-theme .bg-red-500\/5,
+[data-theme="light"] .bg-red-500\/8,
+.light-theme .bg-red-500\/8,
+[data-theme="light"] .bg-red-500\/10,
+.light-theme .bg-red-500\/10,
+[data-theme="light"] .bg-red-500\/12,
+.light-theme .bg-red-500\/12,
+[data-theme="light"] .bg-red-500\/15,
+.light-theme .bg-red-500\/15 {
+  background-color: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #b91c1c !important;
+}
+
+[data-theme="light"] .border-rose-500\/15,
+.light-theme .border-rose-500\/15,
+[data-theme="light"] .border-rose-500\/20,
+.light-theme .border-rose-500\/20,
+[data-theme="light"] .border-rose-500\/30,
+.light-theme .border-rose-500\/30,
+[data-theme="light"] .border-red-500\/15,
+.light-theme .border-red-500\/15 {
+  border-color: #fecaca !important;
+}
+
+/* Purple / QuickML / AI Accents */
+[data-theme="light"] .text-purple-400,
+.light-theme .text-purple-400,
+[data-theme="light"] .text-purple-300,
+.light-theme .text-purple-300 {
+  color: #7e22ce !important;
+}
+
+[data-theme="light"] .bg-purple-500\/5,
+.light-theme .bg-purple-500\/5,
+[data-theme="light"] .bg-purple-500\/10,
+.light-theme .bg-purple-500\/10,
+[data-theme="light"] .bg-purple-950\/40,
+.light-theme .bg-purple-950\/40 {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+  color: #7e22ce !important;
+}
+
+/* Cyan / Sky Accents */
+[data-theme="light"] .text-cyan-400,
+.light-theme .text-cyan-400,
+[data-theme="light"] .text-cyan-300,
+.light-theme .text-cyan-300 {
+  color: #0369a1 !important;
+}
+
+[data-theme="light"] .bg-cyan-500\/5,
+.light-theme .bg-cyan-500\/5,
+[data-theme="light"] .bg-cyan-500\/10,
+.light-theme .bg-cyan-500\/10 {
+  background-color: #f0f9ff !important;
+  border-color: #bae6fd !important;
+  color: #0369a1 !important;
+}
+
+/* ── 8. Form Inputs, Selects & Controls ─────────────── */
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+.light-theme input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] select,
+.light-theme select,
+[data-theme="light"] textarea,
+.light-theme textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px;
+}
+
+[data-theme="light"] input:focus,
+.light-theme input:focus,
+[data-theme="light"] select:focus,
+.light-theme select:focus,
+[data-theme="light"] textarea:focus,
+.light-theme textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  outline: none !important;
+}
+
+[data-theme="light"] input::placeholder,
+.light-theme input::placeholder,
+[data-theme="light"] textarea::placeholder,
+.light-theme textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+[data-theme="light"] select option,
+.light-theme select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* ── 9. Hover States ────────────────────────────────── */
+[data-theme="light"] .hover\:bg-slate-800:hover,
+.light-theme .hover\:bg-slate-800:hover,
+[data-theme="light"] .hover\:bg-slate-800\/90:hover,
+.light-theme .hover\:bg-slate-800\/90:hover,
+[data-theme="light"] .hover\:bg-slate-800\/80:hover,
+.light-theme .hover\:bg-slate-800\/80:hover,
+[data-theme="light"] .hover\:bg-slate-800\/60:hover,
+.light-theme .hover\:bg-slate-800\/60:hover,
+[data-theme="light"] .hover\:bg-slate-800\/50:hover,
+.light-theme .hover\:bg-slate-800\/50:hover,
+[data-theme="light"] .hover\:bg-slate-900:hover,
+.light-theme .hover\:bg-slate-900:hover,
+[data-theme="light"] .hover\:bg-slate-900\/80:hover,
+.light-theme .hover\:bg-slate-900\/80:hover {
+  background-color: #f1f5f9 !important;
+}
+
+[data-theme="light"] .hover\:text-white:hover,
+.light-theme .hover\:text-white:hover {
+  color: #1d4ed8 !important;
+}
+
+/* ── 10. Tables & Data Feeds ────────────────────────── */
+[data-theme="light"] table thead,
+.light-theme table thead,
+[data-theme="light"] thead tr,
+.light-theme thead tr {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] table th,
+.light-theme table th {
+  color: #475569 !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] table tbody tr,
+.light-theme table tbody tr,
+[data-theme="light"] .intel-row,
+.light-theme .intel-row {
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+[data-theme="light"] table tbody tr:hover,
+.light-theme table tbody tr:hover,
+[data-theme="light"] .intel-row:hover,
+.light-theme .intel-row:hover {
+  background-color: #f8fafc !important;
+}
+
+/* ── 11. Notification Dropdown Panel ────────────────── */
+[data-theme="light"] .notification-dropdown-panel,
+.light-theme .notification-dropdown-panel {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .notification-dropdown-panel > div:first-child,
+.light-theme .notification-dropdown-panel > div:first-child {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .notification-dropdown-panel .group,
+.light-theme .notification-dropdown-panel .group {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .notification-dropdown-panel .group:hover,
+.light-theme .notification-dropdown-panel .group:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* ── 12. Leaflet Maps & Overlays ────────────────────── */
+[data-theme="light"] .cmd-toolbar,
+.light-theme .cmd-toolbar {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid #cbd5e1 !important;
+  border-left: 3px solid #2563eb !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .cmd-toolbar select,
+.light-theme .cmd-toolbar select,
+[data-theme="light"] .cmd-toolbar input,
+.light-theme .cmd-toolbar input {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .map-severity-legend,
+.light-theme .map-severity-legend {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="light"] .leaflet-tooltip-dark,
+.light-theme .leaflet-tooltip-dark {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .dark-popup .leaflet-popup-content-wrapper,
+.light-theme .dark-popup .leaflet-popup-content-wrapper {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light"] .dark-popup .leaflet-popup-tip,
+.light-theme .dark-popup .leaflet-popup-tip {
+  background-color: #ffffff !important;
+  border-left: 1px solid #cbd5e1 !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+}
+
+[data-theme="light"] .leaflet-control-zoom a,
+.light-theme .leaflet-control-zoom a {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .leaflet-control-zoom a:hover,
+.light-theme .leaflet-control-zoom a:hover {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
+}
+
+/* ── 13. Recharts & Charts ──────────────────────────── */
+[data-theme="light"] .recharts-default-tooltip,
+.light-theme .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .recharts-cartesian-grid line,
+.light-theme .recharts-cartesian-grid line {
+  stroke: #e2e8f0 !important;
+}
+
+[data-theme="light"] .recharts-text,
+.light-theme .recharts-text {
+  fill: #64748b !important;
+}
+
+/* ── 14. Modals & Dialogs ───────────────────────────── */
+[data-theme="light"] .fixed.inset-0.bg-slate-950\/80,
+.light-theme .fixed.inset-0.bg-slate-950\/80,
+[data-theme="light"] .fixed.inset-0.bg-black\/80,
+.light-theme .fixed.inset-0.bg-black\/80,
+[data-theme="light"] .fixed.inset-0.bg-slate-950\/70,
+.light-theme .fixed.inset-0.bg-slate-950\/70 {
+  background-color: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* ── 15. Settings Page Adaptations ──────────────────── */
+[data-theme="light"].settings-active aside,
+.light-theme.settings-active aside {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-right-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+[data-theme="light"].settings-active header,
+.light-theme.settings-active header {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-bottom-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+[data-theme="light"] .settings-dark-overlay,
+.light-theme .settings-dark-overlay {
+  background-color: rgba(255, 255, 255, 0.45) !important;
+}
+

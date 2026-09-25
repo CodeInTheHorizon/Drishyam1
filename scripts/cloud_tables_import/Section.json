@@ -1,0 +1,32 @@
+[
+  {
+    "ActCode": "IPC",
+    "SectionCode": "Sec 302",
+    "SectionDescription": "Murder",
+    "Active": 1
+  },
+  {
+    "ActCode": "IPC",
+    "SectionCode": "Sec 379",
+    "SectionDescription": "Theft",
+    "Active": 1
+  },
+  {
+    "ActCode": "IPC",
+    "SectionCode": "Sec 395",
+    "SectionDescription": "Dacoity",
+    "Active": 1
+  },
+  {
+    "ActCode": "IT Act",
+    "SectionCode": "Sec 66D",
+    "SectionDescription": "Cheating by Personation Using Computer Resource",
+    "Active": 1
+  },
+  {
+    "ActCode": "NDPS",
+    "SectionCode": "Sec 20(b)",
+    "SectionDescription": "Possession of Cannabis",
+    "Active": 1
+  }
+]

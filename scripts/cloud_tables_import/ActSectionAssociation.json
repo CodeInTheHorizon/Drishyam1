@@ -1,0 +1,1402 @@
+[
+  {
+    "CaseMasterID": 2001,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2002,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2003,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2004,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2005,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2006,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2007,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2008,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2009,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2010,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2011,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2012,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2013,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2014,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2015,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2016,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2017,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2018,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2019,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2020,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2021,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2022,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2023,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2024,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2025,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2026,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2027,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2028,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2029,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2030,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2031,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2032,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2033,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2034,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2035,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2036,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2037,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2038,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2039,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2040,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2041,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2042,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2043,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2044,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2045,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2046,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2047,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2048,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2049,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2050,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2051,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2052,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2053,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2054,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2055,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2056,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2057,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2058,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2059,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2060,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2061,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2062,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2063,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2064,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2065,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2066,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2067,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2068,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2069,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2070,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2071,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2072,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2073,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2074,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2075,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2076,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2077,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2078,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2079,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2080,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2081,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2082,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2083,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2084,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2085,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2086,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2087,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2088,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2089,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2090,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2091,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2092,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2093,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2094,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2095,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2096,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2097,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2098,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2099,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2100,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2101,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2102,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2103,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2104,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2105,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2106,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2107,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2108,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2109,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2110,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2111,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2112,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2113,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2114,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2115,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2116,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2117,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2118,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2119,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2120,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2121,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2122,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2123,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2124,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2125,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2126,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2127,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2128,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2129,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2130,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2131,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2132,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2133,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2134,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2135,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2136,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2137,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2138,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2139,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2140,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2141,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2142,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2143,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2144,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2145,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2146,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2147,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2148,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2149,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2150,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2151,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2152,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2153,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2154,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2155,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2156,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2157,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2158,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2159,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2160,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2161,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2162,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2163,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2164,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2165,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2166,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2167,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2168,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2169,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2170,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2171,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2172,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2173,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2174,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2175,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2176,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2177,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2178,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2179,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2180,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2181,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2182,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2183,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2184,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2185,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2186,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2187,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2188,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2189,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2190,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2191,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2192,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2193,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2194,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2195,
+    "ActID": "IT Act",
+    "SectionID": "IT Act Sec 66D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2196,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 409",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2197,
+    "ActID": "NDPS Act",
+    "SectionID": "NDPS Sec 20(b)",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2198,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 354D",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2199,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 395",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  },
+  {
+    "CaseMasterID": 2200,
+    "ActID": "IPC",
+    "SectionID": "IPC Sec 302",
+    "ActOrderID": 1,
+    "SectionOrderID": 1
+  }
+]

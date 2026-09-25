@@ -1,0 +1,37 @@
+[
+  {
+    "CourtID": 501,
+    "CourtName": "Metropolitan Magistrate Court 1",
+    "DistrictID": 101,
+    "StateID": 29,
+    "Active": 1
+  },
+  {
+    "CourtID": 502,
+    "CourtName": "Metropolitan Magistrate Court 2",
+    "DistrictID": 101,
+    "StateID": 29,
+    "Active": 1
+  },
+  {
+    "CourtID": 503,
+    "CourtName": "Metropolitan Magistrate Court 3",
+    "DistrictID": 101,
+    "StateID": 29,
+    "Active": 1
+  },
+  {
+    "CourtID": 504,
+    "CourtName": "Metropolitan Magistrate Court 4",
+    "DistrictID": 101,
+    "StateID": 29,
+    "Active": 1
+  },
+  {
+    "CourtID": 505,
+    "CourtName": "Metropolitan Magistrate Court 5",
+    "DistrictID": 101,
+    "StateID": 29,
+    "Active": 1
+  }
+]

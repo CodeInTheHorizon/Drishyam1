@@ -1,0 +1,122 @@
+[
+  {
+    "UnitID": 301,
+    "UnitName": "Bengaluru Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 101,
+    "Active": 1
+  },
+  {
+    "UnitID": 302,
+    "UnitName": "Mysuru Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 102,
+    "Active": 1
+  },
+  {
+    "UnitID": 303,
+    "UnitName": "Mangaluru Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 103,
+    "Active": 1
+  },
+  {
+    "UnitID": 304,
+    "UnitName": "Hubli-Dharwad Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 104,
+    "Active": 1
+  },
+  {
+    "UnitID": 305,
+    "UnitName": "Belagavi Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 105,
+    "Active": 1
+  },
+  {
+    "UnitID": 306,
+    "UnitName": "Kalaburagi Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 106,
+    "Active": 1
+  },
+  {
+    "UnitID": 307,
+    "UnitName": "Shivamogga Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 107,
+    "Active": 1
+  },
+  {
+    "UnitID": 308,
+    "UnitName": "Udupi Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 108,
+    "Active": 1
+  },
+  {
+    "UnitID": 309,
+    "UnitName": "Davanagere Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 109,
+    "Active": 1
+  },
+  {
+    "UnitID": 310,
+    "UnitName": "Tumakuru Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 110,
+    "Active": 1
+  },
+  {
+    "UnitID": 311,
+    "UnitName": "Ballari Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 111,
+    "Active": 1
+  },
+  {
+    "UnitID": 312,
+    "UnitName": "Chikkamagaluru Central PS",
+    "TypeID": 1,
+    "ParentUnit": 0,
+    "NationalityID": 1,
+    "StateID": 29,
+    "DistrictID": 112,
+    "Active": 1
+  }
+]

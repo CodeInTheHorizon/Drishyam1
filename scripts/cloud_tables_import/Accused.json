@@ -1,0 +1,1602 @@
+[
+  {
+    "AccusedMasterID": 5001,
+    "CaseMasterID": 2001,
+    "AccusedName": "Deepak Acharya (alias 'Speedy')",
+    "AgeYear": 23,
+    "GenderID": 1,
+    "PersonID": "A1"
+  },
+  {
+    "AccusedMasterID": 5002,
+    "CaseMasterID": 2002,
+    "AccusedName": "Karthik Kumar (alias 'Ghost')",
+    "AgeYear": 24,
+    "GenderID": 1,
+    "PersonID": "A2"
+  },
+  {
+    "AccusedMasterID": 5003,
+    "CaseMasterID": 2003,
+    "AccusedName": "Nandini Kamath (alias 'Doctor')",
+    "AgeYear": 25,
+    "GenderID": 1,
+    "PersonID": "A3"
+  },
+  {
+    "AccusedMasterID": 5004,
+    "CaseMasterID": 2004,
+    "AccusedName": "Rajesh Puranik (alias 'Appu')",
+    "AgeYear": 26,
+    "GenderID": 1,
+    "PersonID": "A4"
+  },
+  {
+    "AccusedMasterID": 5005,
+    "CaseMasterID": 2005,
+    "AccusedName": "Sanjay Venkatesh (alias 'Speedy')",
+    "AgeYear": 27,
+    "GenderID": 1,
+    "PersonID": "A5"
+  },
+  {
+    "AccusedMasterID": 5006,
+    "CaseMasterID": 2006,
+    "AccusedName": "Sudarshan Bhardwaj (alias 'Ghost')",
+    "AgeYear": 28,
+    "GenderID": 1,
+    "PersonID": "A6"
+  },
+  {
+    "AccusedMasterID": 5007,
+    "CaseMasterID": 2007,
+    "AccusedName": "Aarav Iyengar (alias 'Doctor')",
+    "AgeYear": 29,
+    "GenderID": 1,
+    "PersonID": "A7"
+  },
+  {
+    "AccusedMasterID": 5008,
+    "CaseMasterID": 2008,
+    "AccusedName": "Deepak Swamy (alias 'Appu')",
+    "AgeYear": 30,
+    "GenderID": 1,
+    "PersonID": "A8"
+  },
+  {
+    "AccusedMasterID": 5009,
+    "CaseMasterID": 2009,
+    "AccusedName": "Karthik Rao (alias 'Speedy')",
+    "AgeYear": 31,
+    "GenderID": 1,
+    "PersonID": "A9"
+  },
+  {
+    "AccusedMasterID": 5010,
+    "CaseMasterID": 2010,
+    "AccusedName": "Nandini Shenoy (alias 'Ghost')",
+    "AgeYear": 32,
+    "GenderID": 1,
+    "PersonID": "A10"
+  },
+  {
+    "AccusedMasterID": 5011,
+    "CaseMasterID": 2011,
+    "AccusedName": "Rajesh Deshmukh (alias 'Doctor')",
+    "AgeYear": 33,
+    "GenderID": 1,
+    "PersonID": "A11"
+  },
+  {
+    "AccusedMasterID": 5012,
+    "CaseMasterID": 2012,
+    "AccusedName": "Sanjay Mallya (alias 'Appu')",
+    "AgeYear": 34,
+    "GenderID": 1,
+    "PersonID": "A12"
+  },
+  {
+    "AccusedMasterID": 5013,
+    "CaseMasterID": 2013,
+    "AccusedName": "Sudarshan Joshi (alias 'Speedy')",
+    "AgeYear": 35,
+    "GenderID": 1,
+    "PersonID": "A13"
+  },
+  {
+    "AccusedMasterID": 5014,
+    "CaseMasterID": 2014,
+    "AccusedName": "Aarav Iyer (alias 'Ghost')",
+    "AgeYear": 36,
+    "GenderID": 1,
+    "PersonID": "A14"
+  },
+  {
+    "AccusedMasterID": 5015,
+    "CaseMasterID": 2015,
+    "AccusedName": "Deepak Menon (alias 'Doctor')",
+    "AgeYear": 37,
+    "GenderID": 1,
+    "PersonID": "A15"
+  },
+  {
+    "AccusedMasterID": 5016,
+    "CaseMasterID": 2016,
+    "AccusedName": "Karthik Shetty (alias 'Appu')",
+    "AgeYear": 38,
+    "GenderID": 1,
+    "PersonID": "A16"
+  },
+  {
+    "AccusedMasterID": 5017,
+    "CaseMasterID": 2017,
+    "AccusedName": "Nandini Pawar (alias 'Speedy')",
+    "AgeYear": 39,
+    "GenderID": 1,
+    "PersonID": "A17"
+  },
+  {
+    "AccusedMasterID": 5018,
+    "CaseMasterID": 2018,
+    "AccusedName": "Rajesh Naik (alias 'Ghost')",
+    "AgeYear": 40,
+    "GenderID": 1,
+    "PersonID": "A18"
+  },
+  {
+    "AccusedMasterID": 5019,
+    "CaseMasterID": 2019,
+    "AccusedName": "Sanjay Kudva (alias 'Doctor')",
+    "AgeYear": 41,
+    "GenderID": 1,
+    "PersonID": "A19"
+  },
+  {
+    "AccusedMasterID": 5020,
+    "CaseMasterID": 2020,
+    "AccusedName": "Sudarshan Bhat (alias 'Appu')",
+    "AgeYear": 42,
+    "GenderID": 1,
+    "PersonID": "A20"
+  },
+  {
+    "AccusedMasterID": 5021,
+    "CaseMasterID": 2021,
+    "AccusedName": "Aarav Krishnan (alias 'Speedy')",
+    "AgeYear": 43,
+    "GenderID": 1,
+    "PersonID": "A21"
+  },
+  {
+    "AccusedMasterID": 5022,
+    "CaseMasterID": 2022,
+    "AccusedName": "Deepak Nair (alias 'Ghost')",
+    "AgeYear": 44,
+    "GenderID": 1,
+    "PersonID": "A22"
+  },
+  {
+    "AccusedMasterID": 5023,
+    "CaseMasterID": 2023,
+    "AccusedName": "Karthik Patil (alias 'Doctor')",
+    "AgeYear": 45,
+    "GenderID": 1,
+    "PersonID": "A23"
+  },
+  {
+    "AccusedMasterID": 5024,
+    "CaseMasterID": 2024,
+    "AccusedName": "Nandini Chavan (alias 'Appu')",
+    "AgeYear": 46,
+    "GenderID": 1,
+    "PersonID": "A24"
+  },
+  {
+    "AccusedMasterID": 5025,
+    "CaseMasterID": 2025,
+    "AccusedName": "Rajesh Hegde (alias 'Speedy')",
+    "AgeYear": 47,
+    "GenderID": 1,
+    "PersonID": "A25"
+  },
+  {
+    "AccusedMasterID": 5026,
+    "CaseMasterID": 2026,
+    "AccusedName": "Sanjay Pai (alias 'Ghost')",
+    "AgeYear": 48,
+    "GenderID": 1,
+    "PersonID": "A26"
+  },
+  {
+    "AccusedMasterID": 5027,
+    "CaseMasterID": 2027,
+    "AccusedName": "Sudarshan Kulkarni (alias 'Doctor')",
+    "AgeYear": 49,
+    "GenderID": 1,
+    "PersonID": "A27"
+  },
+  {
+    "AccusedMasterID": 5028,
+    "CaseMasterID": 2028,
+    "AccusedName": "Aarav Murthy (alias 'Appu')",
+    "AgeYear": 50,
+    "GenderID": 1,
+    "PersonID": "A28"
+  },
+  {
+    "AccusedMasterID": 5029,
+    "CaseMasterID": 2029,
+    "AccusedName": "Deepak Reddy (alias 'Speedy')",
+    "AgeYear": 51,
+    "GenderID": 1,
+    "PersonID": "A29"
+  },
+  {
+    "AccusedMasterID": 5030,
+    "CaseMasterID": 2030,
+    "AccusedName": "Karthik Gowda (alias 'Ghost')",
+    "AgeYear": 52,
+    "GenderID": 1,
+    "PersonID": "A30"
+  },
+  {
+    "AccusedMasterID": 5031,
+    "CaseMasterID": 2031,
+    "AccusedName": "Nandini Acharya (alias 'Doctor')",
+    "AgeYear": 53,
+    "GenderID": 1,
+    "PersonID": "A31"
+  },
+  {
+    "AccusedMasterID": 5032,
+    "CaseMasterID": 2032,
+    "AccusedName": "Rajesh Kumar (alias 'Appu')",
+    "AgeYear": 54,
+    "GenderID": 1,
+    "PersonID": "A32"
+  },
+  {
+    "AccusedMasterID": 5033,
+    "CaseMasterID": 2033,
+    "AccusedName": "Sanjay Kamath (alias 'Speedy')",
+    "AgeYear": 55,
+    "GenderID": 1,
+    "PersonID": "A33"
+  },
+  {
+    "AccusedMasterID": 5034,
+    "CaseMasterID": 2034,
+    "AccusedName": "Sudarshan Puranik (alias 'Ghost')",
+    "AgeYear": 56,
+    "GenderID": 1,
+    "PersonID": "A34"
+  },
+  {
+    "AccusedMasterID": 5035,
+    "CaseMasterID": 2035,
+    "AccusedName": "Aarav Venkatesh (alias 'Doctor')",
+    "AgeYear": 22,
+    "GenderID": 1,
+    "PersonID": "A35"
+  },
+  {
+    "AccusedMasterID": 5036,
+    "CaseMasterID": 2036,
+    "AccusedName": "Deepak Bhardwaj (alias 'Appu')",
+    "AgeYear": 23,
+    "GenderID": 1,
+    "PersonID": "A36"
+  },
+  {
+    "AccusedMasterID": 5037,
+    "CaseMasterID": 2037,
+    "AccusedName": "Karthik Iyengar (alias 'Speedy')",
+    "AgeYear": 24,
+    "GenderID": 1,
+    "PersonID": "A37"
+  },
+  {
+    "AccusedMasterID": 5038,
+    "CaseMasterID": 2038,
+    "AccusedName": "Nandini Swamy (alias 'Ghost')",
+    "AgeYear": 25,
+    "GenderID": 1,
+    "PersonID": "A38"
+  },
+  {
+    "AccusedMasterID": 5039,
+    "CaseMasterID": 2039,
+    "AccusedName": "Rajesh Rao (alias 'Doctor')",
+    "AgeYear": 26,
+    "GenderID": 1,
+    "PersonID": "A39"
+  },
+  {
+    "AccusedMasterID": 5040,
+    "CaseMasterID": 2040,
+    "AccusedName": "Sanjay Shenoy (alias 'Appu')",
+    "AgeYear": 27,
+    "GenderID": 1,
+    "PersonID": "A40"
+  },
+  {
+    "AccusedMasterID": 5041,
+    "CaseMasterID": 2041,
+    "AccusedName": "Sudarshan Deshmukh (alias 'Speedy')",
+    "AgeYear": 28,
+    "GenderID": 1,
+    "PersonID": "A41"
+  },
+  {
+    "AccusedMasterID": 5042,
+    "CaseMasterID": 2042,
+    "AccusedName": "Aarav Mallya (alias 'Ghost')",
+    "AgeYear": 29,
+    "GenderID": 1,
+    "PersonID": "A42"
+  },
+  {
+    "AccusedMasterID": 5043,
+    "CaseMasterID": 2043,
+    "AccusedName": "Deepak Joshi (alias 'Doctor')",
+    "AgeYear": 30,
+    "GenderID": 1,
+    "PersonID": "A43"
+  },
+  {
+    "AccusedMasterID": 5044,
+    "CaseMasterID": 2044,
+    "AccusedName": "Karthik Iyer (alias 'Appu')",
+    "AgeYear": 31,
+    "GenderID": 1,
+    "PersonID": "A44"
+  },
+  {
+    "AccusedMasterID": 5045,
+    "CaseMasterID": 2045,
+    "AccusedName": "Nandini Menon (alias 'Speedy')",
+    "AgeYear": 32,
+    "GenderID": 1,
+    "PersonID": "A45"
+  },
+  {
+    "AccusedMasterID": 5046,
+    "CaseMasterID": 2046,
+    "AccusedName": "Rajesh Shetty (alias 'Ghost')",
+    "AgeYear": 33,
+    "GenderID": 1,
+    "PersonID": "A46"
+  },
+  {
+    "AccusedMasterID": 5047,
+    "CaseMasterID": 2047,
+    "AccusedName": "Sanjay Pawar (alias 'Doctor')",
+    "AgeYear": 34,
+    "GenderID": 1,
+    "PersonID": "A47"
+  },
+  {
+    "AccusedMasterID": 5048,
+    "CaseMasterID": 2048,
+    "AccusedName": "Sudarshan Naik (alias 'Appu')",
+    "AgeYear": 35,
+    "GenderID": 1,
+    "PersonID": "A48"
+  },
+  {
+    "AccusedMasterID": 5049,
+    "CaseMasterID": 2049,
+    "AccusedName": "Aarav Kudva (alias 'Speedy')",
+    "AgeYear": 36,
+    "GenderID": 1,
+    "PersonID": "A49"
+  },
+  {
+    "AccusedMasterID": 5050,
+    "CaseMasterID": 2050,
+    "AccusedName": "Deepak Bhat (alias 'Ghost')",
+    "AgeYear": 37,
+    "GenderID": 1,
+    "PersonID": "A50"
+  },
+  {
+    "AccusedMasterID": 5051,
+    "CaseMasterID": 2051,
+    "AccusedName": "Karthik Krishnan (alias 'Doctor')",
+    "AgeYear": 38,
+    "GenderID": 1,
+    "PersonID": "A51"
+  },
+  {
+    "AccusedMasterID": 5052,
+    "CaseMasterID": 2052,
+    "AccusedName": "Nandini Nair (alias 'Appu')",
+    "AgeYear": 39,
+    "GenderID": 1,
+    "PersonID": "A52"
+  },
+  {
+    "AccusedMasterID": 5053,
+    "CaseMasterID": 2053,
+    "AccusedName": "Rajesh Patil (alias 'Speedy')",
+    "AgeYear": 40,
+    "GenderID": 1,
+    "PersonID": "A53"
+  },
+  {
+    "AccusedMasterID": 5054,
+    "CaseMasterID": 2054,
+    "AccusedName": "Sanjay Chavan (alias 'Ghost')",
+    "AgeYear": 41,
+    "GenderID": 1,
+    "PersonID": "A54"
+  },
+  {
+    "AccusedMasterID": 5055,
+    "CaseMasterID": 2055,
+    "AccusedName": "Sudarshan Hegde (alias 'Doctor')",
+    "AgeYear": 42,
+    "GenderID": 1,
+    "PersonID": "A55"
+  },
+  {
+    "AccusedMasterID": 5056,
+    "CaseMasterID": 2056,
+    "AccusedName": "Aarav Pai (alias 'Appu')",
+    "AgeYear": 43,
+    "GenderID": 1,
+    "PersonID": "A56"
+  },
+  {
+    "AccusedMasterID": 5057,
+    "CaseMasterID": 2057,
+    "AccusedName": "Deepak Kulkarni (alias 'Speedy')",
+    "AgeYear": 44,
+    "GenderID": 1,
+    "PersonID": "A57"
+  },
+  {
+    "AccusedMasterID": 5058,
+    "CaseMasterID": 2058,
+    "AccusedName": "Karthik Murthy (alias 'Ghost')",
+    "AgeYear": 45,
+    "GenderID": 1,
+    "PersonID": "A58"
+  },
+  {
+    "AccusedMasterID": 5059,
+    "CaseMasterID": 2059,
+    "AccusedName": "Nandini Reddy (alias 'Doctor')",
+    "AgeYear": 46,
+    "GenderID": 1,
+    "PersonID": "A59"
+  },
+  {
+    "AccusedMasterID": 5060,
+    "CaseMasterID": 2060,
+    "AccusedName": "Rajesh Gowda (alias 'Appu')",
+    "AgeYear": 47,
+    "GenderID": 1,
+    "PersonID": "A60"
+  },
+  {
+    "AccusedMasterID": 5061,
+    "CaseMasterID": 2061,
+    "AccusedName": "Sanjay Acharya (alias 'Speedy')",
+    "AgeYear": 48,
+    "GenderID": 1,
+    "PersonID": "A61"
+  },
+  {
+    "AccusedMasterID": 5062,
+    "CaseMasterID": 2062,
+    "AccusedName": "Sudarshan Kumar (alias 'Ghost')",
+    "AgeYear": 49,
+    "GenderID": 1,
+    "PersonID": "A62"
+  },
+  {
+    "AccusedMasterID": 5063,
+    "CaseMasterID": 2063,
+    "AccusedName": "Aarav Kamath (alias 'Doctor')",
+    "AgeYear": 50,
+    "GenderID": 1,
+    "PersonID": "A63"
+  },
+  {
+    "AccusedMasterID": 5064,
+    "CaseMasterID": 2064,
+    "AccusedName": "Deepak Puranik (alias 'Appu')",
+    "AgeYear": 51,
+    "GenderID": 1,
+    "PersonID": "A64"
+  },
+  {
+    "AccusedMasterID": 5065,
+    "CaseMasterID": 2065,
+    "AccusedName": "Karthik Venkatesh (alias 'Speedy')",
+    "AgeYear": 52,
+    "GenderID": 1,
+    "PersonID": "A65"
+  },
+  {
+    "AccusedMasterID": 5066,
+    "CaseMasterID": 2066,
+    "AccusedName": "Nandini Bhardwaj (alias 'Ghost')",
+    "AgeYear": 53,
+    "GenderID": 1,
+    "PersonID": "A66"
+  },
+  {
+    "AccusedMasterID": 5067,
+    "CaseMasterID": 2067,
+    "AccusedName": "Rajesh Iyengar (alias 'Doctor')",
+    "AgeYear": 54,
+    "GenderID": 1,
+    "PersonID": "A67"
+  },
+  {
+    "AccusedMasterID": 5068,
+    "CaseMasterID": 2068,
+    "AccusedName": "Sanjay Swamy (alias 'Appu')",
+    "AgeYear": 55,
+    "GenderID": 1,
+    "PersonID": "A68"
+  },
+  {
+    "AccusedMasterID": 5069,
+    "CaseMasterID": 2069,
+    "AccusedName": "Sudarshan Rao (alias 'Speedy')",
+    "AgeYear": 56,
+    "GenderID": 1,
+    "PersonID": "A69"
+  },
+  {
+    "AccusedMasterID": 5070,
+    "CaseMasterID": 2070,
+    "AccusedName": "Aarav Shenoy (alias 'Ghost')",
+    "AgeYear": 22,
+    "GenderID": 1,
+    "PersonID": "A70"
+  },
+  {
+    "AccusedMasterID": 5071,
+    "CaseMasterID": 2071,
+    "AccusedName": "Deepak Deshmukh (alias 'Doctor')",
+    "AgeYear": 23,
+    "GenderID": 1,
+    "PersonID": "A71"
+  },
+  {
+    "AccusedMasterID": 5072,
+    "CaseMasterID": 2072,
+    "AccusedName": "Karthik Mallya (alias 'Appu')",
+    "AgeYear": 24,
+    "GenderID": 1,
+    "PersonID": "A72"
+  },
+  {
+    "AccusedMasterID": 5073,
+    "CaseMasterID": 2073,
+    "AccusedName": "Nandini Joshi (alias 'Speedy')",
+    "AgeYear": 25,
+    "GenderID": 1,
+    "PersonID": "A73"
+  },
+  {
+    "AccusedMasterID": 5074,
+    "CaseMasterID": 2074,
+    "AccusedName": "Rajesh Iyer (alias 'Ghost')",
+    "AgeYear": 26,
+    "GenderID": 1,
+    "PersonID": "A74"
+  },
+  {
+    "AccusedMasterID": 5075,
+    "CaseMasterID": 2075,
+    "AccusedName": "Sanjay Menon (alias 'Doctor')",
+    "AgeYear": 27,
+    "GenderID": 1,
+    "PersonID": "A75"
+  },
+  {
+    "AccusedMasterID": 5076,
+    "CaseMasterID": 2076,
+    "AccusedName": "Sudarshan Shetty (alias 'Appu')",
+    "AgeYear": 28,
+    "GenderID": 1,
+    "PersonID": "A76"
+  },
+  {
+    "AccusedMasterID": 5077,
+    "CaseMasterID": 2077,
+    "AccusedName": "Aarav Pawar (alias 'Speedy')",
+    "AgeYear": 29,
+    "GenderID": 1,
+    "PersonID": "A77"
+  },
+  {
+    "AccusedMasterID": 5078,
+    "CaseMasterID": 2078,
+    "AccusedName": "Deepak Naik (alias 'Ghost')",
+    "AgeYear": 30,
+    "GenderID": 1,
+    "PersonID": "A78"
+  },
+  {
+    "AccusedMasterID": 5079,
+    "CaseMasterID": 2079,
+    "AccusedName": "Karthik Kudva (alias 'Doctor')",
+    "AgeYear": 31,
+    "GenderID": 1,
+    "PersonID": "A79"
+  },
+  {
+    "AccusedMasterID": 5080,
+    "CaseMasterID": 2080,
+    "AccusedName": "Nandini Bhat (alias 'Appu')",
+    "AgeYear": 32,
+    "GenderID": 1,
+    "PersonID": "A80"
+  },
+  {
+    "AccusedMasterID": 5081,
+    "CaseMasterID": 2081,
+    "AccusedName": "Rajesh Krishnan (alias 'Speedy')",
+    "AgeYear": 33,
+    "GenderID": 1,
+    "PersonID": "A81"
+  },
+  {
+    "AccusedMasterID": 5082,
+    "CaseMasterID": 2082,
+    "AccusedName": "Sanjay Nair (alias 'Ghost')",
+    "AgeYear": 34,
+    "GenderID": 1,
+    "PersonID": "A82"
+  },
+  {
+    "AccusedMasterID": 5083,
+    "CaseMasterID": 2083,
+    "AccusedName": "Sudarshan Patil (alias 'Doctor')",
+    "AgeYear": 35,
+    "GenderID": 1,
+    "PersonID": "A83"
+  },
+  {
+    "AccusedMasterID": 5084,
+    "CaseMasterID": 2084,
+    "AccusedName": "Aarav Chavan (alias 'Appu')",
+    "AgeYear": 36,
+    "GenderID": 1,
+    "PersonID": "A84"
+  },
+  {
+    "AccusedMasterID": 5085,
+    "CaseMasterID": 2085,
+    "AccusedName": "Deepak Hegde (alias 'Speedy')",
+    "AgeYear": 37,
+    "GenderID": 1,
+    "PersonID": "A85"
+  },
+  {
+    "AccusedMasterID": 5086,
+    "CaseMasterID": 2086,
+    "AccusedName": "Karthik Pai (alias 'Ghost')",
+    "AgeYear": 38,
+    "GenderID": 1,
+    "PersonID": "A86"
+  },
+  {
+    "AccusedMasterID": 5087,
+    "CaseMasterID": 2087,
+    "AccusedName": "Nandini Kulkarni (alias 'Doctor')",
+    "AgeYear": 39,
+    "GenderID": 1,
+    "PersonID": "A87"
+  },
+  {
+    "AccusedMasterID": 5088,
+    "CaseMasterID": 2088,
+    "AccusedName": "Rajesh Murthy (alias 'Appu')",
+    "AgeYear": 40,
+    "GenderID": 1,
+    "PersonID": "A88"
+  },
+  {
+    "AccusedMasterID": 5089,
+    "CaseMasterID": 2089,
+    "AccusedName": "Sanjay Reddy (alias 'Speedy')",
+    "AgeYear": 41,
+    "GenderID": 1,
+    "PersonID": "A89"
+  },
+  {
+    "AccusedMasterID": 5090,
+    "CaseMasterID": 2090,
+    "AccusedName": "Sudarshan Gowda (alias 'Ghost')",
+    "AgeYear": 42,
+    "GenderID": 1,
+    "PersonID": "A90"
+  },
+  {
+    "AccusedMasterID": 5091,
+    "CaseMasterID": 2091,
+    "AccusedName": "Aarav Acharya (alias 'Doctor')",
+    "AgeYear": 43,
+    "GenderID": 1,
+    "PersonID": "A91"
+  },
+  {
+    "AccusedMasterID": 5092,
+    "CaseMasterID": 2092,
+    "AccusedName": "Deepak Kumar (alias 'Appu')",
+    "AgeYear": 44,
+    "GenderID": 1,
+    "PersonID": "A92"
+  },
+  {
+    "AccusedMasterID": 5093,
+    "CaseMasterID": 2093,
+    "AccusedName": "Karthik Kamath (alias 'Speedy')",
+    "AgeYear": 45,
+    "GenderID": 1,
+    "PersonID": "A93"
+  },
+  {
+    "AccusedMasterID": 5094,
+    "CaseMasterID": 2094,
+    "AccusedName": "Nandini Puranik (alias 'Ghost')",
+    "AgeYear": 46,
+    "GenderID": 1,
+    "PersonID": "A94"
+  },
+  {
+    "AccusedMasterID": 5095,
+    "CaseMasterID": 2095,
+    "AccusedName": "Rajesh Venkatesh (alias 'Doctor')",
+    "AgeYear": 47,
+    "GenderID": 1,
+    "PersonID": "A95"
+  },
+  {
+    "AccusedMasterID": 5096,
+    "CaseMasterID": 2096,
+    "AccusedName": "Sanjay Bhardwaj (alias 'Appu')",
+    "AgeYear": 48,
+    "GenderID": 1,
+    "PersonID": "A96"
+  },
+  {
+    "AccusedMasterID": 5097,
+    "CaseMasterID": 2097,
+    "AccusedName": "Sudarshan Iyengar (alias 'Speedy')",
+    "AgeYear": 49,
+    "GenderID": 1,
+    "PersonID": "A97"
+  },
+  {
+    "AccusedMasterID": 5098,
+    "CaseMasterID": 2098,
+    "AccusedName": "Aarav Swamy (alias 'Ghost')",
+    "AgeYear": 50,
+    "GenderID": 1,
+    "PersonID": "A98"
+  },
+  {
+    "AccusedMasterID": 5099,
+    "CaseMasterID": 2099,
+    "AccusedName": "Deepak Rao (alias 'Doctor')",
+    "AgeYear": 51,
+    "GenderID": 1,
+    "PersonID": "A99"
+  },
+  {
+    "AccusedMasterID": 5100,
+    "CaseMasterID": 2100,
+    "AccusedName": "Karthik Shenoy (alias 'Appu')",
+    "AgeYear": 52,
+    "GenderID": 1,
+    "PersonID": "A100"
+  },
+  {
+    "AccusedMasterID": 5101,
+    "CaseMasterID": 2101,
+    "AccusedName": "Nandini Deshmukh (alias 'Speedy')",
+    "AgeYear": 53,
+    "GenderID": 1,
+    "PersonID": "A101"
+  },
+  {
+    "AccusedMasterID": 5102,
+    "CaseMasterID": 2102,
+    "AccusedName": "Rajesh Mallya (alias 'Ghost')",
+    "AgeYear": 54,
+    "GenderID": 1,
+    "PersonID": "A102"
+  },
+  {
+    "AccusedMasterID": 5103,
+    "CaseMasterID": 2103,
+    "AccusedName": "Sanjay Joshi (alias 'Doctor')",
+    "AgeYear": 55,
+    "GenderID": 1,
+    "PersonID": "A103"
+  },
+  {
+    "AccusedMasterID": 5104,
+    "CaseMasterID": 2104,
+    "AccusedName": "Sudarshan Iyer (alias 'Appu')",
+    "AgeYear": 56,
+    "GenderID": 1,
+    "PersonID": "A104"
+  },
+  {
+    "AccusedMasterID": 5105,
+    "CaseMasterID": 2105,
+    "AccusedName": "Aarav Menon (alias 'Speedy')",
+    "AgeYear": 22,
+    "GenderID": 1,
+    "PersonID": "A105"
+  },
+  {
+    "AccusedMasterID": 5106,
+    "CaseMasterID": 2106,
+    "AccusedName": "Deepak Shetty (alias 'Ghost')",
+    "AgeYear": 23,
+    "GenderID": 1,
+    "PersonID": "A106"
+  },
+  {
+    "AccusedMasterID": 5107,
+    "CaseMasterID": 2107,
+    "AccusedName": "Karthik Pawar (alias 'Doctor')",
+    "AgeYear": 24,
+    "GenderID": 1,
+    "PersonID": "A107"
+  },
+  {
+    "AccusedMasterID": 5108,
+    "CaseMasterID": 2108,
+    "AccusedName": "Nandini Naik (alias 'Appu')",
+    "AgeYear": 25,
+    "GenderID": 1,
+    "PersonID": "A108"
+  },
+  {
+    "AccusedMasterID": 5109,
+    "CaseMasterID": 2109,
+    "AccusedName": "Rajesh Kudva (alias 'Speedy')",
+    "AgeYear": 26,
+    "GenderID": 1,
+    "PersonID": "A109"
+  },
+  {
+    "AccusedMasterID": 5110,
+    "CaseMasterID": 2110,
+    "AccusedName": "Sanjay Bhat (alias 'Ghost')",
+    "AgeYear": 27,
+    "GenderID": 1,
+    "PersonID": "A110"
+  },
+  {
+    "AccusedMasterID": 5111,
+    "CaseMasterID": 2111,
+    "AccusedName": "Sudarshan Krishnan (alias 'Doctor')",
+    "AgeYear": 28,
+    "GenderID": 1,
+    "PersonID": "A111"
+  },
+  {
+    "AccusedMasterID": 5112,
+    "CaseMasterID": 2112,
+    "AccusedName": "Aarav Nair (alias 'Appu')",
+    "AgeYear": 29,
+    "GenderID": 1,
+    "PersonID": "A112"
+  },
+  {
+    "AccusedMasterID": 5113,
+    "CaseMasterID": 2113,
+    "AccusedName": "Deepak Patil (alias 'Speedy')",
+    "AgeYear": 30,
+    "GenderID": 1,
+    "PersonID": "A113"
+  },
+  {
+    "AccusedMasterID": 5114,
+    "CaseMasterID": 2114,
+    "AccusedName": "Karthik Chavan (alias 'Ghost')",
+    "AgeYear": 31,
+    "GenderID": 1,
+    "PersonID": "A114"
+  },
+  {
+    "AccusedMasterID": 5115,
+    "CaseMasterID": 2115,
+    "AccusedName": "Nandini Hegde (alias 'Doctor')",
+    "AgeYear": 32,
+    "GenderID": 1,
+    "PersonID": "A115"
+  },
+  {
+    "AccusedMasterID": 5116,
+    "CaseMasterID": 2116,
+    "AccusedName": "Rajesh Pai (alias 'Appu')",
+    "AgeYear": 33,
+    "GenderID": 1,
+    "PersonID": "A116"
+  },
+  {
+    "AccusedMasterID": 5117,
+    "CaseMasterID": 2117,
+    "AccusedName": "Sanjay Kulkarni (alias 'Speedy')",
+    "AgeYear": 34,
+    "GenderID": 1,
+    "PersonID": "A117"
+  },
+  {
+    "AccusedMasterID": 5118,
+    "CaseMasterID": 2118,
+    "AccusedName": "Sudarshan Murthy (alias 'Ghost')",
+    "AgeYear": 35,
+    "GenderID": 1,
+    "PersonID": "A118"
+  },
+  {
+    "AccusedMasterID": 5119,
+    "CaseMasterID": 2119,
+    "AccusedName": "Aarav Reddy (alias 'Doctor')",
+    "AgeYear": 36,
+    "GenderID": 1,
+    "PersonID": "A119"
+  },
+  {
+    "AccusedMasterID": 5120,
+    "CaseMasterID": 2120,
+    "AccusedName": "Deepak Gowda (alias 'Appu')",
+    "AgeYear": 37,
+    "GenderID": 1,
+    "PersonID": "A120"
+  },
+  {
+    "AccusedMasterID": 5121,
+    "CaseMasterID": 2121,
+    "AccusedName": "Karthik Acharya (alias 'Speedy')",
+    "AgeYear": 38,
+    "GenderID": 1,
+    "PersonID": "A121"
+  },
+  {
+    "AccusedMasterID": 5122,
+    "CaseMasterID": 2122,
+    "AccusedName": "Nandini Kumar (alias 'Ghost')",
+    "AgeYear": 39,
+    "GenderID": 1,
+    "PersonID": "A122"
+  },
+  {
+    "AccusedMasterID": 5123,
+    "CaseMasterID": 2123,
+    "AccusedName": "Rajesh Kamath (alias 'Doctor')",
+    "AgeYear": 40,
+    "GenderID": 1,
+    "PersonID": "A123"
+  },
+  {
+    "AccusedMasterID": 5124,
+    "CaseMasterID": 2124,
+    "AccusedName": "Sanjay Puranik (alias 'Appu')",
+    "AgeYear": 41,
+    "GenderID": 1,
+    "PersonID": "A124"
+  },
+  {
+    "AccusedMasterID": 5125,
+    "CaseMasterID": 2125,
+    "AccusedName": "Sudarshan Venkatesh (alias 'Speedy')",
+    "AgeYear": 42,
+    "GenderID": 1,
+    "PersonID": "A125"
+  },
+  {
+    "AccusedMasterID": 5126,
+    "CaseMasterID": 2126,
+    "AccusedName": "Aarav Bhardwaj (alias 'Ghost')",
+    "AgeYear": 43,
+    "GenderID": 1,
+    "PersonID": "A126"
+  },
+  {
+    "AccusedMasterID": 5127,
+    "CaseMasterID": 2127,
+    "AccusedName": "Deepak Iyengar (alias 'Doctor')",
+    "AgeYear": 44,
+    "GenderID": 1,
+    "PersonID": "A127"
+  },
+  {
+    "AccusedMasterID": 5128,
+    "CaseMasterID": 2128,
+    "AccusedName": "Karthik Swamy (alias 'Appu')",
+    "AgeYear": 45,
+    "GenderID": 1,
+    "PersonID": "A128"
+  },
+  {
+    "AccusedMasterID": 5129,
+    "CaseMasterID": 2129,
+    "AccusedName": "Nandini Rao (alias 'Speedy')",
+    "AgeYear": 46,
+    "GenderID": 1,
+    "PersonID": "A129"
+  },
+  {
+    "AccusedMasterID": 5130,
+    "CaseMasterID": 2130,
+    "AccusedName": "Rajesh Shenoy (alias 'Ghost')",
+    "AgeYear": 47,
+    "GenderID": 1,
+    "PersonID": "A130"
+  },
+  {
+    "AccusedMasterID": 5131,
+    "CaseMasterID": 2131,
+    "AccusedName": "Sanjay Deshmukh (alias 'Doctor')",
+    "AgeYear": 48,
+    "GenderID": 1,
+    "PersonID": "A131"
+  },
+  {
+    "AccusedMasterID": 5132,
+    "CaseMasterID": 2132,
+    "AccusedName": "Sudarshan Mallya (alias 'Appu')",
+    "AgeYear": 49,
+    "GenderID": 1,
+    "PersonID": "A132"
+  },
+  {
+    "AccusedMasterID": 5133,
+    "CaseMasterID": 2133,
+    "AccusedName": "Aarav Joshi (alias 'Speedy')",
+    "AgeYear": 50,
+    "GenderID": 1,
+    "PersonID": "A133"
+  },
+  {
+    "AccusedMasterID": 5134,
+    "CaseMasterID": 2134,
+    "AccusedName": "Deepak Iyer (alias 'Ghost')",
+    "AgeYear": 51,
+    "GenderID": 1,
+    "PersonID": "A134"
+  },
+  {
+    "AccusedMasterID": 5135,
+    "CaseMasterID": 2135,
+    "AccusedName": "Karthik Menon (alias 'Doctor')",
+    "AgeYear": 52,
+    "GenderID": 1,
+    "PersonID": "A135"
+  },
+  {
+    "AccusedMasterID": 5136,
+    "CaseMasterID": 2136,
+    "AccusedName": "Nandini Shetty (alias 'Appu')",
+    "AgeYear": 53,
+    "GenderID": 1,
+    "PersonID": "A136"
+  },
+  {
+    "AccusedMasterID": 5137,
+    "CaseMasterID": 2137,
+    "AccusedName": "Rajesh Pawar (alias 'Speedy')",
+    "AgeYear": 54,
+    "GenderID": 1,
+    "PersonID": "A137"
+  },
+  {
+    "AccusedMasterID": 5138,
+    "CaseMasterID": 2138,
+    "AccusedName": "Sanjay Naik (alias 'Ghost')",
+    "AgeYear": 55,
+    "GenderID": 1,
+    "PersonID": "A138"
+  },
+  {
+    "AccusedMasterID": 5139,
+    "CaseMasterID": 2139,
+    "AccusedName": "Sudarshan Kudva (alias 'Doctor')",
+    "AgeYear": 56,
+    "GenderID": 1,
+    "PersonID": "A139"
+  },
+  {
+    "AccusedMasterID": 5140,
+    "CaseMasterID": 2140,
+    "AccusedName": "Aarav Bhat (alias 'Appu')",
+    "AgeYear": 22,
+    "GenderID": 1,
+    "PersonID": "A140"
+  },
+  {
+    "AccusedMasterID": 5141,
+    "CaseMasterID": 2141,
+    "AccusedName": "Deepak Krishnan (alias 'Speedy')",
+    "AgeYear": 23,
+    "GenderID": 1,
+    "PersonID": "A141"
+  },
+  {
+    "AccusedMasterID": 5142,
+    "CaseMasterID": 2142,
+    "AccusedName": "Karthik Nair (alias 'Ghost')",
+    "AgeYear": 24,
+    "GenderID": 1,
+    "PersonID": "A142"
+  },
+  {
+    "AccusedMasterID": 5143,
+    "CaseMasterID": 2143,
+    "AccusedName": "Nandini Patil (alias 'Doctor')",
+    "AgeYear": 25,
+    "GenderID": 1,
+    "PersonID": "A143"
+  },
+  {
+    "AccusedMasterID": 5144,
+    "CaseMasterID": 2144,
+    "AccusedName": "Rajesh Chavan (alias 'Appu')",
+    "AgeYear": 26,
+    "GenderID": 1,
+    "PersonID": "A144"
+  },
+  {
+    "AccusedMasterID": 5145,
+    "CaseMasterID": 2145,
+    "AccusedName": "Sanjay Hegde (alias 'Speedy')",
+    "AgeYear": 27,
+    "GenderID": 1,
+    "PersonID": "A145"
+  },
+  {
+    "AccusedMasterID": 5146,
+    "CaseMasterID": 2146,
+    "AccusedName": "Sudarshan Pai (alias 'Ghost')",
+    "AgeYear": 28,
+    "GenderID": 1,
+    "PersonID": "A146"
+  },
+  {
+    "AccusedMasterID": 5147,
+    "CaseMasterID": 2147,
+    "AccusedName": "Aarav Kulkarni (alias 'Doctor')",
+    "AgeYear": 29,
+    "GenderID": 1,
+    "PersonID": "A147"
+  },
+  {
+    "AccusedMasterID": 5148,
+    "CaseMasterID": 2148,
+    "AccusedName": "Deepak Murthy (alias 'Appu')",
+    "AgeYear": 30,
+    "GenderID": 1,
+    "PersonID": "A148"
+  },
+  {
+    "AccusedMasterID": 5149,
+    "CaseMasterID": 2149,
+    "AccusedName": "Karthik Reddy (alias 'Speedy')",
+    "AgeYear": 31,
+    "GenderID": 1,
+    "PersonID": "A149"
+  },
+  {
+    "AccusedMasterID": 5150,
+    "CaseMasterID": 2150,
+    "AccusedName": "Nandini Gowda (alias 'Ghost')",
+    "AgeYear": 32,
+    "GenderID": 1,
+    "PersonID": "A150"
+  },
+  {
+    "AccusedMasterID": 5151,
+    "CaseMasterID": 2151,
+    "AccusedName": "Rajesh Acharya (alias 'Doctor')",
+    "AgeYear": 33,
+    "GenderID": 1,
+    "PersonID": "A151"
+  },
+  {
+    "AccusedMasterID": 5152,
+    "CaseMasterID": 2152,
+    "AccusedName": "Sanjay Kumar (alias 'Appu')",
+    "AgeYear": 34,
+    "GenderID": 1,
+    "PersonID": "A152"
+  },
+  {
+    "AccusedMasterID": 5153,
+    "CaseMasterID": 2153,
+    "AccusedName": "Sudarshan Kamath (alias 'Speedy')",
+    "AgeYear": 35,
+    "GenderID": 1,
+    "PersonID": "A153"
+  },
+  {
+    "AccusedMasterID": 5154,
+    "CaseMasterID": 2154,
+    "AccusedName": "Aarav Puranik (alias 'Ghost')",
+    "AgeYear": 36,
+    "GenderID": 1,
+    "PersonID": "A154"
+  },
+  {
+    "AccusedMasterID": 5155,
+    "CaseMasterID": 2155,
+    "AccusedName": "Deepak Venkatesh (alias 'Doctor')",
+    "AgeYear": 37,
+    "GenderID": 1,
+    "PersonID": "A155"
+  },
+  {
+    "AccusedMasterID": 5156,
+    "CaseMasterID": 2156,
+    "AccusedName": "Karthik Bhardwaj (alias 'Appu')",
+    "AgeYear": 38,
+    "GenderID": 1,
+    "PersonID": "A156"
+  },
+  {
+    "AccusedMasterID": 5157,
+    "CaseMasterID": 2157,
+    "AccusedName": "Nandini Iyengar (alias 'Speedy')",
+    "AgeYear": 39,
+    "GenderID": 1,
+    "PersonID": "A157"
+  },
+  {
+    "AccusedMasterID": 5158,
+    "CaseMasterID": 2158,
+    "AccusedName": "Rajesh Swamy (alias 'Ghost')",
+    "AgeYear": 40,
+    "GenderID": 1,
+    "PersonID": "A158"
+  },
+  {
+    "AccusedMasterID": 5159,
+    "CaseMasterID": 2159,
+    "AccusedName": "Sanjay Rao (alias 'Doctor')",
+    "AgeYear": 41,
+    "GenderID": 1,
+    "PersonID": "A159"
+  },
+  {
+    "AccusedMasterID": 5160,
+    "CaseMasterID": 2160,
+    "AccusedName": "Sudarshan Shenoy (alias 'Appu')",
+    "AgeYear": 42,
+    "GenderID": 1,
+    "PersonID": "A160"
+  },
+  {
+    "AccusedMasterID": 5161,
+    "CaseMasterID": 2161,
+    "AccusedName": "Aarav Deshmukh (alias 'Speedy')",
+    "AgeYear": 43,
+    "GenderID": 1,
+    "PersonID": "A161"
+  },
+  {
+    "AccusedMasterID": 5162,
+    "CaseMasterID": 2162,
+    "AccusedName": "Deepak Mallya (alias 'Ghost')",
+    "AgeYear": 44,
+    "GenderID": 1,
+    "PersonID": "A162"
+  },
+  {
+    "AccusedMasterID": 5163,
+    "CaseMasterID": 2163,
+    "AccusedName": "Karthik Joshi (alias 'Doctor')",
+    "AgeYear": 45,
+    "GenderID": 1,
+    "PersonID": "A163"
+  },
+  {
+    "AccusedMasterID": 5164,
+    "CaseMasterID": 2164,
+    "AccusedName": "Nandini Iyer (alias 'Appu')",
+    "AgeYear": 46,
+    "GenderID": 1,
+    "PersonID": "A164"
+  },
+  {
+    "AccusedMasterID": 5165,
+    "CaseMasterID": 2165,
+    "AccusedName": "Rajesh Menon (alias 'Speedy')",
+    "AgeYear": 47,
+    "GenderID": 1,
+    "PersonID": "A165"
+  },
+  {
+    "AccusedMasterID": 5166,
+    "CaseMasterID": 2166,
+    "AccusedName": "Sanjay Shetty (alias 'Ghost')",
+    "AgeYear": 48,
+    "GenderID": 1,
+    "PersonID": "A166"
+  },
+  {
+    "AccusedMasterID": 5167,
+    "CaseMasterID": 2167,
+    "AccusedName": "Sudarshan Pawar (alias 'Doctor')",
+    "AgeYear": 49,
+    "GenderID": 1,
+    "PersonID": "A167"
+  },
+  {
+    "AccusedMasterID": 5168,
+    "CaseMasterID": 2168,
+    "AccusedName": "Aarav Naik (alias 'Appu')",
+    "AgeYear": 50,
+    "GenderID": 1,
+    "PersonID": "A168"
+  },
+  {
+    "AccusedMasterID": 5169,
+    "CaseMasterID": 2169,
+    "AccusedName": "Deepak Kudva (alias 'Speedy')",
+    "AgeYear": 51,
+    "GenderID": 1,
+    "PersonID": "A169"
+  },
+  {
+    "AccusedMasterID": 5170,
+    "CaseMasterID": 2170,
+    "AccusedName": "Karthik Bhat (alias 'Ghost')",
+    "AgeYear": 52,
+    "GenderID": 1,
+    "PersonID": "A170"
+  },
+  {
+    "AccusedMasterID": 5171,
+    "CaseMasterID": 2171,
+    "AccusedName": "Nandini Krishnan (alias 'Doctor')",
+    "AgeYear": 53,
+    "GenderID": 1,
+    "PersonID": "A171"
+  },
+  {
+    "AccusedMasterID": 5172,
+    "CaseMasterID": 2172,
+    "AccusedName": "Rajesh Nair (alias 'Appu')",
+    "AgeYear": 54,
+    "GenderID": 1,
+    "PersonID": "A172"
+  },
+  {
+    "AccusedMasterID": 5173,
+    "CaseMasterID": 2173,
+    "AccusedName": "Sanjay Patil (alias 'Speedy')",
+    "AgeYear": 55,
+    "GenderID": 1,
+    "PersonID": "A173"
+  },
+  {
+    "AccusedMasterID": 5174,
+    "CaseMasterID": 2174,
+    "AccusedName": "Sudarshan Chavan (alias 'Ghost')",
+    "AgeYear": 56,
+    "GenderID": 1,
+    "PersonID": "A174"
+  },
+  {
+    "AccusedMasterID": 5175,
+    "CaseMasterID": 2175,
+    "AccusedName": "Aarav Hegde (alias 'Doctor')",
+    "AgeYear": 22,
+    "GenderID": 1,
+    "PersonID": "A175"
+  },
+  {
+    "AccusedMasterID": 5176,
+    "CaseMasterID": 2176,
+    "AccusedName": "Deepak Pai (alias 'Appu')",
+    "AgeYear": 23,
+    "GenderID": 1,
+    "PersonID": "A176"
+  },
+  {
+    "AccusedMasterID": 5177,
+    "CaseMasterID": 2177,
+    "AccusedName": "Karthik Kulkarni (alias 'Speedy')",
+    "AgeYear": 24,
+    "GenderID": 1,
+    "PersonID": "A177"
+  },
+  {
+    "AccusedMasterID": 5178,
+    "CaseMasterID": 2178,
+    "AccusedName": "Nandini Murthy (alias 'Ghost')",
+    "AgeYear": 25,
+    "GenderID": 1,
+    "PersonID": "A178"
+  },
+  {
+    "AccusedMasterID": 5179,
+    "CaseMasterID": 2179,
+    "AccusedName": "Rajesh Reddy (alias 'Doctor')",
+    "AgeYear": 26,
+    "GenderID": 1,
+    "PersonID": "A179"
+  },
+  {
+    "AccusedMasterID": 5180,
+    "CaseMasterID": 2180,
+    "AccusedName": "Sanjay Gowda (alias 'Appu')",
+    "AgeYear": 27,
+    "GenderID": 1,
+    "PersonID": "A180"
+  },
+  {
+    "AccusedMasterID": 5181,
+    "CaseMasterID": 2181,
+    "AccusedName": "Sudarshan Acharya (alias 'Speedy')",
+    "AgeYear": 28,
+    "GenderID": 1,
+    "PersonID": "A181"
+  },
+  {
+    "AccusedMasterID": 5182,
+    "CaseMasterID": 2182,
+    "AccusedName": "Aarav Kumar (alias 'Ghost')",
+    "AgeYear": 29,
+    "GenderID": 1,
+    "PersonID": "A182"
+  },
+  {
+    "AccusedMasterID": 5183,
+    "CaseMasterID": 2183,
+    "AccusedName": "Deepak Kamath (alias 'Doctor')",
+    "AgeYear": 30,
+    "GenderID": 1,
+    "PersonID": "A183"
+  },
+  {
+    "AccusedMasterID": 5184,
+    "CaseMasterID": 2184,
+    "AccusedName": "Karthik Puranik (alias 'Appu')",
+    "AgeYear": 31,
+    "GenderID": 1,
+    "PersonID": "A184"
+  },
+  {
+    "AccusedMasterID": 5185,
+    "CaseMasterID": 2185,
+    "AccusedName": "Nandini Venkatesh (alias 'Speedy')",
+    "AgeYear": 32,
+    "GenderID": 1,
+    "PersonID": "A185"
+  },
+  {
+    "AccusedMasterID": 5186,
+    "CaseMasterID": 2186,
+    "AccusedName": "Rajesh Bhardwaj (alias 'Ghost')",
+    "AgeYear": 33,
+    "GenderID": 1,
+    "PersonID": "A186"
+  },
+  {
+    "AccusedMasterID": 5187,
+    "CaseMasterID": 2187,
+    "AccusedName": "Sanjay Iyengar (alias 'Doctor')",
+    "AgeYear": 34,
+    "GenderID": 1,
+    "PersonID": "A187"
+  },
+  {
+    "AccusedMasterID": 5188,
+    "CaseMasterID": 2188,
+    "AccusedName": "Sudarshan Swamy (alias 'Appu')",
+    "AgeYear": 35,
+    "GenderID": 1,
+    "PersonID": "A188"
+  },
+  {
+    "AccusedMasterID": 5189,
+    "CaseMasterID": 2189,
+    "AccusedName": "Aarav Rao (alias 'Speedy')",
+    "AgeYear": 36,
+    "GenderID": 1,
+    "PersonID": "A189"
+  },
+  {
+    "AccusedMasterID": 5190,
+    "CaseMasterID": 2190,
+    "AccusedName": "Deepak Shenoy (alias 'Ghost')",
+    "AgeYear": 37,
+    "GenderID": 1,
+    "PersonID": "A190"
+  },
+  {
+    "AccusedMasterID": 5191,
+    "CaseMasterID": 2191,
+    "AccusedName": "Karthik Deshmukh (alias 'Doctor')",
+    "AgeYear": 38,
+    "GenderID": 1,
+    "PersonID": "A191"
+  },
+  {
+    "AccusedMasterID": 5192,
+    "CaseMasterID": 2192,
+    "AccusedName": "Nandini Mallya (alias 'Appu')",
+    "AgeYear": 39,
+    "GenderID": 1,
+    "PersonID": "A192"
+  },
+  {
+    "AccusedMasterID": 5193,
+    "CaseMasterID": 2193,
+    "AccusedName": "Rajesh Joshi (alias 'Speedy')",
+    "AgeYear": 40,
+    "GenderID": 1,
+    "PersonID": "A193"
+  },
+  {
+    "AccusedMasterID": 5194,
+    "CaseMasterID": 2194,
+    "AccusedName": "Sanjay Iyer (alias 'Ghost')",
+    "AgeYear": 41,
+    "GenderID": 1,
+    "PersonID": "A194"
+  },
+  {
+    "AccusedMasterID": 5195,
+    "CaseMasterID": 2195,
+    "AccusedName": "Sudarshan Menon (alias 'Doctor')",
+    "AgeYear": 42,
+    "GenderID": 1,
+    "PersonID": "A195"
+  },
+  {
+    "AccusedMasterID": 5196,
+    "CaseMasterID": 2196,
+    "AccusedName": "Aarav Shetty (alias 'Appu')",
+    "AgeYear": 43,
+    "GenderID": 1,
+    "PersonID": "A196"
+  },
+  {
+    "AccusedMasterID": 5197,
+    "CaseMasterID": 2197,
+    "AccusedName": "Deepak Pawar (alias 'Speedy')",
+    "AgeYear": 44,
+    "GenderID": 1,
+    "PersonID": "A197"
+  },
+  {
+    "AccusedMasterID": 5198,
+    "CaseMasterID": 2198,
+    "AccusedName": "Karthik Naik (alias 'Ghost')",
+    "AgeYear": 45,
+    "GenderID": 1,
+    "PersonID": "A198"
+  },
+  {
+    "AccusedMasterID": 5199,
+    "CaseMasterID": 2199,
+    "AccusedName": "Nandini Kudva (alias 'Doctor')",
+    "AgeYear": 46,
+    "GenderID": 1,
+    "PersonID": "A199"
+  },
+  {
+    "AccusedMasterID": 5200,
+    "CaseMasterID": 2200,
+    "AccusedName": "Rajesh Bhat (alias 'Appu')",
+    "AgeYear": 47,
+    "GenderID": 1,
+    "PersonID": "A200"
+  }
+]

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ksp-crime-intelligence-platform
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: QUICKML_ENDPOINT
+        sync: false
+      - key: QUICKML_ACCESS_TOKEN
+        sync: false
+      - key: CATALYST_ORG_ID
+        sync: false
