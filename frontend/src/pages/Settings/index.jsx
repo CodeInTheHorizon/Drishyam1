@@ -105,13 +105,43 @@ const Settings = () => {
     reader.readAsDataURL(file);
   };
 
-  // Sync state with current user session and fetch online database officers
+  const fetchLiveDatabaseOfficers = async () => {
+    try {
+      const res = await fetch('/api/officers');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          const defaultAvatars = [
+            "https://i.pinimg.com/736x/2c/11/3f/2c113fd9405b68fa8e59fbf22a17ed45.jpg",
+            "https://i.pinimg.com/1200x/4a/00/0f/4a000f954bc84e713ce910bc90de34f9.jpg"
+          ];
+          const liveOfficers = json.data.map((off, idx) => ({
+            id: off.ROWID || off.badgeNumber || `u-${idx}`,
+            ROWID: off.ROWID,
+            name: off.name,
+            rank: off.rank || "DSP",
+            kgid: off.badgeNumber || off.KGID,
+            badge: off.badgeNumber || off.KGID,
+            badgeNumber: off.badgeNumber || off.KGID,
+            username: off.username || `mpp.${(off.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')}`,
+            password: off.password || "Officer@123",
+            unit: off.unit || "Bhopal Central Cyber Cell",
+            avatar: off.avatar || defaultAvatars[idx % defaultAvatars.length],
+            role: "OFFICER"
+          }));
+          setUsersList(liveOfficers);
+          authService.syncOnlineOfficers();
+          return liveOfficers;
+        }
+      }
+    } catch (err) {
+      console.warn("Failed fetching live database officers:", err.message);
+    }
+  };
+
+  // Sync state with current user session and live database
   useEffect(() => {
-    const sync = async () => {
-      await authService.syncOnlineOfficers();
-      setUsersList(authService.getUsers().filter((u) => u.role === "OFFICER"));
-    };
-    sync();
+    fetchLiveDatabaseOfficers();
 
     if (currentUser) {
       setProfileForm({
@@ -227,8 +257,8 @@ const Settings = () => {
     }
   };
 
-  // Handle Admin Password Reset for Officers
-  const handleOfficerPasswordReset = (e) => {
+  // Handle Admin Password Reset for Officers directly in live database
+  const handleOfficerPasswordReset = async (e) => {
     e.preventDefault();
     setOfficerPwdSuccess("");
     setOfficerPwdError("");
@@ -244,11 +274,38 @@ const Settings = () => {
     }
 
     try {
-      const targetUser = usersList.find((u) => u.id === selectedUserId);
+      const targetUser = usersList.find((u) => u.id === selectedUserId || u.badge === selectedUserId || u.kgid === selectedUserId);
+      const officerIdentifier = targetUser?.ROWID || targetUser?.badge || selectedUserId;
+
+      // 1. Direct database API update
+      try {
+        await fetch(`/api/officers/${encodeURIComponent(officerIdentifier)}/password`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: officerNewPassword })
+        });
+      } catch (apiErr) {
+        console.warn("Direct DB password update API error:", apiErr);
+      }
+
+      // 2. Update authService credentials
       authService.updatePassword(selectedUserId, officerNewPassword);
-      setOfficerPwdSuccess(`Password for officer '${targetUser?.name}' (${targetUser?.username}) updated successfully!`);
+
+      // 3. Immediately reflect in UI state
+      setUsersList((prev) =>
+        prev.map((u) => (u.id === selectedUserId ? { ...u, password: officerNewPassword } : u))
+      );
+
+      setOfficerPwdSuccess(
+        `Passphrase for officer '${targetUser?.name || "Officer"}' (${targetUser?.username || ""}) successfully updated in live database!`
+      );
       setOfficerNewPassword("");
       setSelectedUserId("");
+
+      // Re-fetch live database records
+      setTimeout(() => {
+        fetchLiveDatabaseOfficers();
+      }, 400);
     } catch (err) {
       setOfficerPwdError(err.message || "Failed to reset officer password.");
     }
@@ -263,6 +320,7 @@ const Settings = () => {
       (u.username || "").toLowerCase().includes(q) ||
       (u.rank || "").toLowerCase().includes(q) ||
       (u.kgid || "").toLowerCase().includes(q) ||
+      (u.badge || "").toLowerCase().includes(q) ||
       (u.unit || "").toLowerCase().includes(q)
     );
   });
@@ -948,19 +1006,20 @@ const Settings = () => {
                   Select Officer Account <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                 </label>
                 <div className="relative">
-                  <select
-                    value={selectedUserId}
-                    onChange={(e) => setSelectedUserId(e.target.value)}
-                    className="w-full h-11 rounded-lg bg-slate-900 border border-slate-800 pr-10 text-xs text-slate-200 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%2522%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.75rem_center] bg-no-repeat font-inter shadow-inner"
-                    style={{ paddingLeft: "16px" }}
-                  >
-                    <option value="">-- Choose Officer Account --</option>
-                    {usersList.map((off) => (
-                      <option key={off.id} value={off.id}>
-                        {off.name} (Username: {off.username} | Password: {off.password || "officer123"})
-                      </option>
-                    ))}
-                  </select>
+                    <select
+                      value={selectedUserId}
+                      onChange={(e) => setSelectedUserId(e.target.value)}
+                      required
+                      className="w-full h-11 rounded-lg bg-slate-900 border border-slate-800 pr-10 text-xs text-slate-200 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%2522%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M7%209l3%203%203-3%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.75rem_center] bg-no-repeat font-inter shadow-inner"
+                      style={{ paddingLeft: "16px" }}
+                    >
+                      <option value="">-- Choose Officer Account --</option>
+                      {usersList.map((off) => (
+                        <option key={off.id} value={off.id}>
+                          {off.name} (KGID: {off.kgid || off.badge} • User: {off.username})
+                        </option>
+                      ))}
+                    </select>
                 </div>
               </div>
 

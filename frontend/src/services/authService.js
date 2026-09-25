@@ -37,15 +37,66 @@ const INITIAL_USERS = [
   }
 ];
 
-// Load Users
+// Load Users with automated recovery across storage keys
 const loadUsers = () => {
   try {
     const raw = localStorage.getItem(USERS_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(INITIAL_USERS));
-      return INITIAL_USERS;
+    let users = raw ? JSON.parse(raw) : null;
+    if (!users || !Array.isArray(users) || users.length === 0) {
+      users = [...INITIAL_USERS];
     }
-    return JSON.parse(raw);
+
+    // Check if any officers are present in current users
+    const hasOfficers = users.some((u) => u.role === "OFFICER");
+    if (!hasOfficers) {
+      // Recovery 1: Check prior version keys
+      try {
+        const oldAuth = localStorage.getItem("ksp_auth_users_v6_pinterest_avatars");
+        if (oldAuth) {
+          const parsedOld = JSON.parse(oldAuth);
+          const oldOfficers = parsedOld.filter((u) => u.role === "OFFICER");
+          if (oldOfficers.length > 0) {
+            users = [...users, ...oldOfficers];
+          }
+        }
+      } catch (e) {}
+
+      // Recovery 2: Check custom officers storage
+      try {
+        const rawCustom = localStorage.getItem("mpp_custom_officers_v7") || localStorage.getItem("ksp_custom_officers_v5_pinterest_photos");
+        if (rawCustom) {
+          const customMap = JSON.parse(rawCustom);
+          Object.values(customMap).forEach((co, idx) => {
+            const badge = co.badgeNumber || `MPP-${idx + 1}`;
+            const cleanName = (co.name || "officer").toLowerCase().replace(/[^a-z0-9]/g, "");
+            const exists = users.some(
+              (u) =>
+                u.badge === badge ||
+                u.kgid === badge ||
+                (u.name && u.name.toLowerCase().trim() === (co.name || "").toLowerCase().trim())
+            );
+            if (!exists) {
+              users.push({
+                id: `u-${co.ROWID || badge}`,
+                username: co.username || `mpp.${cleanName}`,
+                password: "Officer@123",
+                name: co.name,
+                role: "OFFICER",
+                rank: co.rank || "Police Inspector",
+                kgid: badge,
+                badge: badge,
+                unit: co.unit || "General Unit",
+                avatar: co.avatar || OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length]
+              });
+            }
+          });
+        }
+      } catch (e) {}
+
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+    }
+
+    return users;
   } catch (err) {
     console.error("Failed loading users from storage:", err);
     return INITIAL_USERS;
@@ -113,26 +164,35 @@ export const authService = {
       const res = await fetch('/api/officers');
       if (res.ok) {
         const json = await res.json();
-        if (json.success && Array.isArray(json.data)) {
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
           const currentUsers = loadUsers();
-          const adminUsers = currentUsers.filter(u => u.role === "ADMIN");
+          const adminUsers = currentUsers.filter((u) => u.role === "ADMIN");
+
+          const defaultAvatars = [
+            "https://i.pinimg.com/736x/2c/11/3f/2c113fd9405b68fa8e59fbf22a17ed45.jpg",
+            "https://i.pinimg.com/1200x/4a/00/0f/4a000f954bc84e713ce910bc90de34f9.jpg"
+          ];
 
           const onlineOfficers = json.data.map((emp, idx) => {
-            const cleanName = emp.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const badge = emp.badgeNumber || `MPP-${emp.ROWID}`;
-            const photoUrl = OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length];
-            const existing = currentUsers.find(u => u.id === `u-${emp.ROWID}` || u.badge === badge || u.name.toLowerCase() === emp.name.toLowerCase());
+            const cleanName = (emp.name || "officer").toLowerCase().replace(/[^a-z0-9]/g, '');
+            const badge = emp.badgeNumber || emp.KGID || `MPP-${emp.ROWID || emp.EmployeeID}`;
+            const existing = currentUsers.find(
+              (u) =>
+                (u.badge && badge && u.badge.toLowerCase() === badge.toLowerCase()) ||
+                (u.name && emp.name && u.name.toLowerCase().trim() === emp.name.toLowerCase().trim())
+            );
+
             return {
-              id: `u-${emp.ROWID}`,
-              username: existing?.username || `mpp.${cleanName}`,
-              password: existing?.password || "Officer@123",
+              id: emp.ROWID || badge,
+              username: emp.username || existing?.username || `mpp.${cleanName}`,
+              password: emp.password || existing?.password || "Officer@123",
               name: emp.name,
               role: "OFFICER",
-              rank: emp.rank || "Police Inspector",
+              rank: emp.rank || existing?.rank || "DSP",
               kgid: badge,
               badge: badge,
-              unit: emp.unit || "State Range",
-              avatar: photoUrl
+              unit: emp.unit || existing?.unit || "Bhopal Central Cyber Cell",
+              avatar: emp.avatar || existing?.avatar || defaultAvatars[idx % defaultAvatars.length]
             };
           });
 
@@ -232,10 +292,30 @@ export const authService = {
 
   updatePassword: (userId, newPassword) => {
     const users = loadUsers();
-    const userIndex = users.findIndex((u) => u.id === userId);
+    let userIndex = users.findIndex(
+      (u) =>
+        u.id === userId ||
+        u.badge === userId ||
+        u.kgid === userId ||
+        (u.username && u.username.toLowerCase() === String(userId).toLowerCase())
+    );
 
     if (userIndex === -1) {
-      throw new Error("User account not found.");
+      // Dynamic fallback: user was selected from officers list
+      const newUser = {
+        id: userId,
+        username: `mpp.${String(userId).toLowerCase().replace(/[^a-z0-9]/g, "")}`,
+        password: newPassword,
+        name: "Officer",
+        role: "OFFICER",
+        rank: "Police Inspector",
+        kgid: String(userId),
+        badge: String(userId),
+        unit: "General Unit"
+      };
+      users.push(newUser);
+      saveUsers(users);
+      return newUser;
     }
 
     users[userIndex].password = newPassword;
@@ -243,7 +323,7 @@ export const authService = {
 
     // If updating current active session user, update session as well
     const current = loadSession();
-    if (current && current.id === userId) {
+    if (current && (current.id === userId || current.username === users[userIndex].username)) {
       current.password = newPassword;
       saveSession(current);
     }

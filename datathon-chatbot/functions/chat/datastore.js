@@ -40,6 +40,7 @@ const SEED_DATA_PATH = path.join(__dirname, "local_crime_records.json");
 const ROWID_MAPPING_PATH = path.join(__dirname, "../../../scripts/rowid_mapping.json");
 
 const DB_FILE_PATH = SEED_DATA_PATH;
+const OFFICER_DB_FILE_PATH = path.join(__dirname, "local_officer_records.json");
 
 const loadPersistentDb = () => {
     try {
@@ -61,6 +62,29 @@ const savePersistentDb = (records) => {
         fs.writeFileSync(DB_FILE_PATH, JSON.stringify(records, null, 2), "utf-8");
     } catch (e) {
         console.warn("[datastore] Failed writing persistent DB file:", e.message);
+    }
+};
+
+const loadPersistentOfficers = () => {
+    try {
+        if (fs.existsSync(OFFICER_DB_FILE_PATH)) {
+            const raw = fs.readFileSync(OFFICER_DB_FILE_PATH, "utf-8");
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+            }
+        }
+    } catch (e) {
+        console.warn("[datastore] Failed reading persistent officers DB file:", e.message);
+    }
+    return [];
+};
+
+const savePersistentOfficers = (officers) => {
+    try {
+        fs.writeFileSync(OFFICER_DB_FILE_PATH, JSON.stringify(officers, null, 2), "utf-8");
+    } catch (e) {
+        console.warn("[datastore] Failed writing persistent officers DB file:", e.message);
     }
 };
 
@@ -176,13 +200,13 @@ function getCatalystCredentials() {
     return null;
 }
 
-let cachedToken = process.env.QUICKML_ACCESS_TOKEN || null;
-let tokenExpiryTime = process.env.QUICKML_ACCESS_TOKEN ? (Date.now() + 50 * 60 * 1000) : 0;
+let cachedToken = null;
+let tokenExpiryTime = 0;
 let inFlightTokenPromise = null;
 let lastRateLimitTime = 0;
 
-async function getFreshAccessToken() {
-    if (cachedToken && Date.now() < tokenExpiryTime) {
+async function getFreshAccessToken(forceRefresh = false) {
+    if (!forceRefresh && cachedToken && Date.now() < tokenExpiryTime) {
         return cachedToken;
     }
     // If rate-limited recently (in last 15s), don't hammer the auth server
@@ -253,7 +277,7 @@ function makeApiRequest(options, postData) {
     });
 }
 
-async function callCatalystDatastoreApi(pathSuffix, method = 'GET', bodyObj = null) {
+async function callCatalystDatastoreApi(pathSuffix, method = 'GET', bodyObj = null, isRetry = false) {
     const projectId = process.env.CATALYST_PROJECT_ID;
     const orgId = process.env.CATALYST_ORG_ID;
     if (!projectId || !orgId) {
@@ -261,7 +285,7 @@ async function callCatalystDatastoreApi(pathSuffix, method = 'GET', bodyObj = nu
     }
     let token = null;
     try {
-        token = await getFreshAccessToken();
+        token = await getFreshAccessToken(isRetry);
     } catch (e) {
         return { status: 503, data: null };
     }
@@ -300,6 +324,14 @@ async function callCatalystDatastoreApi(pathSuffix, method = 'GET', bodyObj = nu
     } catch(e) {
         parsed = { raw: res.body };
     }
+
+    if ((res.status === 401 || (parsed && parsed.status === "failure" && parsed.data && (parsed.data.error_code === "INVALID_TOKEN" || parsed.data.error_code === "AUTHENTICATION_FAILURE"))) && !isRetry) {
+        console.warn("[datastore] Token expired or invalid (401). Retrying with fresh access token...");
+        cachedToken = null;
+        tokenExpiryTime = 0;
+        return callCatalystDatastoreApi(pathSuffix, method, bodyObj, true);
+    }
+
     return { status: res.status, data: parsed };
 }
 
@@ -762,31 +794,89 @@ class CrimeRepository {
 
     async getAllOfficerRecords() {
         let cloudOfficers = [];
+        const localOfficers = loadPersistentOfficers();
         try {
             const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
             if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
-                cloudOfficers = res.data.data.map(emp => ({
-                    badgeNumber: emp.KGID || `MPP-${emp.EmployeeID}`,
-                    name: emp.FirstName,
-                    rank: "Police Inspector",
-                    unit: "General Unit",
-                    station: "Bhopal Police Station",
-                    yearsOfService: 5,
-                    status: "On Duty",
-                    ROWID: emp.ROWID,
-                    EmployeeID: emp.EmployeeID
-                }));
+                cloudOfficers = res.data.data.map((emp, idx) => {
+                    const localMatch = localOfficers.find(l => 
+                        (l.badgeNumber && emp.KGID && l.badgeNumber.toLowerCase() === emp.KGID.toLowerCase()) || 
+                        (l.ROWID && emp.ROWID && l.ROWID === emp.ROWID) ||
+                        (l.name && emp.FirstName && l.name.toLowerCase().trim() === emp.FirstName.toLowerCase().trim())
+                    );
+                    const cleanName = (emp.FirstName || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const defaultAvatars = [
+                        "https://i.pinimg.com/736x/2c/11/3f/2c113fd9405b68fa8e59fbf22a17ed45.jpg",
+                        "https://i.pinimg.com/1200x/4a/00/0f/4a000f954bc84e713ce910bc90de34f9.jpg"
+                    ];
+                    return {
+                        id: `u-${emp.ROWID || emp.EmployeeID || emp.KGID}`,
+                        badgeNumber: emp.KGID || `MPP-${emp.EmployeeID}`,
+                        name: emp.FirstName,
+                        rank: localMatch?.rank || "DSP",
+                        unit: localMatch?.unit || "Bhopal Central Cyber Cell",
+                        station: localMatch?.station || "Bhopal Range",
+                        yearsOfService: localMatch?.yearsOfService || 5,
+                        status: "On Duty",
+                        ROWID: emp.ROWID,
+                        EmployeeID: emp.EmployeeID,
+                        username: localMatch?.username || `mpp.${cleanName}`,
+                        password: localMatch?.password || "Officer@123",
+                        avatar: localMatch?.avatar || defaultAvatars[idx % defaultAvatars.length]
+                    };
+                });
                 console.log(`[CrimeRepository] Fetched ${cloudOfficers.length} officer employees directly from Zoho Catalyst Online Data Store.`);
             }
         } catch (e) {
             console.warn("[CrimeRepository] Online Catalyst Employee fetch failed:", e.message);
         }
 
-        return cloudOfficers;
+        if (cloudOfficers.length > 0) {
+            return cloudOfficers;
+        }
+
+        return localOfficers;
+    }
+
+    async updateOfficerPassword(badgeOrId, newPassword) {
+        const officers = loadPersistentOfficers();
+        let target = null;
+        for (const off of officers) {
+            if (
+                off.badgeNumber === badgeOrId || 
+                off.ROWID === badgeOrId || 
+                off.EmployeeID === badgeOrId || 
+                off.id === badgeOrId ||
+                `u-${off.ROWID}` === badgeOrId ||
+                `u-${off.EmployeeID}` === badgeOrId ||
+                `u-${off.badgeNumber}` === badgeOrId ||
+                (off.username && off.username.toLowerCase() === String(badgeOrId).toLowerCase()) ||
+                (off.name && off.name.toLowerCase() === String(badgeOrId).toLowerCase())
+            ) {
+                off.password = newPassword;
+                target = off;
+                break;
+            }
+        }
+        if (target) {
+            savePersistentOfficers(officers);
+            return { success: true, officer: target };
+        }
+        // If not found, add record with updated password
+        const newRecord = {
+            badgeNumber: String(badgeOrId),
+            name: "Officer",
+            password: newPassword,
+            updatedAt: new Date().toISOString()
+        };
+        officers.push(newRecord);
+        savePersistentOfficers(officers);
+        return { success: true, officer: newRecord };
     }
 
     async deleteAllOfficerRecords() {
         try {
+            savePersistentOfficers([]);
             const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
             if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
                 console.log(`[CrimeRepository] Deleting ${res.data.data.length} officer records from Catalyst Employee table...`);
@@ -835,23 +925,13 @@ class CrimeRepository {
             UnitID: String(this.rowIds.Unit || "56116000000049001")
         };
 
+        let cloudRow = null;
         try {
             console.log("[CrimeRepository] Inserting new Officer Employee directly into Zoho Catalyst Online Data Store...");
             const insertRes = await callCatalystDatastoreApi('/table/Employee/row', 'POST', [catalystEmployeeRow]);
             if (insertRes.status === 200 && insertRes.data && insertRes.data.data && insertRes.data.data[0]) {
-                const cloudRow = insertRes.data.data[0];
+                cloudRow = insertRes.data.data[0];
                 console.log("✅ [CrimeRepository] Catalyst Employee INSERT SUCCESS. ROWID:", cloudRow.ROWID);
-                return {
-                    badgeNumber: badge,
-                    name: name,
-                    rank: rank,
-                    unit: unit,
-                    station: station,
-                    yearsOfService: Number(officerData.yearsOfService) || 5,
-                    status: "On Duty",
-                    ROWID: cloudRow.ROWID,
-                    EmployeeID: empId
-                };
             } else {
                 console.error("❌ [CrimeRepository] Catalyst Employee Insert Failed:", insertRes.status, JSON.stringify(insertRes.data));
             }
@@ -859,7 +939,7 @@ class CrimeRepository {
             console.error("❌ [CrimeRepository] Catalyst Employee Insert Exception:", e.message);
         }
 
-        return {
+        const finalOfficer = {
             badgeNumber: badge,
             name: name,
             rank: rank,
@@ -867,8 +947,17 @@ class CrimeRepository {
             station: station,
             yearsOfService: Number(officerData.yearsOfService) || 5,
             status: "On Duty",
+            ROWID: cloudRow?.ROWID || `local-${Date.now()}`,
             EmployeeID: empId
         };
+
+        // Always persist locally as well
+        const existing = loadPersistentOfficers();
+        const updatedList = existing.filter(o => o.badgeNumber !== badge && o.name.toLowerCase().trim() !== name.toLowerCase().trim());
+        updatedList.push(finalOfficer);
+        savePersistentOfficers(updatedList);
+
+        return finalOfficer;
     }
 }
 

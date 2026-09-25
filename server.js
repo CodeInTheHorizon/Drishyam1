@@ -206,6 +206,21 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify({ success: false, error: err.message }));
             }
         });
+    } else if (pathname.startsWith("/api/officers/") && pathname.endsWith("/password") && (req.method === "PUT" || req.method === "POST")) {
+        const id = pathname.replace("/api/officers/", "").replace("/password", "");
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const { password } = JSON.parse(body);
+                const result = await repo.updateOfficerPassword(id, password);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
     } else if (pathname === "/api/audit-trail" && req.method === "GET") {
         try {
             const trails = await repo.getBiometricAuditTrails();

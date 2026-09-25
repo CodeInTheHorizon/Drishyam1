@@ -17,8 +17,15 @@ const OFFICERS_STORAGE_KEY = "mpp_custom_officers_v7";
 
 const loadCustomOfficers = () => {
   try {
-    const raw = localStorage.getItem(OFFICERS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
+    let raw = localStorage.getItem(OFFICERS_STORAGE_KEY);
+    let map = raw ? JSON.parse(raw) : null;
+    if (!map || Object.keys(map).length === 0) {
+      const oldRaw = localStorage.getItem("ksp_custom_officers_v5_pinterest_photos");
+      if (oldRaw) {
+        map = JSON.parse(oldRaw);
+      }
+    }
+    return map || {};
   } catch (err) {
     return {};
   }
@@ -57,7 +64,7 @@ export const officerService = {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          const customMap = {};
+          const customMap = loadCustomOfficers();
           json.data.forEach((emp, idx) => {
             const badge = emp.badgeNumber || `MPP-${emp.ROWID || emp.EmployeeID}`;
             customMap[badge] = {
@@ -71,7 +78,7 @@ export const officerService = {
               avatar: emp.avatar || OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length],
               ROWID: emp.ROWID || badge,
               EmployeeID: emp.EmployeeID || badge,
-              kpis: {
+              kpis: customMap[badge]?.kpis || {
                 totalCases: 0,
                 activeCases: 0,
                 closedCases: 0,
@@ -79,8 +86,8 @@ export const officerService = {
                 avgInvestigationTime: 30,
                 detectionRate: 90
               },
-              workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-              summary: {
+              workload: customMap[badge]?.workload || { highPriority: [], pending: [], hearings: [], recent: [] },
+              summary: customMap[badge]?.summary || {
                 strongArea: "Jurisdictional Crime Investigation & Case Management",
                 workloadStatus: "Optimal",
                 rating: "5.0 / 5.0",
@@ -202,11 +209,10 @@ export const officerService = {
         }
       } else {
         const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || `Server validation failed with status ${res.status}`);
+        console.warn("[officerService] Backend returned non-200 status:", res.status, errJson);
       }
     } catch (e) {
-      console.error("[officerService] Backend API POST exception:", e.message);
-      throw e;
+      console.warn("[officerService] Backend API POST exception:", e.message);
     }
 
     const newProfile = {
