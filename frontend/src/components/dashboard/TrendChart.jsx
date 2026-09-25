@@ -131,25 +131,25 @@ const TrendChart = ({ data, className = "" }) => {
                   <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.0} />
                 </linearGradient>
 
-                <linearGradient id="colorTheftGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#facc15" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#eab308" stopOpacity={0.0} />
+                <linearGradient id="colorCdrGlow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#38bdf8" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.0} />
                 </linearGradient>
-                <linearGradient id="colorAssaultGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ff8c38" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#f97316" stopOpacity={0.0} />
+                <linearGradient id="colorBankGlow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#34d399" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
                 </linearGradient>
-                <linearGradient id="colorMurderGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f87171" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#ef4444" stopOpacity={0.0} />
+                <linearGradient id="colorEmailGlow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.0} />
                 </linearGradient>
-                <linearGradient id="colorPropertyGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.0} />
+                <linearGradient id="colorChatGlow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#a5b4fc" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#818cf8" stopOpacity={0.0} />
                 </linearGradient>
-                <linearGradient id="colorCyberGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#c084fc" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#a855f7" stopOpacity={0.0} />
+                <linearGradient id="colorApkGlow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f472b6" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#ec4899" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
 
@@ -213,14 +213,14 @@ const TrendChart = ({ data, className = "" }) => {
                 <>
                   <Area
                     type="monotone"
-                    name="Theft"
-                    dataKey="theft"
-                    stroke="#eab308"
+                    name="CDR / IPDR"
+                    dataKey="cdr_ipdr"
+                    stroke="#06b6d4"
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorTheftGlow)"
-                    dot={{ stroke: "#eab308", strokeWidth: 1.5, fill: "#713f12", r: 3 }}
-                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#eab308" }}
+                    fill="url(#colorCdrGlow)"
+                    dot={{ stroke: "#06b6d4", strokeWidth: 1.5, fill: "#0e7490", r: 3 }}
+                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#06b6d4" }}
                     isAnimationActive={true}
                     animationDuration={800}
                     animationEasing="ease-out"
@@ -228,14 +228,14 @@ const TrendChart = ({ data, className = "" }) => {
 
                   <Area
                     type="monotone"
-                    name="Assault"
-                    dataKey="assault"
-                    stroke="#f97316"
+                    name="Bank / UPI Logs"
+                    dataKey="bank_upi"
+                    stroke="#10b981"
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorAssaultGlow)"
-                    dot={{ stroke: "#f97316", strokeWidth: 1.5, fill: "#7c2d12", r: 3 }}
-                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#f97316" }}
+                    fill="url(#colorBankGlow)"
+                    dot={{ stroke: "#10b981", strokeWidth: 1.5, fill: "#047857", r: 3 }}
+                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#10b981" }}
                     isAnimationActive={true}
                     animationDuration={950}
                     animationEasing="ease-out"
@@ -243,14 +243,14 @@ const TrendChart = ({ data, className = "" }) => {
 
                   <Area
                     type="monotone"
-                    name="Murder"
-                    dataKey="murder"
-                    stroke="#ef4444"
+                    name="Email Headers"
+                    dataKey="email_headers"
+                    stroke="#f59e0b"
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorMurderGlow)"
-                    dot={{ stroke: "#ef4444", strokeWidth: 1.5, fill: "#7f1d1d", r: 3 }}
-                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#ef4444" }}
+                    fill="url(#colorEmailGlow)"
+                    dot={{ stroke: "#f59e0b", strokeWidth: 1.5, fill: "#b45309", r: 3 }}
+                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#f59e0b" }}
                     isAnimationActive={true}
                     animationDuration={1100}
                     animationEasing="ease-out"
@@ -258,14 +258,14 @@ const TrendChart = ({ data, className = "" }) => {
 
                   <Area
                     type="monotone"
-                    name="Property Related"
-                    dataKey="property_related"
-                    stroke="#3b82f6"
+                    name="Chat Exports"
+                    dataKey="chat_exports"
+                    stroke="#818cf8"
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorPropertyGlow)"
-                    dot={{ stroke: "#3b82f6", strokeWidth: 1.5, fill: "#1e3a8a", r: 3 }}
-                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#3b82f6" }}
+                    fill="url(#colorChatGlow)"
+                    dot={{ stroke: "#818cf8", strokeWidth: 1.5, fill: "#4338ca", r: 3 }}
+                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#818cf8" }}
                     isAnimationActive={true}
                     animationDuration={1250}
                     animationEasing="ease-out"
@@ -273,14 +273,14 @@ const TrendChart = ({ data, className = "" }) => {
 
                   <Area
                     type="monotone"
-                    name="Cyber Crime"
-                    dataKey="cyber_crime"
-                    stroke="#a855f7"
+                    name="Android / APK Logs"
+                    dataKey="android_apk"
+                    stroke="#ec4899"
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#colorCyberGlow)"
-                    dot={{ stroke: "#a855f7", strokeWidth: 1.5, fill: "#581c87", r: 3 }}
-                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#a855f7" }}
+                    fill="url(#colorApkGlow)"
+                    dot={{ stroke: "#ec4899", strokeWidth: 1.5, fill: "#be185d", r: 3 }}
+                    activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2, fill: "#ec4899" }}
                     isAnimationActive={true}
                     animationDuration={1400}
                     animationEasing="ease-out"

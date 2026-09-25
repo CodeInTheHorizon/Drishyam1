@@ -12,7 +12,7 @@ const PROMPTS = [
   },
   {
     text: "Show high-risk districts",
-    desc: "Rank incident levels across Karnataka GIS zones",
+    desc: "Rank incident levels across Madhya Pradesh GIS zones",
     icon: FaShieldAlt,
     iconColor: "#f87171",
     iconBg: "rgba(239,68,68,0.12)",

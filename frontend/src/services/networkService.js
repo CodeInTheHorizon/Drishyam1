@@ -52,35 +52,43 @@ const EDGE_TYPES = {
 const SYNDICATE_RULES = [
   {
     id: "syn-cyber-aeps",
-    name: "Inter-State AePS & Phishing Ring",
-    code: "GANG-CYBER-09",
-    category: "Cyber Crime",
-    keywords: ["cyber", "phishing", "aeps", "otp", "sim swap", "clon", "online", "fraud", "66d"],
-    color: "#a855f7"
+    name: "Inter-State APK Malware & Phishing Ring",
+    code: "GANG-APK-09",
+    category: "Android / APK Logs",
+    keywords: ["cyber", "phishing", "aeps", "otp", "apk", "trojan", "malware", "android", "66d"],
+    color: "#ec4899"
   },
   {
-    id: "syn-dacoity-south",
-    name: "Highway Dacoity & Commercial Theft Syndicate",
-    code: "GANG-DACOITY-14",
-    category: "Property Related",
-    keywords: ["dacoity", "highway", "395", "housebreaking", "burglary", "commercial", "theft", "jewel"],
-    color: "#8b5cf6"
+    id: "syn-bank-mule",
+    name: "Layered Mule Account & UPI Syndicate",
+    code: "GANG-BANK-14",
+    category: "Bank / UPI Logs",
+    keywords: ["bank", "upi", "mule", "layering", "imps", "neft", "transfer", "kyc", "crypto"],
+    color: "#10b981"
   },
   {
-    id: "syn-ndps-transit",
-    name: "Coastal NDPS Narcotics Transit Network",
-    code: "GANG-NDPS-04",
-    category: "Property Related",
-    keywords: ["narcotics", "ndps", "ganja", "transit", "contraband", "coastal", "port", "smuggl"],
-    color: "#c084fc"
+    id: "syn-telecom-spoof",
+    name: "VoIP & Cell Tower IMSI Spoofing Cell",
+    code: "GANG-CDR-04",
+    category: "CDR / IPDR",
+    keywords: ["cdr", "ipdr", "tower", "imsi", "imei", "sim swap", "spoof", "call center", "telecom"],
+    color: "#06b6d4"
   },
   {
-    id: "syn-homicide-crew",
-    name: "Organized Extortion & Assault Gang",
-    code: "GANG-ASSAULT-02",
-    category: "Assault",
-    keywords: ["assault", "302", "307", "homicide", "extortion", "rival", "supari", "gang", "threat"],
-    color: "#d946ef"
+    id: "syn-bec-spear",
+    name: "Corporate BEC & Phishing Syndicate",
+    code: "GANG-EMAIL-02",
+    category: "Email Headers",
+    keywords: ["email", "header", "smtp", "domain", "spear", "bec", "phish", "invoice", "spoofed"],
+    color: "#f59e0b"
+  },
+  {
+    id: "syn-chat-traffic",
+    name: "Encrypted Telegram Cyber-Syndicate",
+    code: "GANG-CHAT-08",
+    category: "Chat Exports",
+    keywords: ["chat", "telegram", "whatsapp", "signal", "channel", "group", "export", "operator"],
+    color: "#818cf8"
   }
 ];
 

@@ -57,25 +57,25 @@ function parseIncidentDayAndHour(record) {
   if (hour === -1 || !String(dtStr).includes(':')) {
     const cat = String(record.crimeHead || record.CrimeCategory || '').toLowerCase();
     
-    if (cat.includes("property") || cat.includes("theft") || cat.includes("burglary") || cat.includes("dacoity")) {
-      // Night burglaries & daytime commercial housebreaks
-      const pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 21, 22, 23];
+    if (cat.includes("cdr") || cat.includes("ipdr")) {
+      // Cell tower bursts, nocturnal IP traffic & IMEI switching
+      const pool = [21, 22, 23, 0, 1, 2, 3, 4, 5];
       hour = pool[hash % pool.length];
-    } else if (cat.includes("cyber") || cat.includes("fraud") || cat.includes("phishing") || cat.includes("financial")) {
-      // Office, banking & daytime fraud hours
-      const pool = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+    } else if (cat.includes("bank") || cat.includes("upi")) {
+      // RTGS/NEFT/IMPS/UPI peak banking fraud hours
+      const pool = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
       hour = pool[hash % pool.length];
-    } else if (cat.includes("assault") || cat.includes("murder") || cat.includes("extortion") || cat.includes("body")) {
-      // Evening rush & late night altercations
-      const pool = [16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3];
+    } else if (cat.includes("email") || cat.includes("header")) {
+      // Business email compromise & spear phishing dispatch hours
+      const pool = [8, 9, 10, 11, 12, 14, 15, 16, 17];
       hour = pool[hash % pool.length];
-    } else if (cat.includes("ndps") || cat.includes("narcotics") || cat.includes("contraband")) {
-      // Highway & coastal night transits
-      const pool = [20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7];
+    } else if (cat.includes("chat") || cat.includes("export")) {
+      // Social engineering & messaging syndicate communication
+      const pool = [16, 17, 18, 19, 20, 21, 22, 23, 0, 1];
       hour = pool[hash % pool.length];
-    } else if (cat.includes("vehicle") || cat.includes("chain")) {
-      // Morning walks, Evening markets & Late night lifting
-      const pool = [6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 1, 2, 3];
+    } else if (cat.includes("android") || cat.includes("apk")) {
+      // Malicious app sideloading, remote access & automated telemetry
+      const pool = [11, 12, 13, 14, 15, 18, 19, 20, 21, 22];
       hour = pool[hash % pool.length];
     } else {
       hour = hash % 24;
@@ -148,7 +148,7 @@ export const diurnalService = {
       totalIncidents += 1;
       cell.firs.push(rec);
 
-      const cat = rec.crimeHead || "Property Related";
+      const cat = rec.crimeHead || "CDR / IPDR";
       cell.categories[cat] = (cell.categories[cat] || 0) + 1;
 
       if (cell.count > maxCellCount) {
@@ -223,7 +223,7 @@ export const diurnalService = {
       const g = districtGroups[dist];
       g.total += 1;
       g.firs.push(r);
-      const cat = r.crimeHead || "Property Related";
+      const cat = r.crimeHead || "CDR / IPDR";
       g.categories[cat] = (g.categories[cat] || 0) + 1;
     });
 
@@ -254,11 +254,13 @@ export const diurnalService = {
           dominantThreat,
           severity: surgeFactor >= 35 ? "CRITICAL" : "HIGH",
           timeWindow: surgeFactor >= 35 ? "01:00 AM - 04:00 AM (Night)" : "11:00 AM - 15:00 PM (Day)",
-          actionDirective: dominantThreat.includes("Cyber") 
-            ? "Deploy 3 cyber telemetry auditors & initiate OTP phishing awareness" 
-            : dominantThreat.includes("Property") || dominantThreat.includes("Theft")
-            ? "Initiate dynamic 02:00-05:00 night patrol interceptors in commercial sectors"
-            : "Mobilize district flying squads and intensify vehicle checkpoints",
+          actionDirective: dominantThreat.includes("Android") || dominantThreat.includes("APK")
+            ? "Deploy 3 cyber telemetry auditors & initiate malicious APK signature neutralization" 
+            : dominantThreat.includes("CDR") || dominantThreat.includes("IPDR")
+            ? "Initiate dynamic 22:00-04:00 IPDR session log tracing and cell tower anomaly tracking"
+            : dominantThreat.includes("Bank") || dominantThreat.includes("UPI")
+            ? "Trigger instant mule account freeze protocol with nodal cyber cells"
+            : "Mobilize cyber response units and initiate artifact correlation",
           lastDetected: "Active Radar Pulse"
         });
       }
@@ -277,26 +279,26 @@ export const diurnalService = {
       {
         shiftName: "Shift 1: Morning Watch",
         timeRange: "06:00 - 14:00",
-        threatFocus: "Transit Fraud & Commercial Thefts",
+        threatFocus: "Bank / UPI Logs & Phishing Dispatches",
         riskLevel: "MODERATE",
-        recommendedUnits: "12 Patrol Cars • 24 Personnel",
-        directive: "Monitor morning transit hubs, bus terminuses, and financial banking sectors."
+        recommendedUnits: "12 Cyber Forensics Units • 24 Personnel",
+        directive: "Monitor corporate email relays, morning UPI velocity spikes, and banking gateway logs."
       },
       {
         shiftName: "Shift 2: Evening Command",
         timeRange: "14:00 - 22:00",
-        threatFocus: "Cyber Crime Peak & Traffic Assaults",
+        threatFocus: "Chat Exports & Malicious APK Telemetry",
         riskLevel: "HIGH",
-        recommendedUnits: "18 Patrol Cars • 36 Personnel",
-        directive: "Focus on commercial markets, retail centres, and cyber cell interception."
+        recommendedUnits: "18 Cyber Forensics Units • 36 Personnel",
+        directive: "Focus on instant messaging syndicates, APK sideloading spikes, and mule withdrawal hubs."
       },
       {
         shiftName: "Shift 3: Night Radar Intercept (Peak Diurnal Window)",
         timeRange: "22:00 - 06:00",
-        threatFocus: "Commercial Dacoity & Highway Burglaries",
+        threatFocus: "CDR / IPDR Anomaly & Tower Dump Bursts",
         riskLevel: "CRITICAL SURGE",
-        recommendedUnits: "26 Patrol Cars • 52 Personnel",
-        directive: "Intensify night highway patrols between 01:30 - 04:30 AM across flagged Red-Zone sectors."
+        recommendedUnits: "26 Cyber Forensics Units • 52 Personnel",
+        directive: "Intensify nocturnal IPDR correlation and IMEI switching detection across flagged Red-Zone sectors."
       }
     ];
   }

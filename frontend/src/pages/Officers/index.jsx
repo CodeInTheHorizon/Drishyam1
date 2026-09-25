@@ -65,7 +65,7 @@ const Officers = () => {
               rank: currentUser.rank || "Police Inspector",
               badgeNumber: currentUser.badge || currentUser.kgid,
               unit: currentUser.unit || "State Range",
-              station: "Karnataka Police Command",
+              station: "Madhya Pradesh Police Command",
               yearsOfService: "5",
               specialArea: "Field Operations & Cyber Intelligence",
               avatar: currentUser.avatar
@@ -154,7 +154,7 @@ const Officers = () => {
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-800 border-t-blue-500" />
         </div>
         <div className="animate-pulse tracking-widest uppercase">
-          Querying KSP Officer Dossier Master records...
+          Querying MP Police Officer Dossier Master records...
         </div>
       </div>
     );

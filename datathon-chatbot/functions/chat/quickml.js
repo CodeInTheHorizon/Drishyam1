@@ -8,43 +8,94 @@
  * ============================================================================
  */
 
-const axios = require("axios");
+// Use native fetch (available in Node.js 18+) or fallback
+const fetchFn = typeof fetch !== "undefined" ? fetch : require("node-fetch");
 
 class QuickMLService {
 
     constructor() {
-        this.url = process.env.QUICKML_ENDPOINT;
-        this.orgId = process.env.CATALYST_ORG_ID;
-        this.token = process.env.QUICKML_ACCESS_TOKEN;
+        this.url = process.env.QUICKML_ENDPOINT || "https://console.catalyst.zoho.in/quickml/v1/project/56116000000209001/genai/endpoints/glm-flash-47/generate";
+        this.orgId = process.env.CATALYST_ORG_ID || "60077759371";
+        this.token = process.env.QUICKML_ACCESS_TOKEN || "";
+        this.endpointKey = process.env.QUICKML_ENDPOINT_KEY || "a3a78594529db79169be374765bc9c943e9e29c4de9e45efc4cc595e801bcdd06606939f2165f1eaa2d70b4d76864630";
+        this.environment = process.env.CATALYST_ENVIRONMENT || "Development";
+    }
+
+    async getAccessToken() {
+        if (this.token && (!this.tokenExpiresAt || Date.now() < this.tokenExpiresAt)) {
+            return this.token;
+        }
+
+        const refreshToken = process.env.CATALYST_REFRESH_TOKEN || process.env.QUICKML_REFRESH_TOKEN;
+        const clientId = process.env.CATALYST_CLIENT_ID;
+        const clientSecret = process.env.CATALYST_CLIENT_SECRET;
+
+        if (refreshToken && clientId && clientSecret) {
+            try {
+                const params = new URLSearchParams({
+                    grant_type: "refresh_token",
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    refresh_token: refreshToken
+                });
+                const tokenRes = await fetchFn("https://accounts.zoho.in/oauth/v2/token", {
+                    method: "POST",
+                    body: params
+                });
+                if (tokenRes.ok) {
+                    const tokenData = await tokenRes.json();
+                    if (tokenData && tokenData.access_token) {
+                        this.token = tokenData.access_token;
+                        this.tokenExpiresAt = Date.now() + ((tokenData.expires_in || 3600) - 300) * 1000;
+                        console.log("[QuickMLService] Refreshed OAuth access token successfully.");
+                        return this.token;
+                    }
+                }
+            } catch (e) {
+                console.warn("[QuickMLService] Refresh token failed:", e.message);
+            }
+        }
+        return this.token;
     }
 
     async generate(prompt) {
         try {
-            if (this.url && this.token) {
-                const response = await axios.post(
-                    this.url,
-                    {
-                        messages: [
-                            { role: "system", content: "You are the Karnataka Police AI Intelligence Assistant." },
-                            { role: "user", content: prompt }
-                        ],
-                        temperature: 0.2,
-                        max_tokens: 600,
-                        stream: false
-                    },
-                    {
-                        headers: {
-                            Authorization: `Zoho-oauthtoken ${this.token}`,
-                            "CATALYST-ORG": this.orgId,
-                            "Content-Type": "application/json"
-                        }
-                    }
-                );
-                return response.data;
+            const token = await this.getAccessToken();
+
+            if (this.url && token) {
+                const headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": `Zoho-oauthtoken ${token}`,
+                    "Environment": this.environment,
+                    "x-quickml-endpoint-key": this.endpointKey,
+                    "CATALYST-ORG": this.orgId
+                };
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+                const response = await fetchFn(this.url, {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify({ prompt: prompt }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    console.error("[QuickMLService] QuickML API returned HTTP", response.status, errText);
+                    throw new Error(`QuickML API HTTP ${response.status}: ${errText}`);
+                }
+
+                const data = await response.json();
+                return data;
             }
-            throw new Error("Local offline mode active.");
+            throw new Error("No QuickML access token available. Please provide an active token in .env or run with offline intelligence.");
         }
         catch (err) {
+            console.warn("[QuickMLService] Notice:", err.message);
             console.log("[QuickMLService] Operating in local offline AI intelligence mode.");
             
             let content = "The requested information is not available in the current dataset.";
@@ -75,7 +126,7 @@ Total registered FIR cases: **1,482** (Increase of **4.2%** YoY).
 * East Division (24% of incidents)
 * South-East Division (18% of incidents)`;
             } else if (q.includes("district") || q.includes("hotspot") || q.includes("risk")) {
-                content = `### Karnataka High-Risk Districts (GIS Hotspots)
+                content = `### Madhya Pradesh High-Risk Districts (GIS Hotspots)
 
 Based on active density maps from the GIS Intelligence tracker:
 
@@ -103,7 +154,7 @@ Our ML scans identify three primary vectors currently targeting residents:
 #### Prevention Roadmap:
 Conduct district-level cyber security awareness seminars and coordinate audits with regional telecom providers.`;
             } else if (q.includes("officer") || q.includes("performance") || q.includes("rajeshwari")) {
-                content = `### KSP Command - Lead Officer Performance Summary
+                content = `### MP Police Command - Lead Officer Performance Summary
 
 Review of Top Investigating Officers:
 
@@ -132,8 +183,8 @@ Review of Top Investigating Officers:
             } else if (q.includes("brief") || q.includes("executive") || q.includes("report")) {
                 content = `### EXECUTIVE INTELLIGENCE BRIEFING: CONFIDENTIAL
 
-**Issued by**: KSP Command Center AI Engine  
-**Target**: Director General & Inspector General of Police (DG&IGP), Karnataka  
+**Issued by**: MP Police Command Center AI Engine  
+**Target**: Director General of Police (DGP), Madhya Pradesh  
 
 #### 1. Strategic Crime Summary
 Across all 31 districts, total registered FIRs stand at **14,832** cases. Overall crime detection rate is maintained at **86.4%**, with the charge-sheet rate (IIF-5) at **78.2%**.

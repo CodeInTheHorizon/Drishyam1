@@ -24,9 +24,11 @@ const MONTH_DATA = [
 ];
 
 const DEFAULT_CATEGORIES = [
-  { name: "Property Offenses", value: 10, color: "#3b82f6" },
-  { name: "Cyber Crimes", value: 8, color: "#a855f7" },
-  { name: "Financial & Fraud", value: 6, color: "#f59e0b" }
+  { name: "CDR / IPDR", value: 12, color: "#06b6d4" },
+  { name: "Bank / UPI Logs", value: 10, color: "#10b981" },
+  { name: "Email Headers", value: 8, color: "#f59e0b" },
+  { name: "Chat Exports", value: 6, color: "#818cf8" },
+  { name: "Android / APK Logs", value: 5, color: "#ec4899" }
 ];
 
 const CustomAreaTooltip = ({ active, payload, label }) => {
@@ -49,68 +51,40 @@ const CustomAreaTooltip = ({ active, payload, label }) => {
 };
 
 const CATEGORY_STYLE_MAP = {
-  "Property Offences": {
-    color: "#3b82f6",
-    gradientId: "officerPieGradProperty",
-    light: "#60a5fa",
-    dark: "#1d4ed8",
-    shadow: "rgba(59, 130, 246, 0.4)"
+  "CDR / IPDR": {
+    color: "#06b6d4",
+    gradientId: "officerPieGradCDR",
+    light: "#22d3ee",
+    dark: "#0891b2",
+    shadow: "rgba(6, 182, 212, 0.4)"
   },
-  "Property Offenses": {
-    color: "#3b82f6",
-    gradientId: "officerPieGradProperty",
-    light: "#60a5fa",
-    dark: "#1d4ed8",
-    shadow: "rgba(59, 130, 246, 0.4)"
+  "Bank / UPI Logs": {
+    color: "#10b981",
+    gradientId: "officerPieGradBank",
+    light: "#34d399",
+    dark: "#059669",
+    shadow: "rgba(16, 185, 129, 0.4)"
   },
-  "Cyber Crimes": {
-    color: "#a855f7",
-    gradientId: "officerPieGradCyber",
-    light: "#c084fc",
-    dark: "#7e22ce",
-    shadow: "rgba(168, 85, 247, 0.4)"
-  },
-  "Cyber Crime": {
-    color: "#a855f7",
-    gradientId: "officerPieGradCyber",
-    light: "#c084fc",
-    dark: "#7e22ce",
-    shadow: "rgba(168, 85, 247, 0.4)"
-  },
-  "Financial Fraud": {
+  "Email Headers": {
     color: "#f59e0b",
-    gradientId: "officerPieGradFinancial",
+    gradientId: "officerPieGradEmail",
     light: "#fbbf24",
-    dark: "#b45309",
+    dark: "#d97706",
     shadow: "rgba(245, 158, 11, 0.4)"
   },
-  "Financial & Fraud": {
-    color: "#f59e0b",
-    gradientId: "officerPieGradFinancial",
-    light: "#fbbf24",
-    dark: "#b45309",
-    shadow: "rgba(245, 158, 11, 0.4)"
+  "Chat Exports": {
+    color: "#818cf8",
+    gradientId: "officerPieGradChat",
+    light: "#a5b4fc",
+    dark: "#4f46e5",
+    shadow: "rgba(129, 140, 248, 0.4)"
   },
-  "Assault": {
-    color: "#f97316",
-    gradientId: "officerPieGradAssault",
-    light: "#ff8c38",
-    dark: "#c2410c",
-    shadow: "rgba(249, 115, 22, 0.4)"
-  },
-  "Theft": {
-    color: "#eab308",
-    gradientId: "officerPieGradTheft",
-    light: "#facc15",
-    dark: "#a16207",
-    shadow: "rgba(234, 179, 8, 0.4)"
-  },
-  "Murder": {
-    color: "#ef4444",
-    gradientId: "officerPieGradMurder",
-    light: "#f87171",
-    dark: "#b91c1c",
-    shadow: "rgba(239, 68, 68, 0.4)"
+  "Android / APK Logs": {
+    color: "#ec4899",
+    gradientId: "officerPieGradAndroid",
+    light: "#f472b6",
+    dark: "#db2777",
+    shadow: "rgba(236, 72, 153, 0.4)"
   }
 };
 

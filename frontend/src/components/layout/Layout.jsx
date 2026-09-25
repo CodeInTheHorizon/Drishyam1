@@ -138,10 +138,10 @@ function Layout() {
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/90 bg-[#040711]">
               <div className="flex items-center gap-3">
-                <img src={kspLogo} alt="KSP Emblem" className="w-9 h-9 object-contain flex-shrink-0" />
+                <img src={kspLogo} alt="MP Police Emblem" className="w-9 h-9 object-contain flex-shrink-0" />
                 <div>
                   <h2 className="text-xs font-bold text-white uppercase tracking-wider font-sans leading-tight">
-                    Karnataka Police
+                    Madhya Pradesh Police
                   </h2>
                   <p className="text-[10px] font-mono text-cyan-400 font-bold">
                     Command Navigation

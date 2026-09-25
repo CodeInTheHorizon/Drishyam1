@@ -44,10 +44,11 @@ Let me know if you want a detailed dossier on a specific case or officer workloa
 Total registered FIR cases: **1,482** (Increase of **4.2%** YoY).
 
 #### Breakdown by Crime Head:
-1. **Property Related**: 642 cases (43% of total) - Primary concern: Housebreaking by night.
-2. **Cyber Crime**: 412 cases (28% of total) - Primary concern: OTP/SIM Swap phishing.
-3. **Assault**: 224 cases (15% of total) - Primary concern: Assault outside commercial zones.
-4. **Theft**: 142 cases (10% of total) - Primary concern: Retail & vehicle theft.
+1. **CDR / IPDR**: 642 cases (43% of total) - Primary concern: Tower dump bursts & IMEI hopping.
+2. **Bank / UPI Logs**: 412 cases (28% of total) - Primary concern: Layered mule accounts & swift UPI diversion.
+3. **Email Headers**: 224 cases (15% of total) - Primary concern: Spoofed SMTP relays & executive spear-phishing.
+4. **Chat Exports**: 142 cases (10% of total) - Primary concern: Encrypted telegram & instant messaging cyber rings.
+5. **Android / APK Logs**: 62 cases (4% of total) - Primary concern: Malicious sideloading & remote access trojans.
 
 #### Hotspot Jurisdictions:
 * Central Division (31% of incidents)
@@ -112,26 +113,27 @@ const prebuiltReplies = {
 Total registered FIR cases: **1,482** (Increase of **4.2%** YoY).
 
 #### Breakdown by Crime Head:
-1. **Property Offences**: 642 cases (43% of total) - Primary concern: Housebreaking by night.
-2. **Cyber Crimes**: 412 cases (28% of total) - Primary concern: OTP/SIM Swap phishing.
-3. **Body Offences**: 224 cases (15% of total) - Primary concern: Assault outside commercial zones.
-4. **Financial Fraud**: 142 cases (10% of total) - Primary concern: Shell company investment Ponzi schemes.
+1. **CDR / IPDR**: 642 cases (43% of total) - Primary concern: Tower dump bursts & IMEI hopping.
+2. **Bank / UPI Logs**: 412 cases (28% of total) - Primary concern: Layered mule accounts & swift UPI diversion.
+3. **Email Headers**: 224 cases (15% of total) - Primary concern: Spoofed SMTP relays & executive spear-phishing.
+4. **Chat Exports**: 142 cases (10% of total) - Primary concern: Encrypted telegram & instant messaging cyber rings.
+5. **Android / APK Logs**: 62 cases (4% of total) - Primary concern: Malicious sideloading & remote access trojans.
 
 #### Hotspot Jurisdictions:
 * Central Division (31% of incidents)
 * East Division (24% of incidents)
 * South-East Division (18% of incidents)`,
 
-  "show high-risk districts": `### Karnataka High-Risk Districts (GIS Hotspots)
+  "show high-risk districts": `### Madhya Pradesh High-Risk Districts (GIS Hotspots)
 
 Based on active density maps from the GIS Intelligence tracker:
 
 | Rank | District Zone | Active Crimes | Primary Threat Head | Incident Rate |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Bengaluru City | 642 Cases | Cyber & Property Offences | High (8.8 / 10k pop) |
-| 2 | Mangaluru City | 198 Cases | Narcotics & Body Crimes | Mod-High (5.4 / 10k pop) |
-| 3 | Hubli-Dharwad | 145 Cases | Property & Theft | Moderate (4.2 / 10k pop) |
-| 4 | Belagavi District | 120 Cases | Financial Fraud & Audits | Moderate (3.8 / 10k pop) |
+| 1 | Bengaluru City | 642 Cases | CDR / IPDR & Bank Logs | High (8.8 / 10k pop) |
+| 2 | Mangaluru City | 198 Cases | Email & Chat Exports | Mod-High (5.4 / 10k pop) |
+| 3 | Hubli-Dharwad | 145 Cases | CDR / IPDR & Bank Logs | Moderate (4.2 / 10k pop) |
+| 4 | Belagavi District | 120 Cases | Android / APK Logs | Moderate (3.8 / 10k pop) |
 
 #### AI Recommendation:
 Deploy additional cyber patrol resources to Bengaluru Central division and increase NDPS scans in coastal Mangaluru transit ports.`,
@@ -174,13 +176,13 @@ Review of Top Investigating Officers:
 | Total Registered FIRs | 1,482 Cases | 398 Cases | +1,084 cases (Bengaluru) |
 | Active Investigations | 148 Cases | 62 Cases | +86 cases (Bengaluru) |
 | Charge-sheet Rate | 78% | 84% | +6% (Mangaluru) |
-| Primary Crime Category | Cyber Crimes (38%) | Narcotics (45%) | Category shift |
+| Primary Crime Category | Bank / UPI Logs (38%) | CDR / IPDR (45%) | Category shift |
 | Detection Success Ratio| 82% | 88% | +6% (Mangaluru) |`,
 
   "draft an executive crime briefing": `### EXECUTIVE INTELLIGENCE BRIEFING: CONFIDENTIAL
 
-**Issued by**: KSP Command Center AI Engine  
-**Target**: Director General & Inspector General of Police (DG&IGP), Karnataka  
+**Issued by**: MP Police Command Center AI Engine  
+**Target**: Director General of Police (DGP), Madhya Pradesh  
 
 #### 1. Strategic Crime Summary
 Across all 31 districts, total registered FIRs stand at **14,832** cases. Overall crime detection rate is maintained at **86.4%**, with the charge-sheet rate (IIF-5) at **78.2%**.

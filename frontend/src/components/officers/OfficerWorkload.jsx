@@ -27,7 +27,7 @@ const DOCKET_DATA = [
     priorityColor: "bg-amber-500 text-amber-400"
   },
   {
-    docket: "FIR pending: Theft case",
+    docket: "FIR pending: CDR / IPDR case",
     court: "JMFC Court",
     dueDate: "05 Jun 2025",
     status: "HEARING SOON",

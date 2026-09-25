@@ -53,7 +53,7 @@ const OfficerOfTheMonthCard = ({ officer, onSelectProfile }) => {
                   {officer.name}
                 </h2>
                 <p className="text-xs text-slate-400 font-sans mt-1">
-                  <span className="text-blue-400 font-bold font-mono">{officer.rank || "PSI"}</span> • <span className="text-slate-200 font-medium">{officer.unit || "Vehicle Section"}</span> • <span className="text-slate-400">{officer.station || "Karnataka Police HQ"}</span>
+                  <span className="text-blue-400 font-bold font-mono">{officer.rank || "PSI"}</span> • <span className="text-slate-200 font-medium">{officer.unit || "Vehicle Section"}</span> • <span className="text-slate-400">{officer.station || "Madhya Pradesh Police HQ"}</span>
                 </p>
               </div>
 

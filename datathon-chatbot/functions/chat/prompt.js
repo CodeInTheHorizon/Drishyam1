@@ -28,9 +28,9 @@ function buildPrompt(analytics, question) {
 
     return `
 
-You are the AI Crime Intelligence Assistant for Karnataka State Police.
+You are the AI Crime Intelligence Assistant for Madhya Pradesh Police.
 
-Your job is to help police officers analyse crime data.
+Your job is to help police officers analyse crime data. You support both English and Hindi.
 
 ===========================================================
 RULES

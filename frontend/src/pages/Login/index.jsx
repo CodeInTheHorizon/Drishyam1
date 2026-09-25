@@ -83,14 +83,14 @@ const Login = () => {
         <div className="flex justify-center mb-10">
           <img
             src={kspLogo}
-            alt="Karnataka State Police Emblem"
+            alt="Madhya Pradesh Police Emblem"
             className="w-[115px] md:w-[120px] h-auto object-contain max-h-[135px]"
           />
         </div>
 
         {/* Platform Title */}
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-center text-white font-sans uppercase mb-6 leading-none">
-          KARNATAKA STATE POLICE
+          MADHYA PRADESH POLICE
         </h1>
 
         {/* Subtitle (Inter/font-sans) */}
@@ -160,7 +160,7 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5 pt-1">
             <div className="space-y-2">
               <label className="block text-[11px] font-semibold text-slate-300 tracking-wide font-sans">
-                {activeTab === "admin" ? "Admin ID / Username" : "Officer Username"} <span className="text-blue-400">*</span>
+                {activeTab === "admin" ? "Admin ID / Username" : "Officer Username"} <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
               </label>
               <div className="relative">
                 <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none" />
@@ -168,7 +168,7 @@ const Login = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder={activeTab === "admin" ? "admin" : "e.g. ksp.ramesh"}
+                  placeholder={activeTab === "admin" ? "admin" : "e.g. mpp.rajesh"}
                   required
                   className="w-full h-12 rounded-lg bg-slate-950/80 border border-blue-900/40 pr-4 text-xs text-white outline-none focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa]/30 focus:bg-slate-950 transition-all placeholder-slate-500 shadow-inner font-mono font-medium"
                   style={{ paddingLeft: "3.25rem" }}
@@ -178,7 +178,7 @@ const Login = () => {
 
             <div className="space-y-2">
               <label className="block text-[11px] font-semibold text-slate-300 tracking-wide font-sans">
-                Security Password <span className="text-blue-400">*</span>
+                Security Password <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
               </label>
               <div className="relative">
                 <FaKey className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none" />
@@ -217,14 +217,14 @@ const Login = () => {
               </div>
               <div className="flex justify-between items-center text-slate-300">
                 <span className="font-semibold text-blue-400 font-sans">👮 Officer Role:</span>
-                <span><code className="text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">ksp.ramesh</code> / <code className="text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">Officer@123</code></span>
+                <span><code className="text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">mpp.rajesh</code> / <code className="text-white bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">Officer@123</code></span>
               </div>
             </div>
           </div>
 
           {/* Footer info */}
           <div className="text-center font-sans text-[10.5px] text-slate-500 pt-2 border-t border-slate-800/50">
-            Karnataka State Police CCTNS Portal • Encrypted Gateway v4.2
+            Madhya Pradesh Police CCTNS Portal • Encrypted Gateway v4.2
           </div>
 
         </div>

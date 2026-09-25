@@ -8,30 +8,62 @@
 import { recordService } from "./recordService";
 
 const districtsList = [
-  "Bengaluru City",
-  "Mysuru City",
-  "Mangaluru City",
-  "Hubballi-Dharwad",
-  "Belagavi",
-  "Kalaburagi",
-  "Shivamogga",
-  "Udupi",
-  "Davanagere",
-  "Tumakuru",
-  "Chikkamagaluru",
-  "Bidar",
-  "Mandya",
-  "Dakshina Kannada",
-  "Hassan",
-  "Uttara Kannada"
+  "Bhopal",
+  "Indore",
+  "Jabalpur",
+  "Gwalior",
+  "Ujjain",
+  "Sagar",
+  "Rewa",
+  "Satna",
+  "Chhindwara",
+  "Ratlam",
+  "Dewas",
+  "Dhar",
+  "Datia",
+  "Guna",
+  "Harda",
+  "Hoshangabad",
+  "Katni",
+  "Mandla",
+  "Mandsaur",
+  "Morena",
+  "Narsinghpur",
+  "Neemuch",
+  "Panna",
+  "Raisen",
+  "Rajgarh",
+  "Sehore",
+  "Seoni",
+  "Shahdol",
+  "Shajapur",
+  "Sheopur",
+  "Shivpuri",
+  "Sidhi",
+  "Tikamgarh",
+  "Umaria",
+  "Vidisha",
+  "Anuppur",
+  "Ashoknagar",
+  "Balaghat",
+  "Barwani",
+  "Betul",
+  "Bhind",
+  "Burhanpur",
+  "Chhatarpur",
+  "Damoh",
+  "Dindori",
+  "Jhabua",
+  "East Nimar",
+  "West Nimar"
 ];
 
 const categoriesList = [
-  "Theft",
-  "Assault",
-  "Murder",
-  "Property Related",
-  "Cyber Crime"
+  "CDR / IPDR",
+  "Bank / UPI Logs",
+  "Email Headers",
+  "Chat Exports",
+  "Android / APK Logs"
 ];
 
 const severitiesList = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
@@ -43,35 +75,68 @@ const statusesList = [
 ];
 
 const districtCoordsMap = [
-  { keywords: ["bengaluru", "bangalore"], lat: 12.9716, lng: 77.5946, name: "Bengaluru City" },
-  { keywords: ["mysuru", "mysore"], lat: 12.2958, lng: 76.6394, name: "Mysuru City" },
-  { keywords: ["mangaluru", "mangalore", "dakshina kannada"], lat: 12.9141, lng: 74.8560, name: "Mangaluru City" },
-  { keywords: ["hubballi", "hubli", "dharwad"], lat: 15.3647, lng: 75.1240, name: "Hubballi-Dharwad" },
-  { keywords: ["belagavi", "belgaum"], lat: 15.8497, lng: 74.4977, name: "Belagavi" },
-  { keywords: ["kalaburagi", "gulbarga"], lat: 17.3291, lng: 76.8343, name: "Kalaburagi" },
-  { keywords: ["shivamogga", "shimoga"], lat: 13.9299, lng: 75.5681, name: "Shivamogga" },
-  { keywords: ["udupi"], lat: 13.3409, lng: 74.7421, name: "Udupi" },
-  { keywords: ["davanagere", "davangere"], lat: 14.4644, lng: 75.9218, name: "Davanagere" },
-  { keywords: ["tumakuru", "tumkur"], lat: 13.3392, lng: 77.1140, name: "Tumakuru" },
-  { keywords: ["chikkamagaluru", "chikmagalur"], lat: 13.3161, lng: 75.7720, name: "Chikkamagaluru" },
-  { keywords: ["bidar"], lat: 17.9104, lng: 77.5186, name: "Bidar" },
-  { keywords: ["mandya"], lat: 12.5218, lng: 76.8973, name: "Mandya" },
-  { keywords: ["hassan"], lat: 13.0070, lng: 76.1030, name: "Hassan" },
-  { keywords: ["uttara kannada", "karwar"], lat: 14.7900, lng: 74.6800, name: "Uttara Kannada" }
+  { keywords: ["bhopal"], lat: 23.2599, lng: 77.4126, name: "Bhopal" },
+  { keywords: ["indore"], lat: 22.7196, lng: 75.8577, name: "Indore" },
+  { keywords: ["jabalpur"], lat: 23.1815, lng: 79.9864, name: "Jabalpur" },
+  { keywords: ["gwalior"], lat: 26.2183, lng: 78.1828, name: "Gwalior" },
+  { keywords: ["ujjain"], lat: 23.1765, lng: 75.7885, name: "Ujjain" },
+  { keywords: ["sagar"], lat: 23.8388, lng: 78.7378, name: "Sagar" },
+  { keywords: ["rewa"], lat: 24.5362, lng: 81.3037, name: "Rewa" },
+  { keywords: ["satna"], lat: 24.6005, lng: 80.8322, name: "Satna" },
+  { keywords: ["chhindwara"], lat: 22.0574, lng: 78.9382, name: "Chhindwara" },
+  { keywords: ["ratlam"], lat: 23.3315, lng: 75.0367, name: "Ratlam" },
+  { keywords: ["dewas"], lat: 22.9676, lng: 76.0534, name: "Dewas" },
+  { keywords: ["dhar"], lat: 22.5978, lng: 75.2954, name: "Dhar" },
+  { keywords: ["datia"], lat: 25.6653, lng: 78.4609, name: "Datia" },
+  { keywords: ["guna"], lat: 24.6469, lng: 77.3060, name: "Guna" },
+  { keywords: ["harda"], lat: 22.3445, lng: 77.0933, name: "Harda" },
+  { keywords: ["hoshangabad", "narmadapuram"], lat: 22.7519, lng: 77.7289, name: "Hoshangabad" },
+  { keywords: ["katni"], lat: 23.8343, lng: 80.3957, name: "Katni" },
+  { keywords: ["mandla"], lat: 22.5986, lng: 80.3712, name: "Mandla" },
+  { keywords: ["mandsaur"], lat: 24.0722, lng: 75.0683, name: "Mandsaur" },
+  { keywords: ["morena"], lat: 26.4948, lng: 77.9940, name: "Morena" },
+  { keywords: ["narsinghpur"], lat: 22.9472, lng: 79.1970, name: "Narsinghpur" },
+  { keywords: ["neemuch"], lat: 24.4764, lng: 74.8722, name: "Neemuch" },
+  { keywords: ["panna"], lat: 24.7208, lng: 80.1983, name: "Panna" },
+  { keywords: ["raisen"], lat: 23.3315, lng: 77.7810, name: "Raisen" },
+  { keywords: ["rajgarh"], lat: 24.0062, lng: 76.7295, name: "Rajgarh" },
+  { keywords: ["sehore"], lat: 23.2032, lng: 77.0844, name: "Sehore" },
+  { keywords: ["seoni"], lat: 22.0869, lng: 79.5435, name: "Seoni" },
+  { keywords: ["shahdol"], lat: 23.2856, lng: 81.3539, name: "Shahdol" },
+  { keywords: ["shajapur"], lat: 23.4269, lng: 76.2777, name: "Shajapur" },
+  { keywords: ["sheopur"], lat: 25.6685, lng: 76.6974, name: "Sheopur" },
+  { keywords: ["shivpuri"], lat: 25.4316, lng: 77.6649, name: "Shivpuri" },
+  { keywords: ["sidhi"], lat: 24.4034, lng: 81.8774, name: "Sidhi" },
+  { keywords: ["tikamgarh"], lat: 24.7447, lng: 78.8311, name: "Tikamgarh" },
+  { keywords: ["umaria"], lat: 23.5245, lng: 80.8358, name: "Umaria" },
+  { keywords: ["vidisha"], lat: 23.5251, lng: 77.8081, name: "Vidisha" },
+  { keywords: ["anuppur"], lat: 23.1037, lng: 81.6917, name: "Anuppur" },
+  { keywords: ["ashoknagar"], lat: 24.5772, lng: 77.7289, name: "Ashoknagar" },
+  { keywords: ["balaghat"], lat: 21.8129, lng: 80.1838, name: "Balaghat" },
+  { keywords: ["barwani"], lat: 22.0366, lng: 74.9030, name: "Barwani" },
+  { keywords: ["betul"], lat: 21.9013, lng: 77.9015, name: "Betul" },
+  { keywords: ["bhind"], lat: 26.5645, lng: 78.7844, name: "Bhind" },
+  { keywords: ["burhanpur"], lat: 21.3145, lng: 76.2163, name: "Burhanpur" },
+  { keywords: ["chhatarpur"], lat: 24.9164, lng: 79.5811, name: "Chhatarpur" },
+  { keywords: ["damoh"], lat: 23.8382, lng: 79.4422, name: "Damoh" },
+  { keywords: ["dindori"], lat: 22.9463, lng: 81.0772, name: "Dindori" },
+  { keywords: ["jhabua"], lat: 22.7699, lng: 74.5946, name: "Jhabua" },
+  { keywords: ["khandwa", "east nimar"], lat: 21.8314, lng: 76.3498, name: "East Nimar" },
+  { keywords: ["khargone", "west nimar"], lat: 21.8234, lng: 75.6094, name: "West Nimar" }
 ];
 
 export const getDistrictCoordinates = (districtName, itemLat, itemLng) => {
-  if (itemLat && itemLng && Number(itemLat) !== 12.9716 && Number(itemLng) !== 77.5946) {
+  if (itemLat && itemLng && Number(itemLat) !== 12.9716 && Number(itemLng) !== 77.5946 && Number(itemLat) !== 23.2599 && Number(itemLng) !== 77.4126) {
     return { lat: Number(itemLat), lng: Number(itemLng) };
   }
-  if (!districtName) return { lat: 12.9716, lng: 77.5946 };
+  if (!districtName) return { lat: 23.2599, lng: 77.4126 };
   const dLower = String(districtName).toLowerCase();
   for (const entry of districtCoordsMap) {
     if (entry.keywords.some(k => dLower.includes(k))) {
       return { lat: entry.lat, lng: entry.lng };
     }
   }
-  return { lat: Number(itemLat) || 12.9716, lng: Number(itemLng) || 77.5946 };
+  return { lat: Number(itemLat) || 23.2599, lng: Number(itemLng) || 77.4126 };
 };
 
 const getLiveIncidents = () => {
@@ -87,7 +152,7 @@ const getLiveIncidents = () => {
       category: r.crimeHead || r.CrimeCategory || "Property Offences",
       severity: r.severity || r.Severity || "MEDIUM",
       status: r.status || r.Status || "Under Investigation",
-      district: r.district || r.District || "Bengaluru City",
+      district: r.district || r.District || "Bhopal",
       unit: r.unit || r.PoliceStation || "City Station",
       date: r.regDate || r.CrimeRegisteredDate || new Date().toISOString().split("T")[0],
       lat: Number(r.lat || r.latiutude) || center.lat,
@@ -95,7 +160,7 @@ const getLiveIncidents = () => {
       briefFacts: r.briefFacts || r.BriefFacts || "Incident recorded in CCTNS Datastore.",
       assignedOfficer: {
         name: r.allottedOfficerName || r.OfficerName || "Unassigned",
-        kgid: r.allottedOfficerKgid || "KSP-0000"
+        kgid: r.allottedOfficerKgid || "MPP-0000"
       },
       districtCenter: center
     };
@@ -163,7 +228,7 @@ export const crimeService = {
     const recentIncidents = sortedIncidents.slice(0, 3);
 
     return {
-      name: districtName || "Karnataka State (All Filters)",
+      name: districtName || "Madhya Pradesh State (All Filters)",
       total,
       active,
       chargesheeted,

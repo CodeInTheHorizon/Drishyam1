@@ -295,11 +295,11 @@ const ManageRecords = () => {
               style={{ paddingLeft: "14px", paddingRight: "14px" }}
             >
               <option value="" className="bg-slate-950 text-slate-400">-- ALL CATEGORIES --</option>
-              <option value="Theft" className="bg-slate-950 text-slate-200">Theft</option>
-              <option value="Assault" className="bg-slate-950 text-slate-200">Assault</option>
-              <option value="Murder" className="bg-slate-950 text-slate-200">Murder</option>
-              <option value="Property Related" className="bg-slate-950 text-slate-200">Property Related</option>
-              <option value="Cyber Crime" className="bg-slate-950 text-slate-200">Cyber Crime</option>
+              <option value="CDR / IPDR" className="bg-slate-950 text-slate-200">CDR / IPDR</option>
+              <option value="Bank / UPI Logs" className="bg-slate-950 text-slate-200">Bank / UPI Logs</option>
+              <option value="Email Headers" className="bg-slate-950 text-slate-200">Email Headers</option>
+              <option value="Chat Exports" className="bg-slate-950 text-slate-200">Chat Exports</option>
+              <option value="Android / APK Logs" className="bg-slate-950 text-slate-200">Android / APK Logs</option>
             </select>
           </div>
 

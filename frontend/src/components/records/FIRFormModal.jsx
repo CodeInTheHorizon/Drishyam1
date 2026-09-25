@@ -7,25 +7,62 @@ import {
   FaUser,
   FaMapMarkerAlt,
   FaShieldAlt,
-  FaFileAlt
+  FaFileAlt,
+  FaExclamationCircle,
+  FaCheckCircle
 } from "react-icons/fa";
+
+const MP_DISTRICTS = [
+  "Bhopal",
+  "Indore",
+  "Jabalpur",
+  "Gwalior",
+  "Ujjain",
+  "Sagar",
+  "Rewa",
+  "Satna",
+  "Chhindwara",
+  "Ratlam"
+];
+
+const MP_POLICE_STATIONS = [
+  "Bhopal Central Cyber Cell",
+  "Indore Cyber Police Station",
+  "Jabalpur Cyber Unit",
+  "Gwalior Cyber Police Station",
+  "Ujjain Cyber Unit",
+  "State Cyber Crime Police Station Bhopal"
+];
+
+const CRIME_CATEGORIES = [
+  "CDR / IPDR",
+  "Bank / UPI Logs",
+  "Email Headers",
+  "Chat Exports",
+  "Android / APK Logs"
+];
 
 const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
   const isEdit = Boolean(initialData && initialData.id);
   const [activeTab, setActiveTab] = useState("general");
   const [mounted, setMounted] = useState(false);
+  const [error, setError] = useState("");
+
+  const nowIso = new Date().toISOString().slice(0, 16);
+  const todayDate = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
     crimeNo: "",
     caseNo: "",
-    regDate: new Date().toISOString().split("T")[0],
-    incidentFromDate: new Date().toISOString().slice(0, 16),
-    incidentToDate: "",
-    district: "Bengaluru City",
-    unit: "Koramangala Police Station",
-    crimeHead: "Property Offences",
-    crimeSubHead: "Theft",
-    actSections: "IPC Sec 379 / BNS Sec 303",
+    regDate: todayDate,
+    incidentFromDate: nowIso,
+    incidentToDate: nowIso,
+    infoReceivedPSDate: nowIso,
+    district: "Bhopal",
+    unit: "Bhopal Central Cyber Cell",
+    crimeHead: "CDR / IPDR",
+    crimeSubHead: "Cell Tower Dump & IPDR Intercept",
+    actSections: "IT Act Sec 66C / 66D, BNS Sec 318(4)",
     cognizableType: "Cognizable",
     severity: "MEDIUM",
     status: "Under Investigation",
@@ -38,14 +75,14 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
     
     locationStreet: "",
     landmark: "",
-    lat: "12.9352",
-    lng: "77.6245",
+    lat: "23.2599",
+    lng: "77.4126",
     
-    allottedOfficerName: "Ramesh Gowda",
-    allottedOfficerRank: "PSI",
-    allottedOfficerKgid: "KSP-8821",
+    allottedOfficerName: "Inspector Rajesh Sharma",
+    allottedOfficerRank: "Police Inspector",
+    allottedOfficerKgid: "MPP-2026-901",
     
-    accusedName: "Unknown",
+    accusedName: "Unidentified Suspect",
     accusedStatus: "Unidentified",
     
     briefFacts: "",
@@ -76,22 +113,25 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
       setFormData({
         ...initialData,
         officialReportImage: initialData.officialReportImage || "",
-        lat: String(initialData.lat || 12.9352),
-        lng: String(initialData.lng || 77.6245),
-        estimatedValue: String(initialData.estimatedValue || 0)
+        lat: String(initialData.lat || 23.2599),
+        lng: String(initialData.lng || 77.4126),
+        estimatedValue: String(initialData.estimatedValue || 0),
+        incidentToDate: initialData.incidentToDate || initialData.incidentFromDate || nowIso,
+        infoReceivedPSDate: initialData.infoReceivedPSDate || initialData.regDate || nowIso
       });
     } else {
       setFormData({
         crimeNo: "",
         caseNo: "",
-        regDate: new Date().toISOString().split("T")[0],
-        incidentFromDate: new Date().toISOString().slice(0, 16),
-        incidentToDate: "",
-        district: "Bengaluru City",
-        unit: "Koramangala Police Station",
-        crimeHead: "Property Offences",
-        crimeSubHead: "Theft",
-        actSections: "IPC Sec 379 / BNS Sec 303",
+        regDate: todayDate,
+        incidentFromDate: nowIso,
+        incidentToDate: nowIso,
+        infoReceivedPSDate: nowIso,
+        district: "Bhopal",
+        unit: "Bhopal Central Cyber Cell",
+        crimeHead: "CDR / IPDR",
+        crimeSubHead: "Cell Tower Dump & IPDR Intercept",
+        actSections: "IT Act Sec 66C / 66D, BNS Sec 318(4)",
         cognizableType: "Cognizable",
         severity: "MEDIUM",
         status: "Under Investigation",
@@ -102,19 +142,21 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
         complainantIdNo: "",
         locationStreet: "",
         landmark: "",
-        lat: "12.9352",
-        lng: "77.6245",
-        allottedOfficerName: "Ramesh Gowda",
-        allottedOfficerRank: "PSI",
-        allottedOfficerKgid: "KSP-8821",
-        accusedName: "Unknown",
+        lat: "23.2599",
+        lng: "77.4126",
+        allottedOfficerName: "Inspector Rajesh Sharma",
+        allottedOfficerRank: "Police Inspector",
+        allottedOfficerKgid: "MPP-2026-901",
+        accusedName: "Unidentified Suspect",
         accusedStatus: "Unidentified",
         briefFacts: "",
         propertyDescription: "",
         estimatedValue: "0",
-        resolutionNotes: ""
+        resolutionNotes: "",
+        officialReportImage: ""
       });
     }
+    setError("");
   }, [initialData, isOpen]);
 
   if (!isOpen || !mounted) return null;
@@ -122,11 +164,83 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (error) setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setError("");
+
+    // --- Client-side Validations Matching CaseMaster Schema ---
+    if (!formData.regDate) {
+      setError("Registration Date is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.incidentFromDate) {
+      setError("Incident From Date & Time is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.incidentToDate) {
+      setError("Incident To Date & Time is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.infoReceivedPSDate) {
+      setError("Information Received at PS Date & Time is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.district?.trim()) {
+      setError("District Jurisdiction is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.unit?.trim()) {
+      setError("Police Station / Cyber Unit is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.crimeHead?.trim()) {
+      setError("Cyber Crime Category is mandatory.");
+      setActiveTab("general");
+      return;
+    }
+    if (!formData.actSections?.trim()) {
+      setError("Act & Sections are mandatory.");
+      setActiveTab("general");
+      return;
+    }
+
+    if (!formData.complainantName?.trim()) {
+      setError("Complainant Full Name is mandatory.");
+      setActiveTab("complainant");
+      return;
+    }
+    if (!formData.locationStreet?.trim()) {
+      setError("Incident Street / Site Address is mandatory.");
+      setActiveTab("complainant");
+      return;
+    }
+
+    if (!formData.allottedOfficerName?.trim()) {
+      setError("Investigating Officer (IO) Name is mandatory.");
+      setActiveTab("officer");
+      return;
+    }
+
+    if (!formData.briefFacts?.trim()) {
+      setError("Brief Facts of the Case (Narrative) is mandatory.");
+      setActiveTab("brief");
+      return;
+    }
+
+    try {
+      await onSave(formData);
+    } catch (err) {
+      setError(err.message || "Failed to submit FIR record.");
+    }
   };
 
   const modalContent = (
@@ -156,7 +270,7 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 {isEdit ? `Edit CCTNS Record: ${formData.crimeNo || formData.id}` : "Register New CCTNS FIR Record"}
               </h2>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                Core Application Software (CAS) IIF-1 First Information Logging Form
+                Core Application Software (CAS) IIF-1 First Information Logging Form • Madhya Pradesh Police
               </p>
             </div>
           </div>
@@ -169,6 +283,14 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
             <FaTimes className="text-base" />
           </button>
         </div>
+
+        {/* Validation Error Banner */}
+        {error && (
+          <div className="mx-8 mt-4 p-3.5 rounded-xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2.5 font-medium animate-fade-in shadow-lg">
+            <FaExclamationCircle className="text-rose-400 text-base flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
         {/* Modal Form Sub-tabs */}
         <div 
@@ -232,19 +354,23 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
             {activeTab === "general" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 text-xs">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Crime Number (18-Digit CCTNS)</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Crime Registration Number (CCTNS)
+                  </label>
                   <input
                     type="text"
                     name="crimeNo"
                     value={formData.crimeNo}
                     onChange={handleChange}
-                    placeholder="Auto-generated if empty"
+                    placeholder="e.g. FIR/MP/2026/00101 (Auto-generated if empty)"
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Registration Date <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Registration Date <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="date"
                     name="regDate"
@@ -256,7 +382,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Incident From Date & Time <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Incident From Date & Time <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="datetime-local"
                     name="incidentFromDate"
@@ -268,82 +396,120 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">District Name <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Incident To Date & Time <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    name="incidentToDate"
+                    value={formData.incidentToDate}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Information Received at PS Date & Time <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    name="infoReceivedPSDate"
+                    value={formData.infoReceivedPSDate}
+                    onChange={handleChange}
+                    required
+                    className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-300">
+                    District Jurisdiction <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <select
                     name="district"
                     value={formData.district}
                     onChange={handleChange}
+                    required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner cursor-pointer"
                   >
-                    <option value="Bengaluru City">Bengaluru City</option>
-                    <option value="Mangaluru City">Mangaluru City</option>
-                    <option value="Mysuru City">Mysuru City</option>
-                    <option value="Hubballi-Dharwad">Hubballi-Dharwad</option>
-                    <option value="Belagavi District">Belagavi District</option>
-                    <option value="Kalaburagi Range">Kalaburagi Range</option>
+                    {MP_DISTRICTS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Police Station Unit <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Police Station / Cyber Unit <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="text"
                     name="unit"
                     value={formData.unit}
                     onChange={handleChange}
-                    placeholder="e.g. Koramangala Police Station"
+                    placeholder="e.g. Bhopal Central Cyber Cell"
                     required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Major Crime Head / Category <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Major Crime Head / Category <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <select
                     name="crimeHead"
                     value={formData.crimeHead}
                     onChange={handleChange}
+                    required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner cursor-pointer"
                   >
-                    <option value="Theft">Theft</option>
-                    <option value="Assault">Assault</option>
-                    <option value="Murder">Murder</option>
-                    <option value="Property Related">Property Related</option>
-                    <option value="Cyber Crime">Cyber Crime</option>
+                    {CRIME_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Crime Sub-Head / MO</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Crime Sub-Head / MO Modus Operandi
+                  </label>
                   <input
                     type="text"
                     name="crimeSubHead"
                     value={formData.crimeSubHead}
                     onChange={handleChange}
-                    placeholder="e.g. Dacoity, Cyber Fraud, Theft"
+                    placeholder="e.g. SIM Swap, Mule Accounts, APK Trojan"
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">IPC / BNS Act & Sections <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    IPC / BNS / IT Act & Sections <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="text"
                     name="actSections"
                     value={formData.actSections}
                     onChange={handleChange}
-                    placeholder="e.g. IPC Sec 379 / BNS Sec 303"
+                    placeholder="e.g. IT Act Sec 66C / 66D, BNS Sec 318(4)"
                     required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Severity / Risk Level</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Severity / Risk Level <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <select
                     name="severity"
                     value={formData.severity}
                     onChange={handleChange}
+                    required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono font-bold shadow-inner cursor-pointer"
                   >
                     <option value="CRITICAL">CRITICAL</option>
@@ -354,17 +520,20 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Initial Investigation Status</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Investigation Status <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <select
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
+                    required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner cursor-pointer"
                   >
                     <option value="Under Investigation">Under Investigation</option>
                     <option value="Suspect Apprehended">Suspect Apprehended</option>
-                    <option value="Charge-sheet Submitted">Charge-sheet Submitted</option>
-                    <option value="Case Closed / Completed">Case Closed / Completed</option>
+                    <option value="Chargesheeted">Chargesheeted</option>
+                    <option value="Closed / Resolved">Closed / Resolved</option>
                   </select>
                 </div>
               </div>
@@ -374,7 +543,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
             {activeTab === "complainant" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 text-xs">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Complainant Full Name <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Complainant Full Name <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="text"
                     name="complainantName"
@@ -387,7 +558,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Complainant Phone Number</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Complainant Contact Number
+                  </label>
                   <input
                     type="text"
                     name="complainantPhone"
@@ -399,7 +572,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Complainant Permanent Address</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Complainant Permanent Address
+                  </label>
                   <input
                     type="text"
                     name="complainantAddress"
@@ -411,7 +586,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">ID Proof Type</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    ID Proof Document Type
+                  </label>
                   <select
                     name="complainantIdType"
                     value={formData.complainantIdType}
@@ -427,7 +604,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">ID Proof Document Number</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    ID Proof Document Number
+                  </label>
                   <input
                     type="text"
                     name="complainantIdNo"
@@ -445,38 +624,44 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Incident Street / Site Address <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Incident Street / Site Address <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="text"
                     name="locationStreet"
                     value={formData.locationStreet}
                     onChange={handleChange}
-                    placeholder="e.g. 100 Feet Road Commercial Warehouse"
+                    placeholder="e.g. MP Nagar Zone 2, Main Cyber Hub"
                     required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">GIS Latitude (Lat)</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    GIS Latitude (Lat)
+                  </label>
                   <input
                     type="text"
                     name="lat"
                     value={formData.lat}
                     onChange={handleChange}
-                    placeholder="12.9352"
+                    placeholder="23.2599"
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">GIS Longitude (Lng)</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    GIS Longitude (Lng)
+                  </label>
                   <input
                     type="text"
                     name="lng"
                     value={formData.lng}
                     onChange={handleChange}
-                    placeholder="77.6245"
+                    placeholder="77.4126"
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
                   />
                 </div>
@@ -493,43 +678,50 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Investigating Officer (IO) Name <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Investigating Officer (IO) Name <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <input
                     type="text"
                     name="allottedOfficerName"
                     value={formData.allottedOfficerName}
                     onChange={handleChange}
-                    placeholder="e.g. Ramesh Gowda"
+                    placeholder="e.g. Inspector Rajesh Sharma"
                     required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Officer Rank</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Officer Rank <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <select
                     name="allottedOfficerRank"
                     value={formData.allottedOfficerRank}
                     onChange={handleChange}
+                    required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner cursor-pointer"
                   >
+                    <option value="Police Inspector">Police Inspector</option>
                     <option value="PSI">PSI (Police Sub-Inspector)</option>
                     <option value="CPI">CPI (Circle Police Inspector)</option>
                     <option value="ASI">ASI (Assistant Sub-Inspector)</option>
-                    <option value="Inspector">Inspector</option>
+                    <option value="DSP">DSP (Deputy Superintendent)</option>
                     <option value="ACP">ACP (Assistant Commissioner)</option>
-                    <option value="DySP">DySP (Deputy Superintendent)</option>
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Officer KGID Badge Number</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Officer Badge / KGID Number
+                  </label>
                   <input
                     type="text"
                     name="allottedOfficerKgid"
                     value={formData.allottedOfficerKgid}
                     onChange={handleChange}
-                    placeholder="e.g. KSP-8821"
+                    placeholder="e.g. MPP-2026-901"
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
                   />
                 </div>
@@ -541,30 +733,34 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Primary Accused / Suspect Name</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Primary Accused / Suspect Name
+                  </label>
                   <input
                     type="text"
                     name="accusedName"
                     value={formData.accusedName}
                     onChange={handleChange}
-                    placeholder="e.g. Kiran Kumar (or 'Unknown')"
+                    placeholder="e.g. Deepak Acharya (or 'Unidentified Suspect')"
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Apprehension / Custody Status</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Apprehension / Custody Status
+                  </label>
                   <select
                     name="accusedStatus"
                     value={formData.accusedStatus}
                     onChange={handleChange}
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner cursor-pointer"
                   >
+                    <option value="Unidentified">Unidentified</option>
                     <option value="Absconding">Absconding</option>
                     <option value="Detained">Detained</option>
                     <option value="Judicial Custody">Judicial Custody</option>
                     <option value="On Bail">On Bail</option>
-                    <option value="Unidentified">Unidentified</option>
                   </select>
                 </div>
               </div>
@@ -574,7 +770,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
             {activeTab === "brief" && (
               <div className="space-y-5 text-xs">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Brief Facts of the Case (Narrative) <span className="text-blue-400">*</span></label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Brief Facts of the Case (Narrative) <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                  </label>
                   <textarea
                     name="briefFacts"
                     value={formData.briefFacts}
@@ -588,19 +786,23 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-slate-300">Stolen / Seized Property Description</label>
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Stolen / Seized Digital Evidence Property Description
+                    </label>
                     <input
                       type="text"
                       name="propertyDescription"
                       value={formData.propertyDescription}
                       onChange={handleChange}
-                      placeholder="e.g. Electronic equipment, vehicles, cash..."
+                      placeholder="e.g. Hard drives, SIM cards, smartphone logs..."
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-slate-300">Estimated Property Value (in INR ₹)</label>
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Estimated Property / Defrauded Value (in INR ₹)
+                    </label>
                     <input
                       type="number"
                       name="estimatedValue"
@@ -613,7 +815,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">Resolution / Disposal Notes (If Case Closed)</label>
+                  <label className="block text-xs font-semibold text-slate-300">
+                    Resolution / Disposal Notes (If Case Closed)
+                  </label>
                   <textarea
                     name="resolutionNotes"
                     value={formData.resolutionNotes}
@@ -650,58 +854,53 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                         <div className="relative w-full text-center space-y-1.5">
                           <img
                             src={formData.officialReportImage}
-                            alt="Official Report Preview"
-                            className="h-28 w-full object-cover rounded-lg border border-slate-800 shadow-md"
+                            alt="Scanned Report"
+                            className="max-h-28 mx-auto rounded-lg border border-slate-700 object-contain shadow"
                           />
-                          <button
-                            type="button"
-                            onClick={() => setFormData((prev) => ({ ...prev, officialReportImage: "" }))}
-                            className="text-xs font-medium text-rose-400 hover:text-rose-300 underline cursor-pointer"
-                          >
-                            Remove Attached Report Photo
-                          </button>
+                          <p className="text-[10px] text-emerald-400 font-mono flex items-center justify-center gap-1">
+                            <FaCheckCircle className="text-xs" /> Document Attached
+                          </p>
                         </div>
                       ) : (
-                        <div className="text-center text-xs text-slate-500 space-y-1 p-3">
-                          <FaFileAlt className="text-xl text-slate-600 mx-auto" />
-                          <span>No official report document attached yet</span>
+                        <div className="text-center text-slate-500 space-y-1">
+                          <FaFileAlt className="text-2xl mx-auto text-slate-600" />
+                          <span className="text-[11px] block">No document attached</span>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
+
               </div>
             )}
 
           </div>
 
-          {/* Modal Footer Actions */}
+          {/* Modal Footer Controls */}
           <div 
-            className="py-5 bg-slate-900/90 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-            style={{ paddingLeft: "32px", paddingRight: "28px" }}
+            className="bg-slate-900/90 border-t border-slate-800/80 flex items-center justify-between"
+            style={{ paddingLeft: "32px", paddingRight: "32px", paddingTop: "18px", paddingBottom: "18px" }}
           >
-            <div className="text-xs text-slate-400 font-sans" style={{ paddingLeft: "8px" }}>
-              <span className="text-blue-400 font-bold">*</span> Indicates mandatory fields required for CCTNS registration
+            <div className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5">
+              <span className="text-rose-500 font-bold">*</span> Indicates mandatory fields required by CaseMaster schema
             </div>
 
-            <div className="flex items-center gap-3 self-end sm:self-auto" style={{ paddingRight: "4px" }}>
+            <div className="flex items-center gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="h-11 px-5 rounded-xl border border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold tracking-wide transition-all cursor-pointer"
+                className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800 transition-all cursor-pointer"
               >
                 Cancel
               </button>
-
               <button
                 type="submit"
-                className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-space text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-blue-600/25 transition-all cursor-pointer border-none"
+                className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all cursor-pointer active:scale-95"
               >
-                <FaSave /> {isEdit ? "Save Changes" : "Create CCTNS FIR Record"}
+                <FaSave className="text-xs" /> {isEdit ? "Update FIR Record" : "Save FIR Record"}
               </button>
             </div>
           </div>
-
         </form>
 
       </div>

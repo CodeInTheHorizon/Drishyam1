@@ -5,7 +5,7 @@ import { RiRobot2Fill } from "react-icons/ri";
 const ChatInput = ({ onSend, onClear, disabled }) => {
   const [text, setText] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [voiceLang, setVoiceLang] = useState("en-IN"); // 'en-IN' (English) or 'kn-IN' (Kannada)
+  const [voiceLang, setVoiceLang] = useState("en-IN"); // 'en-IN' (English) or 'hi-IN' (Hindi)
   const recognitionRef = useRef(null);
   const textareaRef = useRef(null);
 
@@ -120,7 +120,7 @@ const ChatInput = ({ onSend, onClear, disabled }) => {
         <div className="flex items-center gap-2.5">
           <div className="flex items-center gap-1.5">
             <RiRobot2Fill className="text-xs text-blue-400" />
-            <span className="text-xs font-semibold text-slate-400 font-inter">KSP AI Copilot</span>
+            <span className="text-xs font-semibold text-slate-400 font-inter">MP Police AI Copilot</span>
           </div>
           <span className="text-slate-600">·</span>
           <div className="flex items-center gap-1.5">
@@ -143,12 +143,12 @@ const ChatInput = ({ onSend, onClear, disabled }) => {
           </button>
           <button
             type="button"
-            onClick={() => setVoiceLang("kn-IN")}
+            onClick={() => setVoiceLang("hi-IN")}
             className={`px-2 py-0.5 text-[10px] font-bold rounded-none transition-colors cursor-pointer ${
-              voiceLang === "kn-IN" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"
+              voiceLang === "hi-IN" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"
             }`}
           >
-            ಕನ್ನಡ
+            हिंदी
           </button>
         </div>
       </div>
@@ -157,7 +157,7 @@ const ChatInput = ({ onSend, onClear, disabled }) => {
       {isListening && (
         <div className="mb-2.5 flex items-center gap-2 px-3.5 py-2 rounded-none bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-inter animate-pulse">
           <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
-          <span>Listening ({voiceLang === "kn-IN" ? "ಕನ್ನಡ Voice Input" : "English Voice Input"})... Speak now</span>
+          <span>Listening ({voiceLang === "hi-IN" ? "हिंदी Voice Input" : "English Voice Input"})... Speak now</span>
         </div>
       )}
 
@@ -180,8 +180,8 @@ const ChatInput = ({ onSend, onClear, disabled }) => {
             onKeyDown={handleKeyDown}
             disabled={disabled}
             placeholder={
-              voiceLang === "kn-IN"
-                ? "ಕನ್ನಡದಲ್ಲಿ ಅಥವಾ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಪ್ರಶ್ನೆ ಕೇಳಿ..."
+              voiceLang === "hi-IN"
+                ? "हिंदी या अंग्रेजी में अपराध, केस या अधिकारी के बारे में पूछें..."
                 : "Ask about crimes, FIR records, officers, district stats…"
             }
             className="flex-1 bg-transparent text-[13.5px] text-white placeholder-slate-400 focus:outline-none resize-none font-sans leading-relaxed pl-2 pr-2"
@@ -204,7 +204,7 @@ const ChatInput = ({ onSend, onClear, disabled }) => {
                   ? "bg-rose-600 text-white shadow-lg shadow-rose-600/50 animate-pulse"
                   : "text-slate-400 hover:text-white hover:bg-slate-800/60"
               }`}
-              title={isListening ? "Stop Voice Input" : `Speak in ${voiceLang === "kn-IN" ? "ಕನ್ನಡ" : "English"}`}
+              title={isListening ? "Stop Voice Input" : `Speak in ${voiceLang === "hi-IN" ? "हिंदी" : "English"}`}
             >
               {isListening ? <FaStop className="text-sm" /> : <FaMicrophone className="text-sm" />}
             </button>

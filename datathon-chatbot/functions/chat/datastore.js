@@ -4,8 +4,8 @@
  * Strict Relational Zoho Catalyst Datastore Repository Layer for Karnataka Police FIR System.
  * 
  * Project Credentials:
- * • Project Name: DataThon
- * • Project ID: 56116000000017001
+ * • Project Name: Abhedya
+ * • Project ID: 56116000000209001
  * • Organization ID: 60077759371
  * • Environment: Development
  */
@@ -15,6 +15,26 @@ const path = require("path");
 const os = require("os");
 const crypto = require("crypto");
 const https = require("https");
+
+// Auto-load .env file if not already populated
+try {
+    const envPath = path.resolve(__dirname, "../../../.env");
+    if (fs.existsSync(envPath)) {
+        const envConfig = fs.readFileSync(envPath, "utf-8");
+        envConfig.split("\n").forEach((line) => {
+            const trimmed = line.trim();
+            if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
+                const [key, ...vals] = trimmed.split("=");
+                const val = vals.join("=").trim().replace(/^["']|["']$/g, '');
+                if (key && !process.env[key.trim()]) {
+                    process.env[key.trim()] = val;
+                }
+            }
+        });
+    }
+} catch (e) {
+    // Ignore .env read errors
+}
 
 const SEED_DATA_PATH = path.join(__dirname, "local_crime_records.json");
 const ROWID_MAPPING_PATH = path.join(__dirname, "../../../scripts/rowid_mapping.json");
@@ -125,9 +145,9 @@ function tryGetLocalCliCredentials() {
         
         return {
             dc: activeDc,
-            clientId: '1000.D5IIHDXSPN2MII26AD0V61I6RMVSNM',
-            clientSecret: '02ee875ecfc50573e5cc8d62916ad3077be20d0f42',
-            refreshToken: credObj.token.slice(2)
+            clientId: process.env.CATALYST_CLIENT_ID || (credObj.client_id || ''),
+            clientSecret: process.env.CATALYST_CLIENT_SECRET || (credObj.client_secret || ''),
+            refreshToken: credObj.token ? credObj.token.slice(2) : ''
         };
     } catch (e) {
         console.warn("[CrimeRepository] CLI credentials read error:", e.message);
@@ -137,11 +157,11 @@ function tryGetLocalCliCredentials() {
 
 function getCatalystCredentials() {
     const envToken = process.env.CATALYST_REFRESH_TOKEN;
-    const envClientId = process.env.CATALYST_CLIENT_ID || "1000.D5IIHDXSPN2MII26AD0V61I6RMVSNM";
-    const envClientSecret = process.env.CATALYST_CLIENT_SECRET || "02ee875ecfc50573e5cc8d62916ad3077be20d0f42";
+    const envClientId = process.env.CATALYST_CLIENT_ID;
+    const envClientSecret = process.env.CATALYST_CLIENT_SECRET;
     const envDc = process.env.CATALYST_DC || "in";
 
-    if (envToken) {
+    if (envToken && envClientId && envClientSecret) {
         return {
             dc: envDc,
             clientId: envClientId,
@@ -153,16 +173,11 @@ function getCatalystCredentials() {
     const localCreds = tryGetLocalCliCredentials();
     if (localCreds) return localCreds;
 
-    return {
-        dc: "in",
-        clientId: "1000.D5IIHDXSPN2MII26AD0V61I6RMVSNM",
-        clientSecret: "02ee875ecfc50573e5cc8d62916ad3077be20d0f42",
-        refreshToken: "1000.a7b68e03acb6065eafafd5a97f89498c.540ce405ff72c1e0eba1b7772d9054df"
-    };
+    return null;
 }
 
-let cachedToken = null;
-let tokenExpiryTime = 0;
+let cachedToken = process.env.QUICKML_ACCESS_TOKEN || null;
+let tokenExpiryTime = process.env.QUICKML_ACCESS_TOKEN ? (Date.now() + 50 * 60 * 1000) : 0;
 let inFlightTokenPromise = null;
 let lastRateLimitTime = 0;
 
@@ -239,21 +254,27 @@ function makeApiRequest(options, postData) {
 }
 
 async function callCatalystDatastoreApi(pathSuffix, method = 'GET', bodyObj = null) {
-    const token = await getFreshAccessToken();
-    const projectId = "56116000000017001";
-    const orgId = "60077759371";
+    const projectId = process.env.CATALYST_PROJECT_ID;
+    const orgId = process.env.CATALYST_ORG_ID;
+    if (!projectId || !orgId) {
+        return { status: 503, data: null };
+    }
+    let token = null;
+    try {
+        token = await getFreshAccessToken();
+    } catch (e) {
+        return { status: 503, data: null };
+    }
+    if (!token) {
+        return { status: 503, data: null };
+    }
     const baseHeaders = {
         "Authorization": `Zoho-oauthtoken ${token}`,
         "Accept": "application/vnd.catalyst.v2+json",
         "CATALYST-ORG": orgId,
-        "environment": "Development",
+        "environment": process.env.CATALYST_ENVIRONMENT || "Development",
         "User-Agent": "zcatalyst-cli/1.27.0"
     };
-
-    // Perform session handshakes
-    await makeApiRequest({ hostname: "api.catalyst.zoho.in", port: 443, path: "/baas/v1/orgs", method: "GET", headers: baseHeaders });
-    await makeApiRequest({ hostname: "api.catalyst.zoho.in", port: 443, path: `/baas/v1/project/${projectId}`, method: "GET", headers: baseHeaders });
-    await makeApiRequest({ hostname: "api.catalyst.zoho.in", port: 443, path: `/baas/v1/project/${projectId}/environment`, method: "GET", headers: baseHeaders });
 
     const fullPath = `/baas/v1/project/${projectId}${pathSuffix}`;
     let postData = null;
@@ -331,16 +352,7 @@ class CrimeRepository {
         }
         this.lookupCache = global.__catalyst_lookup_cache;
 
-        const defaults = {
-            District: "56116000000043001",
-            Unit: "56116000000049001",
-            Employee: "56116000000042004",
-            CaseCategory: "56116000000039001",
-            GravityOffence: "56116000000040003",
-            CaseStatusMaster: "56116000000041002",
-            Court: "56116000000047001",
-            CrimeHead: "56116000000034009"
-        };
+        const defaults = {};
         try {
             if (fs.existsSync(ROWID_MAPPING_PATH)) {
                 const loaded = JSON.parse(fs.readFileSync(ROWID_MAPPING_PATH, 'utf-8'));
@@ -361,73 +373,95 @@ class CrimeRepository {
         const caseNo = String(row.CaseNo || row.caseNo || `2026${String(caseMasterId).padStart(5, "0")}`);
         const regDateStr = String(row.CrimeRegisteredDate || row.regDate || new Date().toISOString().split("T")[0]);
 
-        const cache = this.lookupCache || {};
+        const CATEGORY_MAP = {
+            1: "CDR / IPDR",
+            2: "Bank / UPI Logs",
+            3: "Email Headers",
+            4: "Chat Exports",
+            5: "Android / APK Logs"
+        };
+        const DISTRICT_MAP = {
+            1: "Bhopal",
+            2: "Indore",
+            3: "Jabalpur",
+            4: "Gwalior",
+            5: "Ujjain"
+        };
+        const STATION_MAP = {
+            201: "Bhopal Central Cyber Cell",
+            202: "Indore Cyber Police Station",
+            203: "Jabalpur Cyber Unit",
+            204: "Gwalior Cyber Police Station",
+            205: "Ujjain Cyber Unit"
+        };
+        const SEVERITY_MAP = {
+            1: "LOW",
+            2: "MEDIUM",
+            3: "HIGH",
+            4: "CRITICAL"
+        };
+        const STATUS_MAP = {
+            1: "Under Investigation",
+            2: "Chargesheeted",
+            3: "Closed / Resolved"
+        };
 
         let officerName = row.OfficerName || row.allottedOfficerName;
-        let officerRank = row.allottedOfficerRank;
-        let officerKgid = row.allottedOfficerKgid;
-        if (!officerName && row.PolicePersonID) {
-            const emp = liveLookups.employees?.[row.PolicePersonID] || cache.employees?.[row.PolicePersonID];
-            if (emp) {
-                officerName = emp.name || emp.FirstName;
-                officerKgid = emp.kgid || emp.KGID;
-            }
+        let officerRank = row.allottedOfficerRank || "Police Inspector";
+        let officerKgid = row.allottedOfficerKgid || `MPP-2026-${String(row.PolicePersonID || 101).padStart(3, '0')}`;
+        if (!officerName) {
+            const officerList = [
+                "Inspector Rajesh Sharma",
+                "DSP Ananya Verma",
+                "SI Amit Patel",
+                "Inspector Vikram Singh",
+                "SI Priya Chouhan"
+            ];
+            const idx = Math.abs(Number(caseMasterId) || 0) % officerList.length;
+            officerName = officerList[idx];
         }
-        officerName = officerName || "Ramesh Gowda";
-        officerRank = officerRank || "PSI";
-        officerKgid = officerKgid || "KSP-8821";
 
         let stationName = row.PoliceStation || row.unit;
         if (!stationName && row.PoliceStationID) {
-            stationName = liveLookups.units?.[row.PoliceStationID] || cache.units?.[row.PoliceStationID];
+            stationName = STATION_MAP[row.PoliceStationID] || liveLookups.units?.[row.PoliceStationID];
         }
-        stationName = stationName || "Koramangala Police Station";
+        stationName = stationName || "Bhopal Central Cyber Cell";
 
         let districtName = row.District || row.district;
         if (!districtName && row.DistrictID) {
-            districtName = liveLookups.districts?.[row.DistrictID] || cache.districts?.[row.DistrictID];
+            districtName = DISTRICT_MAP[row.DistrictID] || liveLookups.districts?.[row.DistrictID];
         }
-        if (!districtName && row.PoliceStationID && cache.units?.[`dist_${row.PoliceStationID}`]) {
-            const distId = cache.units[`dist_${row.PoliceStationID}`];
-            districtName = liveLookups.districts?.[distId] || cache.districts?.[distId];
+        if (!districtName && row.PoliceStationID && STATION_MAP[row.PoliceStationID]) {
+            districtName = STATION_MAP[row.PoliceStationID].split(" ")[0];
         }
-        districtName = districtName || "Bengaluru City";
+        districtName = districtName || "Bhopal";
 
-        const ALLOWED_5_CATS = ["Assault", "Cyber Crime", "Murder", "Property Related", "Theft"];
         let categoryName = row.CrimeCategory || row.crimeHead;
-        if (!ALLOWED_5_CATS.includes(categoryName)) {
-            categoryName = ALLOWED_5_CATS[Math.abs(Number(caseMasterId) || 0) % ALLOWED_5_CATS.length];
+        if (!categoryName || typeof categoryName !== "string" || !categoryName.trim()) {
+            if (row.CaseCategoryID && CATEGORY_MAP[row.CaseCategoryID]) {
+                categoryName = CATEGORY_MAP[row.CaseCategoryID];
+            } else {
+                const DEFAULT_CATS = ["CDR / IPDR", "Bank / UPI Logs", "Email Headers", "Chat Exports", "Android / APK Logs"];
+                categoryName = DEFAULT_CATS[Math.abs(Number(caseMasterId) || 0) % DEFAULT_CATS.length];
+            }
         }
 
-        let subHeadName = row.crimeSubHead;
-        if (!subHeadName && row.CrimeMinorHeadID) {
-            subHeadName = cache.crimeSubHeads?.[row.CrimeMinorHeadID];
-        }
-        subHeadName = subHeadName || "General";
+        let subHeadName = row.crimeSubHead || "General Cyber Forensic";
 
         let severity = row.Severity || row.severity;
         if (!severity && row.GravityOffenceID != null) {
-            severity = liveLookups.gravity?.[row.GravityOffenceID] || cache.gravityOffences?.[row.GravityOffenceID];
+            severity = SEVERITY_MAP[row.GravityOffenceID] || liveLookups.gravity?.[row.GravityOffenceID];
         }
         severity = severity || "MEDIUM";
 
         let statusName = row.Status || row.status;
         if (!statusName && row.CaseStatusID) {
-            statusName = liveLookups.caseStatuses?.[row.CaseStatusID] || cache.caseStatuses?.[row.CaseStatusID];
+            statusName = STATUS_MAP[row.CaseStatusID] || liveLookups.caseStatuses?.[row.CaseStatusID];
         }
         statusName = statusName || "Under Investigation";
 
-        let compName = row.ComplainantName || row.complainantName;
-        if (!compName && liveLookups.complainants?.[row.ROWID]) {
-            compName = liveLookups.complainants[row.ROWID];
-        }
-        compName = compName || "Citizen Complainant";
-
-        let accName = row.AccusedName || row.accusedName;
-        if (!accName && liveLookups.accused?.[row.ROWID]) {
-            accName = liveLookups.accused[row.ROWID];
-        }
-        accName = accName || "Unidentified Suspect";
+        let compName = row.ComplainantName || row.complainantName || "Citizen Complainant";
+        let accName = row.AccusedName || row.accusedName || "Unidentified Suspect";
 
         return {
             CaseMasterID: caseMasterId,
@@ -446,8 +480,8 @@ class CrimeRepository {
             crimeHead: categoryName,
             CrimeCategory: categoryName,
             crimeSubHead: subHeadName,
-            actSections: row.ActSections || row.actSections || "IPC Sec 395",
-            ActSections: row.ActSections || row.actSections || "IPC Sec 395",
+            actSections: row.ActSections || row.actSections || "IT Act Sec 66C / 66D",
+            ActSections: row.ActSections || row.actSections || "IT Act Sec 66C / 66D",
             severity: severity,
             Severity: severity,
             status: statusName,
@@ -460,80 +494,38 @@ class CrimeRepository {
             allottedOfficerKgid: officerKgid,
             accusedName: accName,
             AccusedName: accName,
-            briefFacts: row.BriefFacts || row.briefFacts || "Incident logged.",
-            BriefFacts: row.BriefFacts || row.briefFacts || "Incident logged.",
-            propertyDescription: row.propertyDescription || "Evidence catalogued under mahazar",
+            briefFacts: row.BriefFacts || row.briefFacts || "Incident logged and evidence registered.",
+            BriefFacts: row.BriefFacts || row.briefFacts || "Incident logged and evidence registered.",
+            propertyDescription: row.propertyDescription || "Digital forensic exhibits catalogued",
             estimatedValue: Number(row.EstimatedValue || row.estimatedValue || 0),
             officialReportImage: "https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=800&auto=format&fit=crop",
-            lat: Number(row.latiutude || row.lat || 12.9716),
-            lng: Number(row.longitude || row.lng || 77.5946),
-            locationStreet: row.locationStreet || `${districtName} Station Limit Road`
+            lat: Number(row.latiutude || row.latitude || row.lat || 23.2599),
+            lng: Number(row.longitude || row.lng || 77.4126),
+            locationStreet: row.locationStreet || `${districtName} Cyber Unit Road`
         };
     }
 
     async getAllCrimeRecords(filters = {}) {
-        let cloudRows = [];
-        const liveLookups = {
-            units: {},
-            districts: {},
-            employees: {},
-            categories: {},
-            gravity: {},
-            caseStatuses: {},
-            crimeHeads: {},
-            complainants: {},
-            accused: {}
-        };
-
+        let cloudRows = null;
         try {
-            const [
-                caseRes, unitRes, distRes, empRes, catRes, gravRes, statusRes, headRes, compRes, accRes
-            ] = await Promise.all([
-                callCatalystDatastoreApi('/table/CaseMaster/row', 'GET'),
-                callCatalystDatastoreApi('/table/Unit/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/District/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/Employee/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/CaseCategory/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/GravityOffence/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/CaseStatusMaster/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/CrimeHead/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/ComplainantDetails/row', 'GET').catch(() => null),
-                callCatalystDatastoreApi('/table/Accused/row', 'GET').catch(() => null)
-            ]);
-
+            const caseRes = await callCatalystDatastoreApi('/table/CaseMaster/row', 'GET');
             if (caseRes.status === 200 && caseRes.data && Array.isArray(caseRes.data.data)) {
                 cloudRows = caseRes.data.data;
+                console.log(`[CrimeRepository] Fetched ${cloudRows.length} CaseMaster rows directly from Zoho Catalyst Online Data Store.`);
             }
-            if (Array.isArray(unitRes?.data?.data)) unitRes.data.data.forEach(u => liveLookups.units[u.ROWID] = u.UnitName);
-            if (Array.isArray(distRes?.data?.data)) distRes.data.data.forEach(d => liveLookups.districts[d.ROWID] = d.DistrictName);
-            if (Array.isArray(empRes?.data?.data)) empRes.data.data.forEach(e => liveLookups.employees[e.ROWID] = e);
-            if (Array.isArray(catRes?.data?.data)) catRes.data.data.forEach(c => liveLookups.categories[c.ROWID] = c.LookupValue);
-            if (Array.isArray(gravRes?.data?.data)) gravRes.data.data.forEach(g => liveLookups.gravity[g.ROWID] = g.LookupValue);
-            if (Array.isArray(statusRes?.data?.data)) statusRes.data.data.forEach(s => liveLookups.caseStatuses[s.ROWID] = s.CaseStatusName);
-            if (Array.isArray(headRes?.data?.data)) headRes.data.data.forEach(h => liveLookups.crimeHeads[h.ROWID] = h.CrimeGroupName);
-            if (Array.isArray(compRes?.data?.data)) compRes.data.data.forEach(c => { if (c.CaseMasterID) liveLookups.complainants[c.CaseMasterID] = c.ComplainantName; });
-            if (Array.isArray(accRes?.data?.data)) accRes.data.data.forEach(a => { if (a.CaseMasterID) liveLookups.accused[a.CaseMasterID] = a.AccusedName; });
-
-            console.log(`[CrimeRepository] Fetched ${cloudRows.length} CaseMaster rows and online lookups from Zoho Catalyst Data Store.`);
         } catch (err) {
             console.warn("[CrimeRepository] Online Catalyst Data Store fetch failed:", err.message);
         }
 
-        globalServerRecords = loadPersistentDb();
-        const baseSeed = (cloudRows.length === 0 && globalServerRecords.length === 0) ? loadBaselineData() : [];
-        const combined = [...cloudRows, ...globalServerRecords, ...baseSeed];
-        const seen = new Set();
-        const uniqueRows = [];
-
-        for (const row of combined) {
-            const key = String(row.CrimeNo || row.crimeNo || row.CaseMasterID || row.ROWID || row.id);
-            if (key && !seen.has(key)) {
-                seen.add(key);
-                uniqueRows.push(row);
-            }
+        let sourceRows = [];
+        if (cloudRows !== null) {
+            sourceRows = cloudRows;
+            savePersistentDb(cloudRows);
+        } else {
+            sourceRows = loadPersistentDb();
         }
 
-        let normalized = uniqueRows.map((r) => this.normalizeRow(r, liveLookups));
+        let normalized = sourceRows.map((r) => this.normalizeRow(r));
 
         if (filters.district) {
             normalized = normalized.filter((r) => r.district.toLowerCase() === filters.district.toLowerCase());
@@ -543,6 +535,18 @@ class CrimeRepository {
             normalized = normalized.filter((r) => r.crimeHead.toLowerCase() === filters.category.toLowerCase());
         }
 
+        if (filters.search) {
+            const q = filters.search.toLowerCase().trim();
+            normalized = normalized.filter(
+                (r) =>
+                    (r.crimeNo && r.crimeNo.toLowerCase().includes(q)) ||
+                    (r.briefFacts && r.briefFacts.toLowerCase().includes(q)) ||
+                    (r.complainantName && r.complainantName.toLowerCase().includes(q)) ||
+                    (r.accusedName && r.accusedName.toLowerCase().includes(q))
+            );
+        }
+
+        this.masterRecords = normalized;
         return normalized;
     }
 
@@ -551,43 +555,74 @@ class CrimeRepository {
     }
 
     async createCrimeRecord(recordData) {
+        if (!recordData || typeof recordData !== "object") {
+            throw new Error("Validation Error: Invalid record payload provided.");
+        }
+
+        // --- Server-side Validations Matching Catalyst CaseMaster Structure ---
+        const missingFields = [];
+        if (!recordData.regDate && !recordData.CrimeRegisteredDate) missingFields.push("Registration Date (CrimeRegisteredDate)");
+        if (!recordData.incidentFromDate && !recordData.IncidentFromDate) missingFields.push("Incident From Date & Time (IncidentFromDate)");
+        if (!recordData.incidentToDate && !recordData.IncidentToDate) missingFields.push("Incident To Date & Time (IncidentToDate)");
+        if (!recordData.infoReceivedPSDate && !recordData.InfoReceivedPSDate) missingFields.push("Information Received at PS Date & Time (InfoReceivedPSDate)");
+        if (!recordData.district && !recordData.districtId && !recordData.DistrictID) missingFields.push("District Jurisdiction (DistrictID)");
+        if (!recordData.unit && !recordData.policeStationId && !recordData.PoliceStationID) missingFields.push("Police Station / Cyber Unit (PoliceStationID)");
+        if (!recordData.crimeHead && !recordData.crimeMajorHeadId && !recordData.CrimeMajorHeadID) missingFields.push("Major Crime Head / Category (CrimeMajorHeadID)");
+        if (!recordData.actSections && !recordData.sectionId && !recordData.SectionID) missingFields.push("IPC / BNS / IT Act Sections (SectionID)");
+        if (!recordData.complainantName || !String(recordData.complainantName).trim()) missingFields.push("Complainant Full Name (ComplainantName)");
+        if (!recordData.locationStreet || !String(recordData.locationStreet).trim()) missingFields.push("Incident Street / Site Address");
+        if (!recordData.allottedOfficerName || !String(recordData.allottedOfficerName).trim()) missingFields.push("Investigating Officer Name");
+        if (!recordData.briefFacts || !String(recordData.briefFacts).trim()) missingFields.push("Brief Facts Narrative (BriefFacts)");
+
+        if (missingFields.length > 0) {
+            throw new Error(`Validation Error: Missing mandatory database field(s): ${missingFields.join(", ")}`);
+        }
+
         const caseMasterId = generateUniqueIntId();
         const serialNo = String(caseMasterId).slice(-5);
-        const crimeNo = String(recordData.crimeNo || `1044361102026${serialNo}`);
-        const caseNo = String(recordData.caseNo || `2026${serialNo}`);
+        const crimeNo = String(recordData.crimeNo || `FIR/MP/2026/${serialNo}`);
+        const caseNo = String(recordData.caseNo || `CR-2026-${serialNo}`);
         const regDateStr = formatCatalystDate(recordData.regDate || recordData.CrimeRegisteredDate);
 
+        // Non-relational schema for Zoho Catalyst CaseMaster
         const catalystCaseMasterRow = {
+            CaseMasterID: Number(caseMasterId),
             CrimeNo: crimeNo,
             CaseNo: caseNo,
             CrimeRegisteredDate: regDateStr,
-            PolicePersonID: String(this.rowIds.Employee || "56116000000042004"),
-            PoliceStationID: String(this.rowIds.Unit || "56116000000049001"),
-            CaseCategoryID: String(this.rowIds.CaseCategory || "56116000000039001"),
-            GravityOffenceID: String(this.rowIds.GravityOffence || "56116000000040003"),
-            CrimeMajorHeadID: String(this.rowIds.CrimeHead || "56116000000034009"),
-            CaseStatusID: String(this.rowIds.CaseStatusMaster || "56116000000041002"),
-            CourtID: String(this.rowIds.Court || "56116000000047001"),
+            PolicePersonID: Number(recordData.policePersonId || recordData.PolicePersonID || 101),
+            PoliceStationID: Number(recordData.policeStationId || recordData.PoliceStationID || 201),
+            CaseCategoryID: Number(recordData.caseCategoryId || recordData.CaseCategoryID || 1),
+            GravityOffenceID: Number(recordData.gravityOffenceId || recordData.GravityOffenceID || 2),
+            CrimeMajorHeadID: Number(recordData.crimeMajorHeadId || recordData.CrimeMajorHeadID || 1),
+            CrimeMinorHeadID: Number(recordData.crimeMinorHeadId || recordData.CrimeMinorHeadID || 1),
+            CaseStatusID: Number(recordData.caseStatusId || recordData.CaseStatusID || 1),
+            CourtID: Number(recordData.courtId || recordData.CourtID || 1),
             IncidentFromDate: formatCatalystDatetime(recordData.incidentFromDate || recordData.IncidentFromDate, "10:00:00"),
             IncidentToDate: formatCatalystDatetime(recordData.incidentToDate || recordData.IncidentToDate, "11:30:00"),
             InfoReceivedPSDate: formatCatalystDatetime(recordData.infoReceivedPSDate || recordData.InfoReceivedPSDate, "12:00:00"),
-            latiutude: Number(recordData.lat || recordData.latiutude || recordData.latitude) || 12.9716,
-            longitude: Number(recordData.lng || recordData.longitude) || 77.5946,
-            BriefFacts: String(recordData.briefFacts || recordData.Description || `FIR #${crimeNo} registered at ${recordData.unit || 'Police Station'}.`).slice(0, 250)
+            latiutude: Number(recordData.lat || recordData.latiutude || recordData.latitude) || 23.2599,
+            longitude: Number(recordData.lng || recordData.longitude) || 77.4126,
+            BriefFacts: String(recordData.briefFacts || recordData.Description || `FIR #${crimeNo} registered at ${recordData.unit || 'Cyber Police Station'}.`).slice(0, 250)
         };
 
         const fullRecord = {
             ...catalystCaseMasterRow,
-            complainantName: String(recordData.complainantName || "Citizen Complainant"),
+            complainantName: String(recordData.complainantName),
             accusedName: String(recordData.accusedName || "Unidentified Suspect"),
-            allottedOfficerName: String(recordData.allottedOfficerName || "PSI Investigating Officer"),
-            unit: String(recordData.unit || "Police Station 1"),
-            district: String(recordData.district || "Bengaluru City"),
-            crimeHead: String(recordData.crimeHead || "Property Offences"),
-            crimeSubHead: String(recordData.crimeSubHead || "General"),
-            actSections: String(recordData.actSections || "IPC Sec 395"),
+            allottedOfficerName: String(recordData.allottedOfficerName),
+            allottedOfficerRank: String(recordData.allottedOfficerRank || "Police Inspector"),
+            allottedOfficerKgid: String(recordData.allottedOfficerKgid || "MPP-2026-901"),
+            locationStreet: String(recordData.locationStreet),
+            unit: String(recordData.unit),
+            district: String(recordData.district),
+            crimeHead: String(recordData.crimeHead),
+            crimeSubHead: String(recordData.crimeSubHead || "General Cyber Forensic"),
+            actSections: String(recordData.actSections),
             severity: String(recordData.severity || "MEDIUM"),
-            status: String(recordData.status || "Under Investigation")
+            status: String(recordData.status || "Under Investigation"),
+            estimatedValue: Number(recordData.estimatedValue) || 0,
+            propertyDescription: String(recordData.propertyDescription || "")
         };
 
         const norm = this.normalizeRow(fullRecord);
@@ -602,17 +637,35 @@ class CrimeRepository {
                 const cloudRow = insertRes.data.data[0];
                 console.log("✅ [CrimeRepository] Catalyst Online Data Store INSERT SUCCESS. ROWID:", cloudRow.ROWID);
                 const cloudNorm = this.normalizeRow({ ...fullRecord, ...cloudRow });
+                
                 this.masterRecords.unshift(cloudNorm);
+                globalServerRecords = loadPersistentDb();
+                globalServerRecords.unshift(cloudNorm);
+                savePersistentDb(globalServerRecords);
+
+                // Automatically log to BiometricAuditTrail in Zoho Catalyst
+                await this.createAuditTrailRecord({
+                    employeeId: catalystCaseMasterRow.PolicePersonID,
+                    officerName: fullRecord.allottedOfficerName,
+                    kgid: fullRecord.allottedOfficerKgid || "MPP-2026-901",
+                    action: "CREATE_CASE",
+                    targetTable: "CaseMaster",
+                    targetRecordId: crimeNo,
+                    deviceId: "ESP32-BHOPAL-01",
+                    fingerprintVerified: true,
+                    otpUsed: "948212",
+                    changesSummary: `FIR #${crimeNo} created in CaseMaster (${fullRecord.crimeHead})`
+                });
+
                 return cloudNorm;
             } else {
                 console.error("❌ [CrimeRepository] Catalyst Online Data Store Insert Failed:", insertRes.status, JSON.stringify(insertRes.data));
+                throw new Error("Catalyst Data Store insert failed: " + (insertRes.data?.message || "Unknown error"));
             }
         } catch (err) {
             console.error("❌ [CrimeRepository] Catalyst Online Data Store Exception:", err.message);
+            throw err;
         }
-
-        this.masterRecords.unshift(norm);
-        return norm;
     }
 
     async updateCrimeRecord(id, updatedData) {
@@ -626,10 +679,18 @@ class CrimeRepository {
             if (rowId && String(rowId).length > 10) {
                 await callCatalystDatastoreApi(`/table/CaseMaster/row`, 'PUT', [{
                     ROWID: String(rowId),
-                    CaseStatusID: String(this.rowIds.CaseStatusMaster || "56116000000041002"),
-                    BriefFacts: String(updatedData.briefFacts || updatedData.Description || "Updated FIR record")
+                    CaseStatusID: Number(updatedData.CaseStatusID || 2),
+                    BriefFacts: String(updatedData.briefFacts || updatedData.Description || "Updated FIR record").slice(0, 250)
                 }]);
                 console.log("✅ [CrimeRepository] Online Catalyst Data Store row updated.");
+
+                // Log audit trail
+                await this.createAuditTrailRecord({
+                    action: "UPDATE_CASE",
+                    targetTable: "CaseMaster",
+                    targetRecordId: String(rowId),
+                    changesSummary: `Updated case status / details for record ${rowId}`
+                });
             }
         } catch (e) {
             console.warn("[CrimeRepository] Online Catalyst updateRow failed:", e.message);
@@ -652,6 +713,51 @@ class CrimeRepository {
             console.warn("[CrimeRepository] Online Catalyst deleteRow failed:", e.message);
         }
         return { success: true, id };
+    }
+
+    // --- BiometricAuditTrail Live Zoho Catalyst Data Store Methods ---
+    async getBiometricAuditTrails() {
+        try {
+            const res = await callCatalystDatastoreApi('/table/BiometricAuditTrail/row', 'GET');
+            if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
+                console.log(`[CrimeRepository] Fetched ${res.data.data.length} audit logs directly from Zoho Catalyst BiometricAuditTrail.`);
+                return res.data.data;
+            }
+        } catch (e) {
+            console.warn("[CrimeRepository] Online Catalyst BiometricAuditTrail fetch failed:", e.message);
+        }
+        return [];
+    }
+
+    async createAuditTrailRecord(auditData = {}) {
+        const auditRow = {
+            AuditID: Date.now(),
+            EmployeeID: Number(auditData.employeeId || 101),
+            OfficerName: String(auditData.officerName || "Inspector Rajesh Sharma"),
+            KGID: String(auditData.kgid || "MPP-2026-901"),
+            Action: String(auditData.action || "BIOMETRIC_AUTH"),
+            TargetTable: String(auditData.targetTable || "CaseMaster"),
+            TargetRecordID: String(auditData.targetRecordId || `AUTH-${Date.now()}`),
+            DeviceID: String(auditData.deviceId || "ESP32-BHOPAL-01"),
+            FingerprintVerified: Boolean(auditData.fingerprintVerified ?? true),
+            OTPUsed: String(auditData.otpUsed || "948212"),
+            IPAddress: String(auditData.ipAddress || "127.0.0.1"),
+            AuditTimestamp: new Date().toISOString().replace('T', ' ').split('.')[0],
+            ChangesSummary: String(auditData.changesSummary || "Biometric authentication verified").slice(0, 500)
+        };
+
+        try {
+            const insertRes = await callCatalystDatastoreApi('/table/BiometricAuditTrail/row', 'POST', [auditRow]);
+            if (insertRes.status === 200 && insertRes.data && insertRes.data.data && insertRes.data.data[0]) {
+                console.log("✅ [CrimeRepository] BiometricAuditTrail INSERT SUCCESS. ROWID:", insertRes.data.data[0].ROWID);
+                return insertRes.data.data[0];
+            } else {
+                console.error("❌ [CrimeRepository] BiometricAuditTrail Insert Failed:", insertRes.status, JSON.stringify(insertRes.data));
+            }
+        } catch (e) {
+            console.error("❌ [CrimeRepository] BiometricAuditTrail Insert Exception:", e.message);
+        }
+        return auditRow;
     }
 
     async getAllOfficerRecords() {
@@ -704,9 +810,28 @@ class CrimeRepository {
     }
 
     async createOfficerRecord(officerData) {
+        if (!officerData || typeof officerData !== "object") {
+            throw new Error("Validation Error: Invalid officer payload provided.");
+        }
+
+        // --- Server-side Validations Matching Catalyst Employee Structure ---
+        const missingFields = [];
+        if (!officerData.name || !String(officerData.name).trim()) missingFields.push("Officer Full Name (FirstName)");
+        if (!officerData.badgeNumber || !String(officerData.badgeNumber).trim()) missingFields.push("KGID / Badge Number (KGID)");
+        if (!officerData.unit || !String(officerData.unit).trim()) missingFields.push("Assigned Division / Unit (UnitID)");
+        if (!officerData.station || !String(officerData.station).trim()) missingFields.push("District Jurisdiction Headquarters (DistrictID)");
+        if (!officerData.rank || !String(officerData.rank).trim()) missingFields.push("Officer Rank (RankID)");
+
+        if (missingFields.length > 0) {
+            throw new Error(`Validation Error: Missing mandatory database field(s): ${missingFields.join(", ")}`);
+        }
+
         const empId = String(Date.now().toString().slice(-6));
-        const badge = String(officerData.badgeNumber || `KSP-2026-${empId}`);
-        const name = String(officerData.name || "Officer");
+        const badge = String(officerData.badgeNumber.trim());
+        const name = String(officerData.name.trim());
+        const rank = String(officerData.rank.trim());
+        const unit = String(officerData.unit.trim());
+        const station = String(officerData.station.trim());
 
         const catalystEmployeeRow = {
             EmployeeID: empId,
@@ -725,9 +850,9 @@ class CrimeRepository {
                 return {
                     badgeNumber: badge,
                     name: name,
-                    rank: officerData.rank || "Police Inspector",
-                    unit: officerData.unit || "General Unit",
-                    station: officerData.station || "Bengaluru Range",
+                    rank: rank,
+                    unit: unit,
+                    station: station,
                     yearsOfService: Number(officerData.yearsOfService) || 5,
                     status: "On Duty",
                     ROWID: cloudRow.ROWID,
@@ -743,9 +868,9 @@ class CrimeRepository {
         return {
             badgeNumber: badge,
             name: name,
-            rank: officerData.rank || "Police Inspector",
-            unit: officerData.unit || "General Unit",
-            station: officerData.station || "Bengaluru Range",
+            rank: rank,
+            unit: unit,
+            station: station,
             yearsOfService: Number(officerData.yearsOfService) || 5,
             status: "On Duty",
             EmployeeID: empId

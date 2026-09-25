@@ -9,40 +9,40 @@ import {
 import ChartCard from "./ChartCard";
 
 const CATEGORY_STYLE_MAP = {
-  "Assault": {
-    color: "#f97316",
-    gradientId: "pieGradAssault",
-    light: "#ff8c38",
-    dark: "#c2410c",
-    shadow: "rgba(249, 115, 22, 0.4)"
+  "CDR / IPDR": {
+    color: "#06b6d4",
+    gradientId: "pieGradCdr",
+    light: "#38bdf8",
+    dark: "#0891b2",
+    shadow: "rgba(6, 182, 212, 0.4)"
   },
-  "Cyber Crime": {
-    color: "#a855f7",
-    gradientId: "pieGradCyber",
-    light: "#c084fc",
-    dark: "#7e22ce",
-    shadow: "rgba(168, 85, 247, 0.4)"
+  "Bank / UPI Logs": {
+    color: "#10b981",
+    gradientId: "pieGradBank",
+    light: "#34d399",
+    dark: "#047857",
+    shadow: "rgba(16, 185, 129, 0.4)"
   },
-  "Murder": {
-    color: "#ef4444",
-    gradientId: "pieGradMurder",
-    light: "#f87171",
-    dark: "#b91c1c",
-    shadow: "rgba(239, 68, 68, 0.4)"
+  "Email Headers": {
+    color: "#f59e0b",
+    gradientId: "pieGradEmail",
+    light: "#fbbf24",
+    dark: "#b45309",
+    shadow: "rgba(245, 158, 11, 0.4)"
   },
-  "Property Related": {
-    color: "#3b82f6",
-    gradientId: "pieGradProperty",
-    light: "#60a5fa",
-    dark: "#1d4ed8",
-    shadow: "rgba(59, 130, 246, 0.4)"
+  "Chat Exports": {
+    color: "#818cf8",
+    gradientId: "pieGradChat",
+    light: "#a5b4fc",
+    dark: "#4f46e5",
+    shadow: "rgba(129, 140, 248, 0.4)"
   },
-  "Theft": {
-    color: "#eab308",
-    gradientId: "pieGradTheft",
-    light: "#facc15",
-    dark: "#a16207",
-    shadow: "rgba(234, 179, 8, 0.4)"
+  "Android / APK Logs": {
+    color: "#ec4899",
+    gradientId: "pieGradApk",
+    light: "#f472b6",
+    dark: "#be185d",
+    shadow: "rgba(236, 72, 153, 0.4)"
   }
 };
 

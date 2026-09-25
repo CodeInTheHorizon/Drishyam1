@@ -119,7 +119,7 @@ export default function NetworkAnalysis() {
           </h1>
 
           <p className="text-xs text-slate-300 mt-1 max-w-2xl font-sans">
-            Cross-jurisdictional link matrix and syndicate mapping across Karnataka police stations.
+            Cross-jurisdictional link matrix and syndicate mapping across Madhya Pradesh police stations.
           </p>
         </div>
 

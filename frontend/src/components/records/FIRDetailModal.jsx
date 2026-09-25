@@ -32,7 +32,7 @@ const FIRDetailModal = ({ isOpen, onClose, record, onToggleStatus }) => {
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-mono">
-                Karnataka State Police • CCTNS IIF-1 Official Log
+                Madhya Pradesh Police • CCTNS IIF-1 Official Log
               </p>
             </div>
           </div>

@@ -45,7 +45,7 @@ const StatGrid = ({ metrics }) => {
       dataSource: (metrics.active_investigations.source_table && metrics.active_investigations.source_field)
         ? `${metrics.active_investigations.source_table} | ${metrics.active_investigations.source_field}`
         : "CaseMaster | CaseStatusMaster",
-      coverage:   metrics.active_investigations.coverage || "All Karnataka Police Precincts",
+      coverage:   metrics.active_investigations.coverage || "All Madhya Pradesh Police Precincts",
       lastSync:   metrics.active_investigations.last_sync || "Real-Time Synced",
       subText:    metrics.active_investigations.status_code || "Status: Under Investigation",
       sparkData:  SPARK_DATA.active.data,

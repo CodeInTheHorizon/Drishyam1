@@ -1,9 +1,9 @@
 const crimeCategories = [
-  { name: "Theft", value: 35 },
-  { name: "Assault", value: 22 },
-  { name: "Cyber Crime", value: 16 },
-  { name: "Fraud", value: 14 },
-  { name: "Others", value: 13 },
+  { name: "CDR / IPDR", value: 35 },
+  { name: "Bank / UPI Logs", value: 25 },
+  { name: "Email Headers", value: 18 },
+  { name: "Chat Exports", value: 12 },
+  { name: "Android / APK Logs", value: 10 },
 ];
 
 export default crimeCategories;

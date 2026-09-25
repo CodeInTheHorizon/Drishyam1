@@ -15,7 +15,7 @@ import { FaBrain, FaGavel, FaSearch, FaExclamationTriangle, FaHistory, FaRobot }
 
 const InsightsForecast = () => {
   const [activeTab, setActiveTab] = useState("copilot");
-  const [pageLang, setPageLang] = useState("en"); // 'en' or 'kn'
+  const [pageLang, setPageLang] = useState("en"); // 'en' or 'hi'
 
   // Chat state
   const [sessions, setSessions] = useState([]);
@@ -28,11 +28,11 @@ const InsightsForecast = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
 
-  const isKn = pageLang === "kn";
+  const isHi = pageLang === "hi";
 
   const TABS = [
-    { id: "copilot", label: isKn ? "ಎಐ ಕಾಪಿಲಟ್ ಮತ್ತು ಹುಡುಕಾಟ" : "AI Copilot & Search", icon: RiRobot2Line, activeColor: "from-blue-600 to-violet-600" },
-    { id: "forecast", label: isKn ? "ಪೂರ್ವಸೂಚಕ ಪ್ರವೃತ್ತಿ ಮತ್ತು ಮುನ್ಸೂಚನೆ" : "Predictive Trend Forecast", icon: TbChartLine, activeColor: "from-violet-600 to-purple-700" },
+    { id: "copilot", label: isHi ? "एआई को-पायलट और खोज" : "AI Copilot & Search", icon: RiRobot2Line, activeColor: "from-blue-600 to-violet-600" },
+    { id: "forecast", label: isHi ? "पूर्वानुमान रुझान एवं विश्लेषण" : "Predictive Trend Forecast", icon: TbChartLine, activeColor: "from-violet-600 to-purple-700" },
   ];
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const InsightsForecast = () => {
 
   const handleNewSession = () => {
     const newId = `session-temp-${Date.now()}`;
-    setSessions((prev) => [{ id: newId, title: isKn ? "ಹೊಸ ಸೇಶನ್" : "New Session", timestamp: isKn ? "ಈಗಷ್ಟೇ" : "Just now", status: "active" }, ...prev]);
+    setSessions((prev) => [{ id: newId, title: isHi ? "नया सत्र" : "New Session", timestamp: isHi ? "अभी" : "Just now", status: "active" }, ...prev]);
     setActiveSessionId(newId);
     setMessages([]);
   };
@@ -67,7 +67,7 @@ const InsightsForecast = () => {
       const replyText = await assistantService.queryAssistant(text);
       setMessages((prev) => [...prev, { sender: "assistant", text: replyText }]);
     } catch {
-      setMessages((prev) => [...prev, { sender: "assistant", text: isKn ? "ದೋಷ: ವಿನಂತಿಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ." : "Error: Failed to process request." }]);
+      setMessages((prev) => [...prev, { sender: "assistant", text: isHi ? "त्रुटि: अनुरोध संसाधित करने में विफल।" : "Error: Failed to process request." }]);
     } finally {
       setIsTyping(false);
     }
@@ -94,11 +94,11 @@ const InsightsForecast = () => {
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-            {isKn ? "ಅಪರಾಧ ಮುನ್ಸೂಚನೆ ಮತ್ತು ವಿಶ್ಲೇಷಣೆ (AI Insights & Forecast)" : "AI Insights & Forecast"}
+            {isHi ? "अपराध पूर्वानुमान और विश्लेषण (AI Insights & Forecast)" : "AI Insights & Forecast"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-sans mt-1.5 max-w-2xl leading-relaxed">
-            {isKn
-              ? "ನೈಸರ್ಗಿಕ ಭಾಷೆಯ ಗುಪ್ತಚರ ಹುಡುಕಾಟ, ಅಪರಾಧ ಮುನ್ಸೂಚನೆ ಮತ್ತು ವೈಪರೀತ್ಯ ಪತ್ತೆ ಸಿಸ್ಟಮ್."
+            {isHi
+              ? "प्राकृतिक भाषा खुफिया खोज, अपराध पूर्वानुमान और विसंगति पहचान प्रणाली।"
               : "Natural language intelligence search, predictive crime forecasting, and automated anomaly detection."}
           </p>
         </div>
@@ -126,12 +126,12 @@ const InsightsForecast = () => {
             </button>
             <button
               type="button"
-              onClick={() => setPageLang("kn")}
+              onClick={() => setPageLang("hi")}
               className={`px-3 py-1.5 text-xs font-bold rounded-none transition-all cursor-pointer ${
-                pageLang === "kn" ? "bg-purple-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+                pageLang === "hi" ? "bg-purple-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
               }`}
             >
-              ಕನ್ನಡ
+              हिंदी
             </button>
           </div>
         </div>
@@ -183,7 +183,7 @@ const InsightsForecast = () => {
                 <div className="flex items-center gap-2.5 pl-2">
                   <FaHistory className="text-xs text-slate-400" />
                   <span className="text-[11px] font-bold font-mono text-slate-300 uppercase tracking-wider">
-                    {isKn ? "ಸೇಶನ್‌ಗಳು" : "Sessions"}
+                    {isHi ? "सत्र सूची" : "Sessions"}
                   </span>
                 </div>
               </div>
@@ -227,7 +227,7 @@ const InsightsForecast = () => {
                     <FaRobot className="text-sm text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white font-space">KSP AI Copilot</p>
+                    <p className="text-xs font-bold text-white font-space">MP Police AI Copilot</p>
                     <p className="text-[10px] font-mono text-emerald-400">● Online · CCTNS Live</p>
                   </div>
                 </div>
@@ -254,58 +254,58 @@ const InsightsForecast = () => {
       {activeTab === "forecast" && (
         <div>
           {loadingData ? (
-            <Loader message={isKn ? "ಕ್ವಿಕ್‌ಎಮ್‌ಎಲ್ ಮುನ್ಸೂಚಕ ಮಾದರಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ..." : "Loading QuickML Time-Series Predictive Models..."} />
+            <Loader message={isHi ? "क्विकएमएल पूर्वानुमान मॉडल लोड हो रहे हैं..." : "Loading QuickML Time-Series Predictive Models..."} />
           ) : (
             <div className="flex flex-col" style={{ gap: "2rem" }}>
               {/* KPI Cards */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <StatCard
-                  title={isKn ? "ಅಂದಾಜು ಕಳ್ಳತನ ಹೆಚ್ಚಳ" : "Forecasted Theft Spike"}
+                  title={isHi ? "अनुमानित सीडीआर/आईपीडीआर वृद्धि" : "Forecasted CDR/IPDR Spike"}
                   value="+18.4%"
-                  change={isKn ? "ಕ್ವಿಕ್‌ಎಮ್‌ಎಲ್ ಮಾದರಿ" : "QuickML Model"}
+                  change={isHi ? "क्विकएमएल मॉडल" : "QuickML Model"}
                   icon={FaBrain}
                   color="text-purple-400"
                   borderColor="border-purple-500"
                   dataSource="CaseMaster + UnitID 4108"
-                  coverage={isKn ? "ಕೋರಮಂಗಲ ಪೊಲೀಸ್ ಠಾಣೆ" : "Koramangala Police Station"}
+                  coverage={isHi ? "संवेदनशील शहरी थाना" : "Urban Police Station"}
                   lastSync="QuickML Realtime"
-                  subText={isKn ? "ಆಸ್ತಿ ಕಳ್ಳತನದ ಹೆಚ್ಚಳ" : "Property Theft Spike"}
+                  subText={isHi ? "आईपीडीआर विसंगति वृद्धि" : "IPDR Anomaly Surge"}
                 />
                 <StatCard
-                  title={isKn ? "ಅಂದಾಜು ಚಾರ್ಜ್ ಶೀಟ್ ದರ" : "Predicted Charge-sheet Rate"}
+                  title={isHi ? "अनुमानित चार्जशीट दर" : "Predicted Charge-sheet Rate"}
                   value="76.8%"
-                  change={isKn ? "+2.6% ಪ್ರಕ್ಷೇಪಣ" : "+2.6% Projection"}
+                  change={isHi ? "+2.6% अनुमान" : "+2.6% Projection"}
                   icon={FaGavel}
                   color="text-emerald-400"
                   borderColor="border-emerald-500"
                   dataSource="ChargesheetDetails ML"
-                  coverage={isKn ? "ನ್ಯಾಯಾಂಗ ಮ್ಯಾಜಿಸ್ಟ್ರೇಟ್ ನ್ಯಾಯಾಲಯಗಳು" : "Judicial Magistrate Courts"}
+                  coverage={isHi ? "न्यायिक मजिस्ट्रेट न्यायालय" : "Judicial Magistrate Courts"}
                   lastSync="Daily Batch Run"
-                  subText={isKn ? "ಅಂತಿಮ ವರದಿ ವಿಧ 'A'" : "Final Report Type 'A'"}
+                  subText={isHi ? "अंतिम रिपोर्ट प्रकार 'A'" : "Final Report Type 'A'"}
                 />
                 <StatCard
-                  title={isKn ? "ಸೈಬರ್ ವಂಚನೆ ವೇಗ" : "Cyber Fraud Velocity"}
+                  title={isHi ? "साइबर धोखाधड़ी वेग" : "Cyber Fraud Velocity"}
                   value="210 / Mo"
-                  change={isKn ? "+14.2% ಮಾಸಿಕ ಅಪಾಯ" : "+14.2% MoM Risk"}
+                  change={isHi ? "+14.2% मासिक जोखिम" : "+14.2% MoM Risk"}
                   icon={FaSearch}
                   color="text-amber-400"
                   borderColor="border-amber-500"
                   dataSource="ActSection IT Sec 66D"
-                  coverage={isKn ? "ಬೆಂಗಳೂರು ಪೂರ್ವ ವಲಯ" : "Bengaluru East Range"}
+                  coverage={isHi ? "शहरी साइबर सेल रेंज" : "Urban Cyber Cell Range"}
                   lastSync="Hourly Telemetry"
-                  subText={isKn ? "AePS ಕ್ಲೋನ್ ವಂಚನೆಗಳು" : "AePS Clone Scams"}
+                  subText={isHi ? "AePS क्लोन धोखाधड़ी" : "AePS Clone Scams"}
                 />
                 <StatCard
-                  title={isKn ? "ಮಾದರಿ ವೈಪರೀತ್ಯ ಸೂಚ್ಯಂಕ" : "Pattern Anomaly Index"}
-                  value={isKn ? "ಹೆಚ್ಚು (0.78)" : "HIGH (0.78)"}
-                  change={isKn ? "3 ಸಕ್ರಿಯ ಎಚ್ಚರಿಕೆಗಳು" : "3 Active Alerts"}
+                  title={isHi ? "पैटर्न विसंगति सूचकांक" : "Pattern Anomaly Index"}
+                  value={isHi ? "उच्च (0.78)" : "HIGH (0.78)"}
+                  change={isHi ? "3 सक्रिय अलर्ट" : "3 Active Alerts"}
                   icon={FaExclamationTriangle}
                   color="text-rose-400"
                   borderColor="border-rose-500"
                   dataSource="QuickML Anomaly Matrix"
-                  coverage={isKn ? "ರಾಜ್ಯವ್ಯಾಪಿ ಎಚ್ಚರಿಕೆಯ ನಕ್ಷೆ" : "Statewide Alert Grid"}
+                  coverage={isHi ? "राज्यव्यापी अलर्ट ग्रिड" : "Statewide Alert Grid"}
                   lastSync="Live Stream"
-                  subText={isKn ? "ಸಂಬಂಧಿತ ಪ್ರಕರಣಗಳ ಗುಂಪು" : "Correlated Case Clusters"}
+                  subText={isHi ? "संबंधित मामला क्लस्टर" : "Correlated Case Clusters"}
                 />
               </div>
 
@@ -324,16 +324,21 @@ const InsightsForecast = () => {
                   <div className="space-y-3 flex-1">
                     <div>
                       <p className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-widest mb-1">
-                        {isKn ? "ಕಾರ್ಯನಿರ್ವಾಹಕ ಮುನ್ಸೂಚನೆ ಸಾರಾಂಶ · ಕ್ವಿಕ್‌ಎಮ್‌ಎಲ್ ವರದಿ" : "Executive Forecast Summary · QuickML Intelligence Report"}
+                        {isHi ? "कार्यकारी पूर्वानुमान सारांश · क्विकएमएल खुफिया रिपोर्ट" : "Executive Forecast Summary · QuickML Intelligence Report"}
                       </p>
                       <h3 className="text-base font-bold text-white tracking-tight">
-                        {isKn ? "ರಾಜ್ಯವ್ಯಾಪಿ ಅಪರಾಧ ಮುನ್ಸೂಚನೆ — ತ್ರೈಮಾಸಿಕ 2025" : "Statewide Crime Outlook — Q3 2025"}
+                        {isHi ? "राज्यव्यापी अपराध परिदृश्य — तिमाही 2026" : "Statewide Crime Outlook — Q3 2026"}
                       </h3>
                     </div>
-                    {isKn ? (
-                      <p className="text-sm text-slate-300 font-sans leading-relaxed">
-                        ಕ್ವಿಕ್‌ಎಮ್‌ಎಲ್ ಮುನ್ಸೂಚಕ ವಿಶ್ಲೇಷಣೆ ಎಂಜಿನ್ ಬಹು-ವರ್ಷಗಳ ಸಿಸಿಟಿಎನ್‌ಎಸ್ ಪ್ರಕರಣಗಳ ಡೇಟಾವನ್ನು ನಕ್ಷೆ ಮಾಡುತ್ತದೆ. ಮುಂಬರುವ ವಾರಾಂತ್ಯಗಳಲ್ಲಿ ನಗರ ಪೊಲೀಸ್ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಆಸ್ತಿ ಕಳ್ಳತನದ ಘಟನೆಗಳು <strong className="text-white">18.4%</strong> ಹೆಚ್ಚಾಗುವ ಮುನ್ಸೂಚನೆಯಿದೆ. ಬೆಂಗಳೂರು ಪೂರ್ವದಲ್ಲಿ ಸೈಬರ್ ವಂಚನೆ ಹೆಚ್ಚಳವು ಮಾಸಿಕ <strong className="text-white">+14.2%</strong> ರಷ್ಟಿದೆ. ಕೋರಮಂಗಲ (<strong className="text-white">86% ಕಳ್ಳತನದ ಸಂಭವನೀಯತೆ</strong>), ಮಂಗಳೂರು ಬಂದರು ವಲಯ (<strong className="text-white">ಮಾದಕದ್ರವ್ಯ 61%</strong>), ಮತ್ತು ಬೆಂಗಳೂರು ಪೂರ್ವ ಸೈಬರ್ ಕಾರಿಡಾರ್ (<strong className="text-white">74%</strong>) ಹೆಚ್ಚಿನ ಅಪಾಯಕಾರಿ ವಲಯಗಳಾಗಿವೆ.
-                      </p>
+                    {isHi ? (
+                      <>
+                        <p className="text-sm text-slate-300 font-sans leading-relaxed">
+                          क्विकएमएल पूर्वानुमान विश्लेषण इंजन बहु-वर्षीय सीसीटीएनएस केसमास्टर लॉग और भौगोलिक इकाई सीमाओं का विश्लेषण करता है। मौसमी भिन्नता और पुनरावृत्ति अपराध धाराओं के आधार पर, आगामी सप्ताहांतों में शहरी पुलिस परिक्षेत्रों में संपत्ति चोरी की घटनाओं में <strong className="text-white">18.4%</strong> की वृद्धि होने का अनुमान है। शहरी क्षेत्रों में साइबर धोखाधड़ी में तेजी से <strong className="text-white">+14.2%</strong> मासिक वृद्धि देखी जा रही है, जो मुख्य रूप से AePS क्लोनिंग अभियानों से प्रेरित है। सामरिक तैनाती अनुशंसाएं थाना प्रभारियों को प्रेषित कर दी गई हैं।
+                        </p>
+                        <p className="text-sm text-slate-300 font-sans leading-relaxed">
+                          उच्च विश्वास वाले क्षेत्रों में <strong className="text-white">संवेदनशील शहरी क्षेत्र (86% चोरी संभाव्यता)</strong>, <strong className="text-white">पारगमन कॉरिडोर (नारकोटिक्स, 61%)</strong>, और <strong className="text-white">साइबर कॉरिडोर (74%)</strong> शामिल हैं। सभी पूर्वानुमान 12-सप्ताह की आगे की विंडो में 88.4% विश्वास सूचकांक के साथ सक्रिय प्राथमिकी रिकॉर्ड से मॉडल-जनरेट किए गए हैं।
+                        </p>
+                      </>
                     ) : (
                       <>
                         <p className="text-sm text-slate-300 font-sans leading-relaxed">

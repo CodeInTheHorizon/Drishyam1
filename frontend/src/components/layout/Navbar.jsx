@@ -37,12 +37,12 @@ function Navbar({ onToggleMobileMenu }) {
         <div className="flex items-center gap-3 sm:gap-4 pl-2 sm:pl-3">
           <img
             src={kspLogo}
-            alt="Karnataka State Police Emblem"
+            alt="Madhya Pradesh Police Emblem"
             className="w-10 h-10 sm:w-12 sm:h-12 object-contain flex-shrink-0"
           />
           <div>
             <h1 className="text-sm sm:text-lg font-bold tracking-wider text-white uppercase leading-tight mb-0.5 sm:mb-1.5 font-sans">
-              Karnataka State Police
+              Madhya Pradesh Police
             </h1>
             <p className="text-[9px] sm:text-[11px] uppercase tracking-[0.14em] sm:tracking-[0.18em] text-blue-400 font-sans leading-normal">
               AI Crime Intelligence Platform

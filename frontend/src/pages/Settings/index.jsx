@@ -118,9 +118,9 @@ const Settings = () => {
         name: currentUser.name || "",
         username: currentUser.username || "",
         phone: currentUser.phone || "+91 98450 12345",
-        address: currentUser.address || "Koramangala Police Station Quarters, Bengaluru",
+        address: currentUser.address || "Jahangirabad Police Line Quarters, Bhopal",
         avatar: currentUser.avatar || PRESET_AVATARS[0].url,
-        unit: currentUser.unit || "State Crime Division",
+        unit: currentUser.unit || "Bhopal Central Cyber Cell",
         newPassword: "",
         confirmPassword: ""
       });
@@ -157,9 +157,9 @@ const Settings = () => {
     if (!currentUser) return;
 
     const currentPhone = currentUser.phone || "+91 98450 12345";
-    const currentAddress = currentUser.address || "Koramangala Police Station Quarters, Bengaluru";
+    const currentAddress = currentUser.address || "Jahangirabad Police Line Quarters, Bhopal";
     const currentAvatar = currentUser.avatar || PRESET_AVATARS[0].url;
-    const currentUnit = currentUser.unit || "State Crime Division";
+    const currentUnit = currentUser.unit || "Bhopal Central Cyber Cell";
 
     const isNameChanged = profileForm.name.trim() !== (currentUser.name || "").trim();
     const isUsernameChanged = profileForm.username.trim() !== (currentUser.username || "").trim();
@@ -385,17 +385,17 @@ const Settings = () => {
             <div className="space-y-3 text-[12px]">
               <div>
                 <span className="text-slate-400 text-[9px] block font-mono uppercase leading-none mb-1">STATION / UNIT</span>
-                <span className="font-semibold text-white">{currentUser?.unit || "KSP Intelligence HQ"}</span>
+                <span className="font-semibold text-white">{currentUser?.unit || "Madhya Pradesh Police Command HQ"}</span>
               </div>
               <div>
                 <span className="text-slate-400 text-[9px] block font-mono uppercase leading-none mb-1">KGID NUMBER</span>
                 <button
                   type="button"
-                  onClick={() => handleCopy(currentUser?.kgid || "KSP-ADMIN-01", "kgid")}
+                  onClick={() => handleCopy(currentUser?.kgid || "MPP-ADMIN-01", "kgid")}
                   className="font-semibold font-mono text-cyan-300 hover:text-cyan-200 flex items-center gap-1.5 transition-colors cursor-pointer"
                   title="Click to copy KGID"
                 >
-                  <span>{currentUser?.kgid || "KSP-ADMIN-01"}</span>
+                  <span>{currentUser?.kgid || "MPP-ADMIN-01"}</span>
                   {copiedKey === "kgid" ? <FaCheck className="text-emerald-400 text-[10px]" /> : <FaCopy className="text-[10px] opacity-60 hover:opacity-100" />}
                 </button>
               </div>
@@ -431,7 +431,7 @@ const Settings = () => {
                 </span>
               </div>
               <div className="text-[10px] text-slate-400 font-mono">
-                CCTNS Node #BLR-HQ-09
+                CCTNS Node #BPL-HQ-01
               </div>
             </div>
           </div>
@@ -528,7 +528,7 @@ const Settings = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 mt-5 px-2 sm:px-3">
                 <div className="space-y-2">
                   <label className="block text-[11px] font-semibold text-slate-300 tracking-normal" style={{ paddingLeft: "6px" }}>
-                    Officer Full Name <span className="text-blue-400">*</span>
+                    Officer Full Name <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -563,7 +563,7 @@ const Settings = () => {
                   </label>
                   <input
                     type="text"
-                    value="Bengaluru City Police"
+                    value="Madhya Pradesh Police (Cyber Cell)"
                     readOnly
                     className="w-full h-12 rounded-xl bg-slate-950/40 border border-slate-800/80 text-[13px] text-slate-400 outline-none cursor-not-allowed shadow-inner font-medium"
                     style={{ paddingLeft: "18px", paddingRight: "18px" }}
@@ -589,7 +589,7 @@ const Settings = () => {
                   </label>
                   <input
                     type="text"
-                    value="Bengaluru Urban"
+                    value="Bhopal"
                     readOnly
                     className="w-full h-12 rounded-xl bg-slate-950/40 border border-slate-800/80 text-[13px] text-slate-400 outline-none cursor-not-allowed shadow-inner font-medium"
                     style={{ paddingLeft: "18px", paddingRight: "18px" }}
@@ -615,7 +615,7 @@ const Settings = () => {
                   </label>
                   <input
                     type="email"
-                    value={currentUser?.email || "officer@ksp.gov.in"}
+                    value={currentUser?.email || "officer@mppolice.gov.in"}
                     readOnly
                     className="w-full h-12 rounded-xl bg-slate-950/40 border border-slate-800/80 text-[13px] text-slate-400 outline-none cursor-not-allowed shadow-inner font-medium"
                     style={{ paddingLeft: "18px", paddingRight: "18px" }}
@@ -624,10 +624,13 @@ const Settings = () => {
               </div>
             </div>
 
-            <div className="mt-8 pt-5 border-t border-slate-800/50 px-3 sm:px-4">
+            <div className="mt-8 pt-5 border-t border-slate-800/50 px-3 sm:px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <span className="text-[11px] text-slate-400">
+                <span className="text-rose-500 font-bold">*</span> Indicates mandatory fields
+              </span>
               <button
                 type="submit"
-                className="h-12 w-full rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer border-none outline-none shadow-lg shadow-blue-600/20 font-jakarta"
+                className="h-12 w-full sm:w-auto px-8 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-[0.99] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer border-none outline-none shadow-lg shadow-blue-600/20 font-jakarta"
               >
                 <FaSave /> Save Profile Changes
               </button>
@@ -662,7 +665,7 @@ const Settings = () => {
               <div className="space-y-5 mt-5 px-2 sm:px-3">
                 <div className="space-y-2">
                   <label className="block text-[11px] font-semibold text-slate-300 tracking-normal" style={{ paddingLeft: "6px" }}>
-                    Login Username
+                    Login Username <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                   </label>
                   <input
                     type="text"
@@ -774,7 +777,7 @@ const Settings = () => {
                 {/* PIN Input */}
                 <div className="space-y-2.5 mt-5 px-2 sm:px-3">
                   <label className="block text-[11px] font-semibold text-slate-300 tracking-normal" style={{ paddingLeft: "6px" }}>
-                    Enter New PIN (4-6 Digits)
+                    Enter New PIN (4-6 Digits) <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -942,7 +945,7 @@ const Settings = () => {
             <form onSubmit={handleOfficerPasswordReset} className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-end bg-slate-950/60 border border-slate-800/80 p-5 rounded-xl">
               <div className="space-y-1.5">
                 <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400" style={{ paddingLeft: "4px" }}>
-                  Select Officer Account
+                  Select Officer Account <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -963,7 +966,7 @@ const Settings = () => {
 
               <div className="space-y-1.5">
                 <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400" style={{ paddingLeft: "4px" }}>
-                  Set New Override Password
+                  Set New Override Password <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                 </label>
                 <input
                   type="text"

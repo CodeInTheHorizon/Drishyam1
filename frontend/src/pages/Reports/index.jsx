@@ -125,7 +125,7 @@ const Reports = () => {
   };
 
   const handleShare = () => {
-    alert("Report metadata successfully routed to KSP Command Directory.");
+    alert("Report metadata successfully routed to MP Police Command Directory.");
   };
 
   const handleSchedule = () => {

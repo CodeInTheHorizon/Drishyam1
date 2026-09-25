@@ -72,7 +72,7 @@ const Dashboard = () => {
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-800 border-t-blue-500" />
         </div>
         <div className="animate-pulse tracking-widest uppercase">
-          Querying Karnataka Police CCTNS Datastore...
+          Querying Madhya Pradesh Police CCTNS Datastore...
         </div>
         <div className="text-[10px] text-slate-600 mt-1.5 uppercase">
           Catalyst Functions: getKPIMetrics, getRecentCriticalCases, getAIIntelligenceAlerts
@@ -112,7 +112,7 @@ const Dashboard = () => {
             Executive Intelligence Dashboard
           </h1>
           <p className="text-xs text-slate-300 mt-1 font-sans">
-            Karnataka State Police &bull; CCTNS Analytical Command Briefing
+            Madhya Pradesh Police &bull; CCTNS Analytical Command Briefing
           </p>
         </div>
 

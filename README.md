@@ -1,4 +1,4 @@
-# ⚡ Karnataka State Police — Crime Intelligence & Predictive Command Platform
+# ⚡ Madhya Pradesh Police — Crime Intelligence & Predictive Command Platform
 ### *Powered Natively by the Zoho Catalyst Serverless Cloud Suite & QuickML AI Engine*
 
 [![Zoho Catalyst](https://img.shields.io/badge/Zoho_Catalyst-Cloud_Platform-red?style=for-the-badge&logo=zoho)](https://catalyst.zoho.com/)
@@ -14,7 +14,7 @@
 
 ## 📌 Executive Summary
 
-An enterprise-grade, real-time **Law Enforcement Intelligence & Predictive Command Platform** engineered for the **Karnataka State Police (KSP)**. The platform is **100% built on top of the Zoho Catalyst Cloud Ecosystem**, utilizing **Catalyst Data Store**, **Serverless Functions**, **Zoho QuickML AI (GLM-4.7 Flash)**, and **Catalyst Web Client Edge Hosting**.
+An enterprise-grade, real-time **Law Enforcement Intelligence & Predictive Command Platform** engineered for the **Madhya Pradesh Police (MPP)**. The platform is **100% built on top of the Zoho Catalyst Cloud Ecosystem**, utilizing **Catalyst Data Store**, **Serverless Functions**, **Zoho QuickML AI (GLM-4.7 Flash)**, and **Catalyst Web Client Edge Hosting**.
 
 It seamlessly aggregates CCTNS (Crime and Criminal Tracking Network & Systems) records across Karnataka districts (Bengaluru, Mysuru, Hubballi-Dharwad, Mangaluru, Belagavi, etc.), providing commanding officers with real-time spatial GIS analytics, diurnal temporal matrices, criminal network link graphs, predictive crime forecasting, and an intelligent natural language AI copilot.
 
@@ -374,4 +374,4 @@ ksp-crime-intelligence-platform/
 
 ## 📄 License & Attribution
 
-This project is licensed under the **MIT License**. Developed for the **Karnataka State Police Crime Intelligence Initiative** powered by **Zoho Catalyst**.
+This project is licensed under the **MIT License**. Developed for the **Madhya Pradesh Police Crime Intelligence Initiative** powered by **Zoho Catalyst**.

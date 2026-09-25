@@ -32,7 +32,7 @@ const ReportPreview = ({ reportData, onExport, onShare, onSchedule }) => {
         {/* Header Cover */}
         <div className="text-center space-y-2 mt-2">
           <span className="text-slate-500 text-[10px] tracking-widest uppercase font-bold">
-            KARNATAKA STATE POLICE
+            MADHYA PRADESH POLICE
           </span>
           <h1 className="text-lg sm:text-xl font-bold text-white tracking-widest uppercase mt-2">
             {title}

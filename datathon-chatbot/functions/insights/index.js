@@ -16,7 +16,12 @@
  * ============================================================================
  */
 
-const catalyst = require("zcatalyst-sdk-node");
+let catalyst = null;
+try {
+    catalyst = require("zcatalyst-sdk-node");
+} catch (err) {
+    catalyst = null;
+}
 
 const CrimeRepository = require("../chat/datastore");
 const { generateAnalytics } = require("../chat/analytics");
@@ -30,7 +35,7 @@ module.exports = async (req, res) => {
 
     try {
 
-        const app = catalyst.initialize(req);
+        const app = catalyst ? catalyst.initialize(req) : null;
 
         const repository =
             new CrimeRepository(req);

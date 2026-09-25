@@ -52,7 +52,7 @@ const officersDatabase = {
     ROWID: "KSP-6120",
     kpis: { totalCases: 3, activeCases: 0, closedCases: 3, chargesheetRate: 100, avgInvestigationTime: 20, detectionRate: 95 },
     workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "Cyber Crime & Assault Tracking", workloadStatus: "Optimal", rating: "5.0 / 5.0", aiRecommendation: "Senior leadership profile.", lastUpdated: "Just now" }
+    summary: { strongArea: "CDR / IPDR & Bank Logs Tracking", workloadStatus: "Optimal", rating: "5.0 / 5.0", aiRecommendation: "Senior leadership profile.", lastUpdated: "Just now" }
   },
   "KSP-4933": {
     badgeNumber: "KSP-4933",
@@ -222,9 +222,9 @@ export const officerService = {
       categoryDistribution: liveStats.categoryDistribution && liveStats.categoryDistribution.length > 0 
         ? liveStats.categoryDistribution 
         : (base.categoryDistribution || [
-            { name: "Property Offences", value: 12, color: "#3b82f6" },
-            { name: "Cyber Crimes", value: 8, color: "#a855f7" },
-            { name: "Financial Fraud", value: 4, color: "#f59e0b" }
+            { name: "CDR / IPDR", value: 12, color: "#06b6d4" },
+            { name: "Bank / UPI Logs", value: 8, color: "#10b981" },
+            { name: "Email Headers", value: 4, color: "#f59e0b" }
           ]),
       monthlyTrend: liveStats.monthlyTrend && liveStats.monthlyTrend.length > 0
         ? liveStats.monthlyTrend
@@ -286,9 +286,13 @@ export const officerService = {
           createdOfficer = json.data;
           console.log("[officerService] Officer registered online in Zoho Catalyst Data Store! ROWID:", json.data.ROWID);
         }
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || `Server validation failed with status ${res.status}`);
       }
     } catch (e) {
-      console.warn("[officerService] Backend API POST exception:", e.message);
+      console.error("[officerService] Backend API POST exception:", e.message);
+      throw e;
     }
 
     const newProfile = {
@@ -311,9 +315,9 @@ export const officerService = {
         detectionRate: 90
       },
       categoryDistribution: [
-        { name: "Property Offences", value: 12, color: "#3b82f6" },
-        { name: "Cyber Crimes", value: 8, color: "#a855f7" },
-        { name: "Financial Fraud", value: 4, color: "#f59e0b" }
+        { name: "CDR / IPDR", value: 12, color: "#06b6d4" },
+        { name: "Bank / UPI Logs", value: 8, color: "#10b981" },
+        { name: "Email Headers", value: 4, color: "#f59e0b" }
       ],
       monthlyTrend: [
         { month: "Jan", assigned: 4, resolved: 3 },
@@ -374,7 +378,7 @@ export const officerService = {
           name: prof.name,
           rank: prof.rank,
           unit: prof.unit,
-          station: prof.station || "Karnataka Police HQ",
+          station: prof.station || "Madhya Pradesh Police HQ",
           yearsOfService: prof.yearsOfService || 10,
           avatar: prof.avatar,
           casesSolvedMonth: Math.max(12, Math.round(closed / 5) + 4),

@@ -11,16 +11,38 @@ import {
   FaExclamationCircle
 } from "react-icons/fa";
 
+const MP_DISTRICTS = [
+  "Bhopal",
+  "Indore",
+  "Jabalpur",
+  "Gwalior",
+  "Ujjain",
+  "Sagar",
+  "Rewa",
+  "Satna",
+  "Chhindwara",
+  "Ratlam"
+];
+
+const MP_STATIONS = [
+  "Bhopal Central Cyber Cell",
+  "Indore Cyber Police Station",
+  "Jabalpur Cyber Unit",
+  "Gwalior Cyber Police Station",
+  "Ujjain Cyber Unit",
+  "State Cyber Crime Police Station Bhopal"
+];
+
 const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
   const [activeTab, setActiveTab] = useState("dossier");
   const [formData, setFormData] = useState({
     name: "",
-    rank: "PSI",
-    badgeNumber: "",
-    unit: "Koramangala Police Station",
-    station: "Bengaluru City Range",
+    rank: "Police Inspector",
+    badgeNumber: "MPP-2026-901",
+    unit: "Bhopal Central Cyber Cell",
+    station: "Bhopal",
     yearsOfService: "5",
-    specialArea: "Cyber Crime & Digital Forensics",
+    specialArea: "Cyber Forensics & Threat Intelligence",
     username: "",
     password: "Officer@123"
   });
@@ -37,25 +59,51 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
       // Auto-generate suggested username if name changes and username not manually touched
       if (name === "name" && value.trim()) {
         const cleanName = value.trim().toLowerCase().replace(/\s+/g, "");
-        updated.username = `ksp.${cleanName}`;
+        updated.username = `mpp.${cleanName}`;
       }
       
       // Auto-generate suggested badge if name changes
       if (name === "name" && value.trim()) {
         const rand = Math.floor(1000 + Math.random() * 9000);
-        updated.badgeNumber = `KSP-2026-IN${rand}`;
+        updated.badgeNumber = `MPP-2026-${rand}`;
       }
 
       return updated;
     });
+    if (error) setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    // --- Client-side Validations Matching Employee Schema ---
     if (!formData.name.trim()) {
       setError("Please enter the officer's full name.");
+      setActiveTab("dossier");
+      return;
+    }
+
+    if (!formData.rank?.trim()) {
+      setError("Please select the officer's rank.");
+      setActiveTab("dossier");
+      return;
+    }
+
+    if (!formData.badgeNumber?.trim()) {
+      setError("Please enter the officer's badge/KGID number.");
+      setActiveTab("dossier");
+      return;
+    }
+
+    if (!formData.unit?.trim()) {
+      setError("Please specify the assigned division or cyber unit.");
+      setActiveTab("dossier");
+      return;
+    }
+
+    if (!formData.station?.trim()) {
+      setError("Please specify the district jurisdiction.");
       setActiveTab("dossier");
       return;
     }
@@ -73,7 +121,7 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
     }
 
     try {
-      onAdd(formData);
+      await onAdd(formData);
       onClose();
     } catch (err) {
       setError(err.message || "Failed to register officer.");
@@ -100,10 +148,10 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold font-space text-white tracking-wide uppercase leading-tight">
-                Register New Police Officer
+                Register New Police Officer • MP Police
               </h2>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                Admin Console • Add Officer Dossier & Generate Login Credentials
+                Admin Console • Add Officer Dossier & Generate CCTNS Access Account
               </p>
             </div>
           </div>
@@ -152,8 +200,8 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
           <div className="max-h-[60vh] overflow-y-auto space-y-6" style={{ padding: "28px 36px" }}>
             
             {error && (
-              <div className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2.5 font-medium animate-fade-in">
-                <FaExclamationCircle className="text-rose-400 text-sm flex-shrink-0" />
+              <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs flex items-center gap-2.5 font-medium animate-fade-in shadow-lg">
+                <FaExclamationCircle className="text-rose-400 text-base flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -171,14 +219,14 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                   
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Officer Full Name & Title <span className="text-blue-400">*</span>
+                      Officer Full Name & Title <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      placeholder="e.g. Vikram Seth"
+                      placeholder="e.g. Inspector Rajesh Sharma"
                       required
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner placeholder-slate-500"
                     />
@@ -186,33 +234,35 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Officer Rank <span className="text-blue-400">*</span>
+                      Officer Rank <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
                     <select
                       name="rank"
                       value={formData.rank}
                       onChange={handleChange}
+                      required
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner cursor-pointer"
                     >
+                      <option value="Police Inspector">Police Inspector</option>
                       <option value="PSI">PSI (Police Sub-Inspector)</option>
                       <option value="CPI">CPI (Circle Police Inspector)</option>
                       <option value="ASI">ASI (Assistant Sub-Inspector)</option>
-                      <option value="Police Inspector">Police Inspector</option>
-                      <option value="Assistant Commissioner">Assistant Commissioner (ACP)</option>
-                      <option value="Deputy Superintendent">Deputy Superintendent (DySP)</option>
+                      <option value="DSP">DSP (Deputy Superintendent)</option>
+                      <option value="ACP">ACP (Assistant Commissioner)</option>
                     </select>
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      KGID Badge Number
+                      KGID / Badge Number <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
                     <input
                       type="text"
                       name="badgeNumber"
                       value={formData.badgeNumber}
                       onChange={handleChange}
-                      placeholder="e.g. KSP-2026-IN9940"
+                      placeholder="e.g. MPP-2026-901"
+                      required
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
                     />
                   </div>
@@ -233,14 +283,15 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Assigned Division / Unit
+                      Assigned Division / Unit <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
                     <input
                       type="text"
                       name="unit"
                       value={formData.unit}
                       onChange={handleChange}
-                      placeholder="e.g. Koramangala Police Station"
+                      placeholder="e.g. Bhopal Central Cyber Cell"
+                      required
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                     />
                   </div>
@@ -254,23 +305,26 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                       name="specialArea"
                       value={formData.specialArea}
                       onChange={handleChange}
-                      placeholder="e.g. Cyber Crime & Digital Forensics"
+                      placeholder="e.g. Cyber Forensics & Threat Intelligence"
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
                     />
                   </div>
 
                   <div className="space-y-1.5 md:col-span-2">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Station Range / Jurisdiction Headquarters
+                      District Jurisdiction Headquarters <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="station"
                       value={formData.station}
                       onChange={handleChange}
-                      placeholder="e.g. Bengaluru City Range"
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
-                    />
+                      required
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner cursor-pointer"
+                    >
+                      {MP_DISTRICTS.map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
                   </div>
 
                 </div>
@@ -290,14 +344,14 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                   
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Officer Login Username <span className="text-blue-400">*</span>
+                      Officer Login Username <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
                     <input
                       type="text"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
-                      placeholder="e.g. ksp.vikram"
+                      placeholder="e.g. mpp.rajesh"
                       required
                       className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono font-semibold shadow-inner placeholder-slate-500"
                     />
@@ -308,7 +362,7 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Initial Passphrase <span className="text-blue-400">*</span>
+                      Initial Passphrase <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
                     </label>
                     <input
                       type="text"
@@ -355,7 +409,7 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
             style={{ paddingLeft: "32px", paddingRight: "28px" }}
           >
             <div className="text-xs text-slate-400 font-sans" style={{ paddingLeft: "8px" }}>
-              <span className="text-blue-400 font-bold">*</span> Indicates mandatory fields required for personnel registration
+              <span className="text-rose-500 font-bold">*</span> Indicates mandatory fields required for personnel registration
             </div>
             
             <div className="flex items-center gap-3 self-end sm:self-auto" style={{ paddingRight: "4px" }}>

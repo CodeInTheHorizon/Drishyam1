@@ -71,7 +71,7 @@ const ContextPanel = ({ recentQueries }) => {
         <div className="space-y-2 font-mono text-[9px] leading-normal">
           <div className="flex justify-between bg-slate-950/40 p-2 rounded border border-slate-900">
             <span className="text-slate-500 uppercase">Target District:</span>
-            <span className="text-slate-300 font-bold">ALL KARNATAKA</span>
+            <span className="text-slate-300 font-bold">ALL MADHYA PRADESH</span>
           </div>
           <div className="flex justify-between bg-slate-950/40 p-2 rounded border border-slate-900">
             <span className="text-slate-500 uppercase">Active Filter:</span>

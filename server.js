@@ -24,10 +24,13 @@ try {
     console.warn("Failed loading .env file:", e.message);
 }
 
-// Chatbot QuickML environment variables
-process.env.QUICKML_ENDPOINT = process.env.QUICKML_ENDPOINT || "https://api.catalyst.zoho.in/quickml/v1/project/56116000000017001/glm/chat";
-process.env.QUICKML_ACCESS_TOKEN = process.env.QUICKML_ACCESS_TOKEN || "1000.0e26964d6e4af7a82438935cde1f3d98.77d250c9050d46c136223b403c654026";
-process.env.CATALYST_ORG_ID = process.env.CATALYST_ORG_ID || "60077759815";
+// Chatbot QuickML environment variables (configured via .env or hosting environment)
+process.env.QUICKML_ENDPOINT = process.env.QUICKML_ENDPOINT || "https://console.catalyst.zoho.in/quickml/v1/project/56116000000209001/genai/endpoints/glm-flash-47/generate";
+process.env.QUICKML_ENDPOINT_KEY = process.env.QUICKML_ENDPOINT_KEY || "a3a78594529db79169be374765bc9c943e9e29c4de9e45efc4cc595e801bcdd06606939f2165f1eaa2d70b4d76864630";
+process.env.CATALYST_ORG_ID = process.env.CATALYST_ORG_ID || "60077759371";
+process.env.CATALYST_PROJECT_ID = process.env.CATALYST_PROJECT_ID || "56116000000209001";
+process.env.CATALYST_ENVIRONMENT = process.env.CATALYST_ENVIRONMENT || "Development";
+process.env.QUICKML_ACCESS_TOKEN = process.env.QUICKML_ACCESS_TOKEN || "";
 
 // Load functions & repository
 const chatHandler = require("./datathon-chatbot/functions/chat/index.js");
@@ -197,6 +200,29 @@ const server = http.createServer(async (req, res) => {
                 const newOfficer = await repo.createOfficerRecord(officerData);
                 res.writeHead(201, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: true, data: newOfficer }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/audit-trail" && req.method === "GET") {
+        try {
+            const trails = await repo.getBiometricAuditTrails();
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, data: trails }));
+        } catch (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+    } else if (pathname === "/api/audit-trail" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const auditData = JSON.parse(body);
+                const recorded = await repo.createAuditTrailRecord(auditData);
+                res.writeHead(201, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: recorded }));
             } catch (err) {
                 res.writeHead(400, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: false, error: err.message }));

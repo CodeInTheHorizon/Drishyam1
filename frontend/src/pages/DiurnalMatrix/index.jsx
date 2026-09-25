@@ -83,7 +83,7 @@ export default function DiurnalMatrix() {
           </h1>
 
           <p className="text-xs text-slate-300 mt-1 max-w-2xl font-sans">
-            Temporal rhythm analysis & high-velocity surge detection across Karnataka police stations.
+            Temporal rhythm analysis & high-velocity surge detection across Madhya Pradesh police stations.
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export default function DiurnalMatrix() {
             <RiShieldFlashLine className="text-cyan-400 text-base" />
           </div>
           <p className="text-2xl font-extrabold text-cyan-300 font-mono truncate">
-            {matrixData.topPeaks[0]?.primaryThreat || "Property Theft"}
+            {matrixData.topPeaks[0]?.primaryThreat || "CDR / IPDR Anomaly"}
           </p>
           <span className="text-[9px] text-slate-400 font-sans mt-0.5">Night Watch Shift 3</span>
         </div>
