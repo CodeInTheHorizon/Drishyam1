@@ -19,7 +19,7 @@ import PatrolDeploymentSchedule from "../../components/diurnal/PatrolDeploymentS
 import HourlyTrendBar from "../../components/diurnal/HourlyTrendBar";
 
 export default function DiurnalMatrix() {
-  const [selectedDistrict, setSelectedDistrict] = useState("Bengaluru City");
+  const [selectedDistrict, setSelectedDistrict] = useState("Bhopal");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [selectedSeverity, setSelectedSeverity] = useState("ALL");
   const [selectedCell, setSelectedCell] = useState(null);
@@ -60,7 +60,7 @@ export default function DiurnalMatrix() {
   }, [selectedDistrict, selectedCategory, selectedSeverity, dbVersion]);
 
   const handleResetFilters = () => {
-    setSelectedDistrict("Bengaluru City");
+    setSelectedDistrict("Bhopal");
     setSelectedCategory("ALL");
     setSelectedSeverity("ALL");
     setSelectedCell(null);

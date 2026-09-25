@@ -16,6 +16,8 @@ const Officers = () => {
   const [profile, setProfile] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const [filters, setFilters] = useState({
     search: "",
     unit: "",
@@ -47,35 +49,26 @@ const Officers = () => {
   // Load officer options on mount from online database & restrict based on role
   useEffect(() => {
     const init = async () => {
-      await officerService.fetchRemoteOfficers();
-      const list = reloadOfficerList();
-      if (list.length > 0) {
-        if (!isAdmin && currentUser) {
-          const match = list.find(
-            (o) =>
-              o.badgeNumber === currentUser.badge ||
-              o.badgeNumber === currentUser.kgid ||
-              o.name.toLowerCase().includes(currentUser.name.toLowerCase())
-          );
-          if (match) {
-            setSelectedBadge(match.badgeNumber);
-          } else {
-            const newProf = await officerService.addOfficer({
-              name: currentUser.name,
-              rank: currentUser.rank || "Police Inspector",
-              badgeNumber: currentUser.badge || currentUser.kgid,
-              unit: currentUser.unit || "State Range",
-              station: "Madhya Pradesh Police Command",
-              yearsOfService: "5",
-              specialArea: "Field Operations & Cyber Intelligence",
-              avatar: currentUser.avatar
-            });
-            reloadOfficerList();
-            setSelectedBadge(newProf.badgeNumber);
+      try {
+        await officerService.fetchRemoteOfficers();
+        const list = reloadOfficerList();
+        if (list.length > 0) {
+          if (!isAdmin && currentUser) {
+            const match = list.find(
+              (o) =>
+                o.badgeNumber === currentUser.badge ||
+                o.badgeNumber === currentUser.kgid ||
+                o.name.toLowerCase().includes(currentUser.name.toLowerCase())
+            );
+            if (match) {
+              setSelectedBadge(match.badgeNumber);
+            }
+          } else if (!selectedBadge) {
+            setSelectedBadge(list[0].badgeNumber);
           }
-        } else if (!selectedBadge) {
-          setSelectedBadge(list[0].badgeNumber);
         }
+      } finally {
+        setIsLoading(false);
       }
     };
     init();
@@ -86,6 +79,8 @@ const Officers = () => {
     if (selectedBadge) {
       const data = officerService.getOfficerProfile(selectedBadge);
       setProfile(data);
+    } else {
+      setProfile(null);
     }
   }, [selectedBadge]);
 
@@ -121,7 +116,7 @@ const Officers = () => {
       }
 
       if (filters.minClearance) {
-        const rate = prof.kpis.chargesheetRate || 0;
+        const rate = prof.kpis?.chargesheetRate || 0;
         if (filters.minClearance === "below80") {
           if (rate >= 80) return false;
         } else {
@@ -146,6 +141,67 @@ const Officers = () => {
       }
     }
   }, [filteredOfficerList, selectedBadge, isAdmin]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] font-mono text-xs text-slate-500">
+        <div className="relative mb-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-800 border-t-blue-500" />
+        </div>
+        <div className="animate-pulse tracking-widest uppercase">
+          Loading MP Police Officer Dossier records...
+        </div>
+      </div>
+    );
+  }
+
+  if (officerList.length === 0) {
+    return (
+      <div className="flex flex-col gap-7 sm:gap-8 font-sans">
+        <PageHeader
+          title="Officer Performance Center"
+          subtitle="Operational evaluation of investigation case logs, task schedules, and resolution metrics"
+          action={
+            isAdmin ? (
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="inline-flex items-center justify-center gap-3.5 rounded-lg bg-blue-600 hover:bg-blue-500 border border-blue-400/60 text-sm font-mono font-bold uppercase tracking-wider text-white transition-all cursor-pointer shadow-lg hover:shadow-blue-500/30 active:scale-[0.98] flex-shrink-0 whitespace-nowrap"
+                style={{ padding: "14px 36px", borderRadius: "10px" }}
+              >
+                <FaPlus className="text-base text-white" />
+                <span>Add New Officer</span>
+              </button>
+            ) : null
+          }
+        />
+
+        <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 border border-slate-800/80 bg-slate-900/40 rounded-xl text-center backdrop-blur-md">
+          <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-4 text-blue-400 text-2xl">
+            <FaPlus />
+          </div>
+          <h3 className="text-lg font-bold text-white font-mono uppercase tracking-wider mb-2">No Officers Registered Yet</h3>
+          <p className="text-sm text-slate-400 max-w-md mb-6 font-sans">
+            The officer database is completely clear. You can register new law enforcement officers manually using the button below.
+          </p>
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-blue-500/25 cursor-pointer"
+          >
+            <FaPlus />
+            <span>Register First Officer</span>
+          </button>
+        </div>
+
+        {isAddModalOpen && (
+          <AddOfficerModal
+            isOpen={isAddModalOpen}
+            onClose={() => setIsAddModalOpen(false)}
+            onAdd={handleAddOfficer}
+          />
+        )}
+      </div>
+    );
+  }
 
   if (!profile) {
     return (

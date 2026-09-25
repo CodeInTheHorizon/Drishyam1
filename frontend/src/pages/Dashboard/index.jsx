@@ -5,7 +5,7 @@ import TrendChart from "../../components/dashboard/TrendChart";
 import CrimeCategoryChart from "../../components/dashboard/CrimeCategoryChart";
 import RecentCriticalCases from "../../components/dashboard/RecentCriticalCases";
 import QuickActionsPanel from "../../components/dashboard/QuickActionsPanel";
-import KarnatakaOverviewPanel from "../../components/dashboard/KarnatakaOverviewPanel";
+import MadhyaPradeshOverviewPanel from "../../components/dashboard/MadhyaPradeshOverviewPanel";
 import AIInsightsBanner from "../../components/dashboard/AIInsightsBanner";
 import { fetchDashboardData } from "../../services/dashboardService";
 import { recordService } from "../../services/recordService";
@@ -13,22 +13,54 @@ import { FaSyncAlt, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 
 const DISTRICTS = [
   "All Districts (Statewide)",
-  "Bengaluru City",
-  "Mysuru District",
-  "Mangaluru City",
-  "Hubli-Dharwad",
-  "Belagavi District",
-  "Kalaburagi District",
-  "Shivamogga",
-  "Udupi District",
-  "Davanagere",
-  "Tumakuru",
-  "Chikkamagaluru",
-  "Bidar",
-  "Mandya",
-  "Dakshina Kannada",
-  "Hassan",
-  "Uttara Kannada"
+  "Bhopal",
+  "Indore",
+  "Jabalpur",
+  "Gwalior",
+  "Ujjain",
+  "Sagar",
+  "Rewa",
+  "Satna",
+  "Chhindwara",
+  "Ratlam",
+  "Dewas",
+  "Dhar",
+  "Datia",
+  "Guna",
+  "Harda",
+  "Hoshangabad",
+  "Katni",
+  "Mandla",
+  "Mandsaur",
+  "Morena",
+  "Narsinghpur",
+  "Neemuch",
+  "Panna",
+  "Raisen",
+  "Rajgarh",
+  "Sehore",
+  "Seoni",
+  "Shahdol",
+  "Shajapur",
+  "Sheopur",
+  "Shivpuri",
+  "Sidhi",
+  "Tikamgarh",
+  "Umaria",
+  "Vidisha",
+  "Anuppur",
+  "Ashoknagar",
+  "Balaghat",
+  "Barwani",
+  "Betul",
+  "Bhind",
+  "Burhanpur",
+  "Chhatarpur",
+  "Damoh",
+  "Dindori",
+  "Jhabua",
+  "East Nimar",
+  "West Nimar"
 ];
 
 const Dashboard = () => {
@@ -195,7 +227,7 @@ const Dashboard = () => {
 
         {/* RIGHT: Intelligence & GIS spatial sidebar */}
         <div className="flex flex-col gap-8 xl:sticky xl:top-10 xl:self-start animate-fade-in-up" style={{ animationDelay: '80ms' }}>
-          <KarnatakaOverviewPanel />
+          <MadhyaPradeshOverviewPanel />
           <AIInsightsBanner />
         </div>
       </div>

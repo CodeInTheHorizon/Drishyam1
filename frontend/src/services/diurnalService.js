@@ -105,8 +105,14 @@ export const diurnalService = {
       records = records.filter(r => {
         const dRec = (r.district || "").toLowerCase().trim();
         if (dRec === dReq) return true;
-        if (dReq.includes("bengaluru") || dReq.includes("bangalore")) {
-          return dRec.includes("bengaluru") || dRec.includes("bangalore");
+        if (dReq.includes("hoshangabad") || dReq.includes("narmadapuram")) {
+          return dRec.includes("hoshangabad") || dRec.includes("narmadapuram");
+        }
+        if (dReq.includes("khandwa") || dReq.includes("east nimar")) {
+          return dRec.includes("khandwa") || dRec.includes("east nimar");
+        }
+        if (dReq.includes("khargone") || dReq.includes("west nimar")) {
+          return dRec.includes("khargone") || dRec.includes("west nimar");
         }
         return dRec.includes(dReq) || dReq.includes(dRec);
       });
@@ -209,7 +215,7 @@ export const diurnalService = {
 
     // Group records by district
     rawRecords.forEach((r) => {
-      const dist = r.district || "Bengaluru City";
+      const dist = r.district || "Bhopal";
       if (!districtGroups[dist]) {
         districtGroups[dist] = {
           name: dist,

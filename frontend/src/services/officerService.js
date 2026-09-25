@@ -11,94 +11,9 @@ const OFFICER_PHOTOS = [
   "https://i.pinimg.com/736x/80/7b/ec/807bec8232c15e4db104f32fa1887835.jpg"
 ];
 
-const officersDatabase = {
-  "KSP-8821": {
-    badgeNumber: "KSP-8821",
-    name: "Ramesh Gowda",
-    rank: "PSI",
-    unit: "Koramangala Police Station",
-    station: "Bengaluru City",
-    yearsOfService: 6,
-    status: "On Duty",
-    avatar: OFFICER_PHOTOS[0],
-    ROWID: "KSP-8821",
-    kpis: { totalCases: 5, activeCases: 2, closedCases: 3, chargesheetRate: 80, avgInvestigationTime: 28, detectionRate: 85 },
-    workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "Property Crimes & Burglary Detection", workloadStatus: "Optimal", rating: "4.8 / 5.0", aiRecommendation: "Highly effective at field operations.", lastUpdated: "Just now" }
-  },
-  "KSP-7455": {
-    badgeNumber: "KSP-7455",
-    name: "PSI Manjunath",
-    rank: "PSI",
-    unit: "Vidyaranyapuram Police Station",
-    station: "Mysuru City",
-    yearsOfService: 4,
-    status: "On Duty",
-    avatar: OFFICER_PHOTOS[1],
-    ROWID: "KSP-7455",
-    kpis: { totalCases: 4, activeCases: 1, closedCases: 3, chargesheetRate: 85, avgInvestigationTime: 30, detectionRate: 90 },
-    workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "Cyber Fraud & Online Cheating Tracking", workloadStatus: "Optimal", rating: "4.9 / 5.0", aiRecommendation: "Strong computer forensic expertise.", lastUpdated: "Just now" }
-  },
-  "KSP-6120": {
-    badgeNumber: "KSP-6120",
-    name: "Inspector Patil",
-    rank: "PI",
-    unit: "Kadri Police Station",
-    station: "Mangaluru City",
-    yearsOfService: 12,
-    status: "On Duty",
-    avatar: OFFICER_PHOTOS[2],
-    ROWID: "KSP-6120",
-    kpis: { totalCases: 3, activeCases: 0, closedCases: 3, chargesheetRate: 100, avgInvestigationTime: 20, detectionRate: 95 },
-    workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "CDR / IPDR & Bank Logs Tracking", workloadStatus: "Optimal", rating: "5.0 / 5.0", aiRecommendation: "Senior leadership profile.", lastUpdated: "Just now" }
-  },
-  "KSP-4933": {
-    badgeNumber: "KSP-4933",
-    name: "PSI Anjali",
-    rank: "PSI",
-    unit: "Camp Police Station",
-    station: "Belagavi District",
-    yearsOfService: 5,
-    status: "On Duty",
-    avatar: OFFICER_PHOTOS[3],
-    ROWID: "KSP-4933",
-    kpis: { totalCases: 2, activeCases: 1, closedCases: 1, chargesheetRate: 75, avgInvestigationTime: 35, detectionRate: 80 },
-    workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "SLL & Community Dispute Settlements", workloadStatus: "Optimal", rating: "4.7 / 5.0", aiRecommendation: "Excellent communal counseling records.", lastUpdated: "Just now" }
-  },
-  "KSP-3211": {
-    badgeNumber: "KSP-3211",
-    name: "PSI Sandeep",
-    rank: "PSI",
-    unit: "Town Police Station",
-    station: "Shivamogga",
-    yearsOfService: 3,
-    status: "On Duty",
-    avatar: OFFICER_PHOTOS[4],
-    ROWID: "KSP-3211",
-    kpis: { totalCases: 1, activeCases: 1, closedCases: 0, chargesheetRate: 60, avgInvestigationTime: 40, detectionRate: 70 },
-    workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "Law and Order Maintenance & Mob Control", workloadStatus: "Underloaded", rating: "4.5 / 5.0", aiRecommendation: "Available for case intake.", lastUpdated: "Just now" }
-  },
-  "KSP-5022": {
-    badgeNumber: "KSP-5022",
-    name: "ASI Siddaramaiah",
-    rank: "ASI",
-    unit: "City Police Station",
-    station: "Tumakuru",
-    yearsOfService: 15,
-    status: "On Duty",
-    avatar: OFFICER_PHOTOS[5],
-    ROWID: "KSP-5022",
-    kpis: { totalCases: 0, activeCases: 0, closedCases: 0, chargesheetRate: 85, avgInvestigationTime: 30, detectionRate: 90 },
-    workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-    summary: { strongArea: "CCTNS Digital Record Maintenance & Verification", workloadStatus: "Optimal", rating: "4.9 / 5.0", aiRecommendation: "Senior administrator.", lastUpdated: "Just now" }
-  }
-};
+const officersDatabase = {};
 
-const OFFICERS_STORAGE_KEY = "ksp_custom_officers_v5_pinterest_photos";
+const OFFICERS_STORAGE_KEY = "mpp_custom_officers_v7";
 
 const loadCustomOfficers = () => {
   try {
@@ -121,7 +36,7 @@ import { recordService } from "./recordService";
 
 const getAuthUserByBadgeOrName = (badgeNumber, name) => {
   try {
-    const raw = localStorage.getItem("ksp_auth_users_v2");
+    const raw = localStorage.getItem("mpp_auth_users_v7") || localStorage.getItem("ksp_auth_users_v6_pinterest_avatars");
     if (!raw) return null;
     const users = JSON.parse(raw);
     return users.find(
@@ -142,38 +57,37 @@ export const officerService = {
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data)) {
-          const customMap = loadCustomOfficers();
+          const customMap = {};
           json.data.forEach((emp, idx) => {
-            const badge = emp.badgeNumber || `KSP-${emp.ROWID}`;
-            if (!customMap[badge]) {
-              customMap[badge] = {
-                badgeNumber: badge,
-                name: emp.name,
-                rank: emp.rank || "Police Inspector",
-                unit: emp.unit || "General Unit",
-                station: emp.station || "Bengaluru Range",
-                yearsOfService: emp.yearsOfService || 5,
-                status: emp.status || "On Duty",
-                avatar: OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length],
-                ROWID: emp.ROWID,
-                kpis: {
-                  totalCases: 0,
-                  activeCases: 0,
-                  closedCases: 0,
-                  chargesheetRate: 85,
-                  avgInvestigationTime: 30,
-                  detectionRate: 90
-                },
-                workload: { highPriority: [], pending: [], hearings: [], recent: [] },
-                summary: {
-                  strongArea: "Field Investigation & Patrol Tracking",
-                  workloadStatus: "Optimal",
-                  rating: "5.0 / 5.0",
-                  aiRecommendation: "Active on duty.",
-                  lastUpdated: "Just now"
-                }
-              };
-            }
+            const badge = emp.badgeNumber || `MPP-${emp.ROWID || emp.EmployeeID}`;
+            customMap[badge] = {
+              badgeNumber: badge,
+              name: emp.name,
+              rank: emp.rank || "Police Inspector",
+              unit: emp.unit || "General Unit",
+              station: emp.station || "Bhopal Range",
+              yearsOfService: emp.yearsOfService || 5,
+              status: emp.status || "On Duty",
+              avatar: emp.avatar || OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length],
+              ROWID: emp.ROWID || badge,
+              EmployeeID: emp.EmployeeID || badge,
+              kpis: {
+                totalCases: 0,
+                activeCases: 0,
+                closedCases: 0,
+                chargesheetRate: 85,
+                avgInvestigationTime: 30,
+                detectionRate: 90
+              },
+              workload: { highPriority: [], pending: [], hearings: [], recent: [] },
+              summary: {
+                strongArea: "Jurisdictional Crime Investigation & Case Management",
+                workloadStatus: "Optimal",
+                rating: "5.0 / 5.0",
+                aiRecommendation: "Active on duty.",
+                lastUpdated: "Just now"
+              }
+            };
           });
           saveCustomOfficers(customMap);
           return customMap;
@@ -260,14 +174,14 @@ export const officerService = {
 
   addOfficer: async (officerData) => {
     const { name, rank, badgeNumber, unit, station, yearsOfService, specialArea, username, password, avatar } = officerData;
-    const badgeKey = badgeNumber || `KSP-2026-${Date.now().toString().slice(-4)}`;
+    const badgeKey = badgeNumber || `MPP-${new Date().getFullYear()}-${Date.now().toString().slice(-4)}`;
 
     const payload = {
       badgeNumber: badgeKey,
       name,
       rank: rank || "Police Inspector",
       unit: unit || "General Crime Unit",
-      station: station || "Bengaluru Range",
+      station: station || "Bhopal Range",
       yearsOfService: Number(yearsOfService) || 5
     };
 
@@ -300,7 +214,7 @@ export const officerService = {
       name: (createdOfficer && createdOfficer.name) || name,
       rank: rank || "Police Inspector",
       unit: unit || "General Crime Unit",
-      station: station || "Bengaluru Range",
+      station: station || "Bhopal Range",
       yearsOfService: Number(yearsOfService) || 5,
       status: "On Duty",
       ROWID: (createdOfficer && createdOfficer.ROWID) || badgeKey,

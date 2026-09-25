@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "CREATORID": "56116000000013007",
+    "BriefFacts": "Phishing attacked by fraud link",
+    "CrimeRegisteredDate": "2026-09-25",
+    "PolicePersonID": "101",
+    "CaseMasterID": "2508919502",
+    "InfoReceivedPSDate": "2026-09-25 21:19:00",
+    "CaseStatusID": "1",
+    "CaseNo": "CR-2026-08879",
+    "MODIFIEDTIME": "2026-09-26 02:51:49:083",
+    "CrimeMajorHeadID": "1",
+    "GravityOffenceID": "2",
+    "CrimeMinorHeadID": "1",
+    "CrimeNo": "FIR/MP/2026/08879",
+    "CourtID": "1",
+    "IncidentToDate": "2026-09-25 21:19:00",
+    "latiutude": 23.2599,
+    "CREATEDTIME": "2026-09-26 02:51:49:083",
+    "CaseCategoryID": "1",
+    "ROWID": "56116000000218004",
+    "PoliceStationID": "201",
+    "IncidentFromDate": "2026-09-25 21:19:00",
+    "longitude": 77.4126
+  }
+]

@@ -8,9 +8,9 @@ import { FaCalendarAlt, FaUser, FaBuilding } from "react-icons/fa";
 const MAP_TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 const MAP_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
-// Map center of Karnataka
-const KARNATAKA_CENTER = [14.5, 76.2];
-const DEFAULT_ZOOM = 7.2;
+// Map center of Madhya Pradesh
+const MP_CENTER = [23.4, 78.2];
+const DEFAULT_ZOOM = 6.8;
 
 // Custom Marker styling based on Severity
 const getMarkerColorClass = (severity) => {
@@ -118,23 +118,54 @@ const createClusterIcon = (districtName, count) => {
   }
 
   const abbrMap = {
-    "Bengaluru City": "BEN",
-    "Mysuru City": "MYS",
-    "Mangaluru City": "MAN",
-    "Hubballi-Dharwad": "HUB",
-    "Belagavi": "BEL",
-    "Kalaburagi": "KAL",
-    "Shivamogga": "SHI",
-    "Udupi": "UDU",
-    "Davanagere": "DAV",
-    "Tumakuru": "TUM",
-    "Chikkamagaluru": "CHI",
-    "Bidar": "BID",
-    "Mandya": "MAN",
-    "Ballari": "BAL",
-    "Dakshina Kannada": "DAK",
-    "Hassan": "HAS",
-    "Uttara Kannada": "UTT"
+    "Bhopal": "BHO",
+    "Indore": "IND",
+    "Jabalpur": "JAB",
+    "Gwalior": "GWA",
+    "Ujjain": "UJJ",
+    "Sagar": "SAG",
+    "Rewa": "REW",
+    "Satna": "SAT",
+    "Chhindwara": "CHH",
+    "Ratlam": "RAT",
+    "Dewas": "DEW",
+    "Dhar": "DHA",
+    "Datia": "DAT",
+    "Guna": "GUN",
+    "Harda": "HAR",
+    "Hoshangabad": "HOS",
+    "Katni": "KAT",
+    "Mandla": "MAN",
+    "Mandsaur": "MDN",
+    "Morena": "MOR",
+    "Narsinghpur": "NAR",
+    "Neemuch": "NEE",
+    "Panna": "PAN",
+    "Raisen": "RAI",
+    "Rajgarh": "RAJ",
+    "Sehore": "SEH",
+    "Seoni": "SEO",
+    "Shahdol": "SHA",
+    "Shajapur": "SHJ",
+    "Sheopur": "SHE",
+    "Shivpuri": "SHV",
+    "Sidhi": "SID",
+    "Tikamgarh": "TIK",
+    "Umaria": "UMA",
+    "Vidisha": "VID",
+    "Anuppur": "ANU",
+    "Ashoknagar": "ASH",
+    "Balaghat": "BAL",
+    "Barwani": "BAR",
+    "Betul": "BET",
+    "Bhind": "BHI",
+    "Burhanpur": "BUR",
+    "Chhatarpur": "CHT",
+    "Damoh": "DAM",
+    "Dindori": "DIN",
+    "Jhabua": "JHA",
+    "East Nimar": "ENI",
+    "West Nimar": "WNI"
   };
 
   const abbr = abbrMap[districtName] || districtName.slice(0, 3).toUpperCase();
@@ -227,8 +258,8 @@ const getSeverityPopupStyle = (severity) => {
   }
 };
 
-// Generates an inverted polygon mask covering the entire world except Karnataka
-const createMaskGeoJSON = (karnatakaGeoJSON) => {
+// Generates an inverted polygon mask covering the entire world except Madhya Pradesh
+const createMaskGeoJSON = (mpGeoJSON) => {
   const worldCoords = [
     [-180, -90],
     [-180, 90],
@@ -237,7 +268,7 @@ const createMaskGeoJSON = (karnatakaGeoJSON) => {
     [-180, -90]
   ];
 
-  const feature = karnatakaGeoJSON.features?.[0];
+  const feature = mpGeoJSON.features?.[0];
   if (!feature || !feature.geometry) return null;
 
   const rings = [worldCoords];
@@ -279,11 +310,11 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
   // Load GeoJSON files asynchronously
   useEffect(() => {
     Promise.all([
-      fetch("/karnataka-state.geojson").then(res => {
+      fetch("/madhya-pradesh-state.geojson").then(res => {
         if (!res.ok) throw new Error("State boundary GeoJSON not found");
         return res.json();
       }),
-      fetch("/karnataka-districts.geojson").then(res => {
+      fetch("/madhya-pradesh-districts.geojson").then(res => {
         if (!res.ok) throw new Error("District boundary GeoJSON not found");
         return res.json();
       })
@@ -311,9 +342,9 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
   const getDistrictClusters = () => {
     const clusters = {};
     incidents.forEach((inc) => {
-      const name = inc.district || "Bengaluru City";
-      const lat = Number(inc.lat) || inc.districtCenter?.lat || 12.9716;
-      const lng = Number(inc.lng) || inc.districtCenter?.lng || 77.5946;
+      const name = inc.district || "Bhopal";
+      const lat = Number(inc.lat) || inc.districtCenter?.lat || 23.2599;
+      const lng = Number(inc.lng) || inc.districtCenter?.lng || 77.4126;
       if (!clusters[name]) {
         clusters[name] = {
           name,
@@ -338,14 +369,14 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
   const officersSet = new Set(incidents.map(i => i.assignedOfficer?.name).filter(Boolean));
   const officersCount = officersSet.size;
 
-  // Custom Layer styles - Heavily fade surrounding states outside Karnataka
+  // Custom Layer styles - Heavily fade surrounding states outside Madhya Pradesh
   const maskStyle = {
     fillColor: "#020617",
     fillOpacity: 0.84,
     stroke: false
   };
 
-  // State fill highlight to make Karnataka stand out with bright spotlight
+  // State fill highlight to make Madhya Pradesh stand out with bright spotlight
   const stateHighlightStyle = {
     fillColor: "#ffffff",
     fillOpacity: 0.22,
@@ -371,7 +402,7 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
     lineJoin: "round"
   };
 
-  // Thin bright neon blue boundary line outlining Karnataka state
+  // Thin bright neon blue boundary line outlining Madhya Pradesh state
   const thinBlueBoundaryStyle = {
     color: "#93c5fd",
     weight: 2.5,
@@ -476,7 +507,7 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
 
       {/* ── Leaflet Map ── */}
       <MapContainer
-        center={KARNATAKA_CENTER}
+        center={MP_CENTER}
         zoom={DEFAULT_ZOOM}
         zoomControl={true}
         className="h-full w-full z-10"
@@ -496,7 +527,7 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
           <GeoJSON data={districtsGeoJSON} style={districtStyle} interactive={false} />
         )}
 
-        {/* 3. Karnataka State Highlight & Neon Glowing Boundary */}
+        {/* 3. Madhya Pradesh State Highlight & Neon Glowing Boundary */}
         {stateGeoJSON && (
           <>
             <GeoJSON data={stateGeoJSON} style={stateHighlightStyle} interactive={false} />
@@ -511,7 +542,7 @@ const InteractiveMap = ({ incidents, selectedItem, onSelectDistrict, onSelectMar
           showClusters ? (
             // Render District Cluster Markers
             districtClusters.map((cluster) => {
-              const districtIncs = cluster.incidents || incidents.filter(i => (i.district || "Bengaluru City") === cluster.name);
+              const districtIncs = cluster.incidents || incidents.filter(i => (i.district || "Bhopal") === cluster.name);
               const categories = {};
               districtIncs.forEach(inc => {
                 const cat = inc.type || "General";

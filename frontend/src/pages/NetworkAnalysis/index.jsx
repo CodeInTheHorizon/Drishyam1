@@ -19,7 +19,7 @@ import NodeDetailsDossier from "../../components/network/NodeDetailsDossier";
 
 export default function NetworkAnalysis() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("Bengaluru City");
+  const [selectedDistrict, setSelectedDistrict] = useState("Bhopal");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [isSimulationActive, setIsSimulationActive] = useState(true);

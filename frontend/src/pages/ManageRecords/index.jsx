@@ -5,6 +5,7 @@ import FIRFormModal from "../../components/records/FIRFormModal";
 import FIRDetailModal from "../../components/records/FIRDetailModal";
 import PINVerificationModal from "../../components/records/PINVerificationModal";
 import { recordService } from "../../services/recordService";
+import { crimeService } from "../../services/crimeService";
 import {
   FaFolderPlus,
   FaSearch,
@@ -277,11 +278,9 @@ const ManageRecords = () => {
               style={{ paddingLeft: "14px", paddingRight: "14px" }}
             >
               <option value="" className="bg-slate-950 text-slate-400">-- ALL DISTRICTS --</option>
-              <option value="Bengaluru City" className="bg-slate-950 text-slate-200">Bengaluru City</option>
-              <option value="Mangaluru City" className="bg-slate-950 text-slate-200">Mangaluru City</option>
-              <option value="Mysuru City" className="bg-slate-950 text-slate-200">Mysuru City</option>
-              <option value="Hubballi-Dharwad" className="bg-slate-950 text-slate-200">Hubballi-Dharwad</option>
-              <option value="Belagavi District" className="bg-slate-950 text-slate-200">Belagavi District</option>
+              {crimeService.getDistricts().map(d => (
+                <option key={d} value={d} className="bg-slate-950 text-slate-200">{d}</option>
+              ))}
             </select>
           </div>
 

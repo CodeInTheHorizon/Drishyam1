@@ -127,7 +127,7 @@ export const recordService = {
         if (!r.district) return false;
         const dRec = String(r.district).toLowerCase().trim();
         if (dRec === dReq) return true;
-        const keywords = ["mysuru", "mysore", "mangaluru", "mangalore", "hubballi", "hubli", "dharwad", "belagavi", "belgaum", "kalaburagi", "gulbarga", "shivamogga", "shimoga", "udupi", "bengaluru", "bangalore"];
+        const keywords = ["bhopal", "indore", "jabalpur", "gwalior", "ujjain", "sagar", "rewa", "satna", "chhindwara", "ratlam", "dewas", "dhar", "datia", "guna", "harda", "hoshangabad", "narmadapuram", "katni", "mandla", "mandsaur", "morena", "narsinghpur", "neemuch", "panna", "raisen", "rajgarh", "sehore", "seoni", "shahdol", "shajapur", "sheopur", "shivpuri", "sidhi", "tikamgarh", "umaria", "vidisha", "anuppur", "ashoknagar", "balaghat", "barwani", "betul", "bhind", "burhanpur", "chhatarpur", "damoh", "dindori", "jhabua", "khandwa", "khargone"];
         for (const kw of keywords) {
           if (dReq.includes(kw) && dRec.includes(kw)) return true;
         }
@@ -413,7 +413,7 @@ export const recordService = {
     // District Distribution
     const distMap = {};
     records.forEach((r) => {
-      const dist = r.district || "Bengaluru City";
+      const dist = r.district || "Bhopal";
       distMap[dist] = (distMap[dist] || 0) + 1;
     });
 

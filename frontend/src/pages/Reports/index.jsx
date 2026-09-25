@@ -32,7 +32,7 @@ const Reports = () => {
     
     // Auto-generate default preview on mount
     reportService.generateReport("exec_summary", {
-      district: "Bengaluru City",
+      district: "Bhopal",
       category: "Cyber Crimes",
       officerName: "ACP Rajeshwari N.",
       startDate: "2026-06-01",

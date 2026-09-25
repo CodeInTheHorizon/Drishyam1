@@ -8,9 +8,7 @@ import { RiBrainLine } from "react-icons/ri";
 import { recordService } from "../../services/recordService";
 
 const DISTRICTS = [
-  "ALL","Bengaluru City","Mysuru District","Mangaluru City","Hubli-Dharwad",
-  "Belagavi District","Kalaburagi District","Shivamogga","Udupi District",
-  "Davanagere","Tumakuru",
+  "ALL","Bhopal","Indore","Jabalpur","Gwalior","Ujjain","Sagar","Rewa","Satna","Chhindwara","Ratlam","Dewas"
 ];
 
 const WHAT_IF_SCENARIOS_EN = [

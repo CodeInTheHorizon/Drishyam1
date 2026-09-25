@@ -5,9 +5,9 @@
  * Backed by localStorage for session persistence across browser refreshes.
  */
 
-const USERS_STORAGE_KEY = "ksp_auth_users_v6_pinterest_avatars";
-const SESSION_STORAGE_KEY = "ksp_auth_session_v6";
-const PIN_STORAGE_KEY = "ksp_security_pin_v6";
+const USERS_STORAGE_KEY = "mpp_auth_users_v7";
+const SESSION_STORAGE_KEY = "mpp_auth_session_v7";
+const PIN_STORAGE_KEY = "mpp_security_pin_v7";
 
 const DEFAULT_SECURITY_PIN = "1122";
 
@@ -27,12 +27,12 @@ const INITIAL_USERS = [
     id: "u-admin",
     username: "admin",
     password: "admin",
-    name: "ACP Director (Admin)",
+    name: "Command Director (Admin)",
     role: "ADMIN",
     rank: "Command Director",
-    kgid: "KSP-ADMIN-01",
-    badge: "KSP-ADMIN-01",
-    unit: "KSP Intelligence HQ",
+    kgid: "MPP-ADMIN-01",
+    badge: "MPP-ADMIN-01",
+    unit: "MP Police Intelligence HQ",
     avatar: OFFICER_PHOTOS[0]
   }
 ];
@@ -119,12 +119,12 @@ export const authService = {
 
           const onlineOfficers = json.data.map((emp, idx) => {
             const cleanName = emp.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            const badge = emp.badgeNumber || `KSP-${emp.ROWID}`;
+            const badge = emp.badgeNumber || `MPP-${emp.ROWID}`;
             const photoUrl = OFFICER_PHOTOS[idx % OFFICER_PHOTOS.length];
             const existing = currentUsers.find(u => u.id === `u-${emp.ROWID}` || u.badge === badge || u.name.toLowerCase() === emp.name.toLowerCase());
             return {
               id: `u-${emp.ROWID}`,
-              username: existing?.username || `ksp.${cleanName}`,
+              username: existing?.username || `mpp.${cleanName}`,
               password: existing?.password || "Officer@123",
               name: emp.name,
               role: "OFFICER",

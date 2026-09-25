@@ -127,8 +127,14 @@ export const networkService = {
       records = records.filter(r => {
         const dRec = (r.district || "").toLowerCase().trim();
         if (dRec === dReq) return true;
-        if (dReq.includes("bengaluru") || dReq.includes("bangalore")) {
-          return dRec.includes("bengaluru") || dRec.includes("bangalore");
+        if (dReq.includes("hoshangabad") || dReq.includes("narmadapuram")) {
+          return dRec.includes("hoshangabad") || dRec.includes("narmadapuram");
+        }
+        if (dReq.includes("khandwa") || dReq.includes("east nimar")) {
+          return dRec.includes("khandwa") || dRec.includes("east nimar");
+        }
+        if (dReq.includes("khargone") || dReq.includes("west nimar")) {
+          return dRec.includes("khargone") || dRec.includes("west nimar");
         }
         return dRec.includes(dReq) || dReq.includes(dRec);
       });
@@ -173,7 +179,7 @@ export const networkService = {
     records.forEach((r) => {
       const recordId = r.id || `fir-${r.crimeNo}`;
       const stationName = sanitizeName(r.unit || "City Station");
-      const districtName = sanitizeName(r.district || "Bengaluru City");
+      const districtName = sanitizeName(r.district || "Bhopal");
       const stationId = `loc-${stationName.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
       
       const { mainName: suspectName, alias: suspectAlias } = extractAlias(r.accusedName);

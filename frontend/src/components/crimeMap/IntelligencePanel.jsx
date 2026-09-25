@@ -122,7 +122,7 @@ const IntelligencePanel = ({ selectionName, metrics, selectedMarker, onDossierCl
       {/* Dossier Card */}
       {renderDossier()}
 
-      {/* 1. Karnataka Overview / Spatial Summary */}
+      {/* 1. Madhya Pradesh Overview / Spatial Summary */}
       <IntelCard>
         <SectionHeader icon={FaMapMarkerAlt} label={selectedMarker ? "Incident Context" : "Spatial Summary"} />
         <div className="space-y-3.5">

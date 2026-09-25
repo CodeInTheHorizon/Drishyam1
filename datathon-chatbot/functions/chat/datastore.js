@@ -766,11 +766,11 @@ class CrimeRepository {
             const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
             if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
                 cloudOfficers = res.data.data.map(emp => ({
-                    badgeNumber: emp.KGID || `KSP-${emp.EmployeeID}`,
+                    badgeNumber: emp.KGID || `MPP-${emp.EmployeeID}`,
                     name: emp.FirstName,
                     rank: "Police Inspector",
                     unit: "General Unit",
-                    station: "Karnataka Police Station",
+                    station: "Bhopal Police Station",
                     yearsOfService: 5,
                     status: "On Duty",
                     ROWID: emp.ROWID,
@@ -782,31 +782,25 @@ class CrimeRepository {
             console.warn("[CrimeRepository] Online Catalyst Employee fetch failed:", e.message);
         }
 
-        if (cloudOfficers.length === 0) {
-            try {
-                const raw = fs.readFileSync(SEED_DATA_PATH, "utf-8");
-                const allData = JSON.parse(raw);
-                const empList = allData.Employee || [];
-                const units = (allData.Unit || []).reduce((acc, u) => { acc[u.UnitID] = u.UnitName; return acc; }, {});
-                const dists = (allData.District || []).reduce((acc, d) => { acc[d.DistrictID] = d.DistrictName; return acc; }, {});
-
-                cloudOfficers = empList.map((emp, idx) => ({
-                    badgeNumber: emp.KGID || `KSP-2026-${String(emp.EmployeeID).padStart(4, '0')}`,
-                    name: emp.FirstName || `Officer ${idx + 1}`,
-                    rank: "Police Inspector",
-                    unit: units[emp.UnitID] || "General Unit",
-                    station: dists[emp.DistrictID] || "Bengaluru City",
-                    yearsOfService: 4 + (idx % 10),
-                    status: "On Duty",
-                    ROWID: emp.EmployeeID,
-                    EmployeeID: emp.EmployeeID
-                }));
-                console.log(`[CrimeRepository] Loaded ${cloudOfficers.length} officer records from seed datastore.`);
-            } catch (fallbackErr) {
-                console.warn("[CrimeRepository] Seed fallback for officers failed:", fallbackErr.message);
-            }
-        }
         return cloudOfficers;
+    }
+
+    async deleteAllOfficerRecords() {
+        try {
+            const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
+            if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
+                console.log(`[CrimeRepository] Deleting ${res.data.data.length} officer records from Catalyst Employee table...`);
+                for (const emp of res.data.data) {
+                    if (emp.ROWID) {
+                        await callCatalystDatastoreApi(`/table/Employee/row/${emp.ROWID}`, 'DELETE');
+                        console.log(`[CrimeRepository] Deleted Employee ROWID: ${emp.ROWID}`);
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn("[CrimeRepository] Error deleting employee records:", e.message);
+        }
+        return true;
     }
 
     async createOfficerRecord(officerData) {
