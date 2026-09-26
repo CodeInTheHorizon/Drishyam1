@@ -37,12 +37,17 @@ module.exports = async (req, res) => {
         }
 
         /**
-         * Load crime records.
+         * Load live crime records, officers, and biometric audits from Zoho Catalyst database.
          */
         const repository = new CrimeRepository(req);
 
-        const records = await repository.getCrimeAnalyticsData();
-        const analytics = generateAnalytics(records);
+        const [records, officers, audits] = await Promise.all([
+            repository.getCrimeAnalyticsData().catch(() => []),
+            (typeof repository.getAllOfficerRecords === "function" ? repository.getAllOfficerRecords().catch(() => []) : Promise.resolve([])),
+            (typeof repository.getBiometricAuditTrails === "function" ? repository.getBiometricAuditTrails().catch(() => []) : Promise.resolve([]))
+        ]);
+
+        const analytics = generateAnalytics(records, officers, audits);
 
         /**
          * Detect user intent.

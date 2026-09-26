@@ -143,10 +143,33 @@ const MessageBubble = ({ message }) => {
   }, []);
 
   const parseMarkdown = (text) => {
+    if (!text) return null;
     const lines = text.split("\n");
     const elements = [];
     let tableRows = [];
     let inTable = false;
+
+    const formatInline = (str) => {
+      if (!str) return "";
+      const parts = str.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
+      return parts.map((part, i) => {
+        if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+          return (
+            <code key={i} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-blue-300 font-mono text-[10px]">
+              {part.slice(1, -1)}
+            </code>
+          );
+        }
+        if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+          return (
+            <strong key={i} className="text-white font-bold">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        return part;
+      });
+    };
 
     const renderTable = (rows, key) => {
       if (rows.length === 0) return null;
@@ -160,7 +183,7 @@ const MessageBubble = ({ message }) => {
             <thead>
               <tr className="border-b border-slate-700/60 bg-slate-900/80 text-slate-300 font-bold uppercase tracking-wider">
                 {headerCells.map((cell, idx) => (
-                  <th key={idx} className="py-3 px-5">{cell}</th>
+                  <th key={idx} className="py-3 px-5 whitespace-nowrap">{formatInline(cell)}</th>
                 ))}
               </tr>
             </thead>
@@ -168,7 +191,9 @@ const MessageBubble = ({ message }) => {
               {bodyRows.map((row, rIdx) => (
                 <tr key={rIdx} className="hover:bg-slate-900/40 transition-colors">
                   {row.map((cell, cIdx) => (
-                    <td key={cIdx} className="py-2.5 px-5">{cell}</td>
+                    <td key={cIdx} className="py-2.5 px-5 whitespace-normal">
+                      {formatInline(cell)}
+                    </td>
                   ))}
                 </tr>
               ))}
@@ -178,20 +203,10 @@ const MessageBubble = ({ message }) => {
       );
     };
 
-    const parseBold = (str) => {
-      const parts = str.split(/(\*\*.*?\*\*)/g);
-      return parts.map((part, i) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return <strong key={i} className="text-white font-bold">{part.slice(2, -2)}</strong>;
-        }
-        return part;
-      });
-    };
-
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      const line = lines[i].trim();
 
-      if (line.includes("|") && line.trim().startsWith("|")) {
+      if (line.includes("|") && line.startsWith("|")) {
         inTable = true;
         tableRows.push(line);
         continue;
@@ -201,36 +216,49 @@ const MessageBubble = ({ message }) => {
         inTable = false;
       }
 
-      if (line.startsWith("###")) {
-        elements.push(
-          <h3 key={i} className="text-xs font-bold text-blue-400 tracking-wider font-mono uppercase mt-4 mb-2.5 border-b border-slate-800 pb-1.5 pl-1.5">
-            {parseBold(line.replace("###", "").trim())}
-          </h3>
-        );
-      } else if (line.startsWith("####")) {
+      if (line.startsWith("####")) {
         elements.push(
           <h4 key={i} className="text-[11px] font-bold text-slate-200 font-mono uppercase mt-3.5 mb-2 pl-1.5">
-            {parseBold(line.replace("####", "").trim())}
+            {formatInline(line.replace(/^####\s*/, ""))}
           </h4>
+        );
+      } else if (line.startsWith("###")) {
+        elements.push(
+          <h3 key={i} className="text-xs font-bold text-blue-400 tracking-wider font-mono uppercase mt-4 mb-2.5 border-b border-slate-800 pb-1.5 pl-1.5">
+            {formatInline(line.replace(/^###\s*/, ""))}
+          </h3>
+        );
+      } else if (line.startsWith("##")) {
+        elements.push(
+          <h3 key={i} className="text-xs font-bold text-blue-400 tracking-wider font-mono uppercase mt-4 mb-2.5 border-b border-slate-800 pb-1.5 pl-1.5">
+            {formatInline(line.replace(/^##\s*/, ""))}
+          </h3>
+        );
+      } else if (line.startsWith("#")) {
+        elements.push(
+          <h3 key={i} className="text-xs font-bold text-blue-400 tracking-wider font-mono uppercase mt-4 mb-2.5 border-b border-slate-800 pb-1.5 pl-1.5">
+            {formatInline(line.replace(/^#\s*/, ""))}
+          </h3>
         );
       } else if (line.startsWith("*") || line.startsWith("-")) {
         elements.push(
           <div key={i} className="flex items-start gap-3 pl-3 sm:pl-4 pr-2 text-xs leading-relaxed text-slate-300 my-1.5 font-sans">
             <span className="h-1.5 w-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-            <span>{parseBold(line.substring(1).trim())}</span>
+            <span>{formatInline(line.substring(1).trim())}</span>
           </div>
         );
-      } else if (line.startsWith("1.") || line.startsWith("2.") || line.startsWith("3.") || line.startsWith("4.")) {
+      } else if (/^\d+\.\s/.test(line)) {
+        const numMatch = line.match(/^(\d+\.)\s*(.*)$/);
         elements.push(
           <div key={i} className="flex items-start gap-3 pl-3 sm:pl-4 pr-2 text-xs leading-relaxed text-slate-300 my-1.5 font-sans">
-            <span className="font-mono text-blue-400 font-bold flex-shrink-0">{line.slice(0, 2)}</span>
-            <span>{parseBold(line.substring(2).trim())}</span>
+            <span className="font-mono text-blue-400 font-bold flex-shrink-0">{numMatch[1]}</span>
+            <span>{formatInline(numMatch[2])}</span>
           </div>
         );
       } else if (line) {
         elements.push(
           <p key={i} className="text-xs leading-relaxed text-slate-300 my-2.5 pl-1.5 font-sans">
-            {parseBold(line)}
+            {formatInline(line)}
           </p>
         );
       }

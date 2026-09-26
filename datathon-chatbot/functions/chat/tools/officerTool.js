@@ -5,39 +5,50 @@
  */
 
 function getOfficerRanking(analytics) {
-    const perf = analytics.officerPerformance || [];
-    if (perf.length > 0) {
-        return [...perf].sort((a, b) => b.count - a.count);
-    }
-    // Default MP Police personnel baseline
-    return [
-        { name: "Kartik Singhal", rank: "Superintendent of Police", count: 18, clearance: "94%" },
-        { name: "Medhavi Agrawal", rank: "Deputy SP", count: 14, clearance: "91%" },
-        { name: "Hitesh Sanghi", rank: "Police Inspector", count: 12, clearance: "88%" }
-    ];
+    return analytics.officerPerformance || [];
 }
 
 function bestOfficer(analytics) {
     const ranking = getOfficerRanking(analytics);
+    const preds = analytics.predictions || {};
+
+    if (!ranking.length) {
+        return {
+            source: "officerTool",
+            requiresAI: false,
+            answer: `### 👮 MP Police Officer Caseload: Live Database Roster
+
+* **Personnel Status**: No officers currently registered in the database.
+* **Directives**: Use the Settings or Officers portal to register active duty personnel.`,
+            data: { ranking: [] }
+        };
+    }
+
     const top = ranking[0];
 
-    const rosterList = ranking.slice(0, 5)
-        .map((off, idx) => `* **#${idx + 1} ${off.name}** (${off.rank || "Investigating Officer"}): **${off.count} cases handled** • Clearance Rate: **${off.clearance || "89%"}**`)
-        .join("\n");
+    const rosterRows = ranking.slice(0, 8).map((off, idx) => 
+        `| **${off.name}** | ${off.rank || "DSP"} | \`${off.badgeNumber || "MPP"}\` | **${off.count} active docket(s)** | ${off.status || "On Duty"} |`
+    ).join("\n");
 
-    const answer = `### 👮 MP Police Officer Performance & Caseload Evaluation
+    const answer = `### 👮 MP Police Live Officer Roster & Caseload Analysis
 
-* **Lead Investigating Officer**: **${top.name}**
-* **Active / Processed Dockets**: **${top.count} cases**
-* **Case Clearance Performance**: **${top.clearance || "94%"}** successful investigation resolution.
+* **Total Personnel Monitored**: **${ranking.length} registered police officers**
+* **Primary Assigned Investigating Officer**: **${top.name}** (${top.count} assigned docket(s))
+* **Workload Saturation Metric**: **${preds.supervisoryCapacity || "Optimal Capacity"}**
 
-#### Officer Performance Dossier Roster:
-${rosterList}
+#### Live Database Officer Caseload Roster:
+| Officer Name | Rank / Cadre | Badge Number | Assigned Caseload | Operational Status |
+| :--- | :--- | :--- | :--- | :--- |
+${rosterRows}
+
+#### 🔮 Real-Time Workload & Capacity Prediction:
+* **Caseload Saturation Level**: **${preds.workloadSaturation || "Optimal (100% capacity available)"}**
+* **Predictive Allocation Plan**: With an average of ${(analytics.totalCases / Math.max(1, ranking.length)).toFixed(2)} case(s) per officer, the division has full investigative bandwidth to take on new cyber fraud dockets without caseload backlog.
 
 #### 📋 Supervisory Directives:
-1. **Workload Balancing**: Ensure active dockets per officer remain below 20 to prevent procedural delays.
-2. **Statutory Timeline (IIF-5)**: Maintain chargesheet filings within statutory 60/90-day deadlines.
-3. **Specialized Allocation**: Route complex financial and cyber fraud cases to certified forensic investigators.`;
+1. **Case Distribution**: Assign incoming dockets to available DSPs to maintain balanced caseload distribution.
+2. **Statutory Timeline (IIF-5)**: Maintain chargesheet filings within statutory 60-day deadline under CrPC 167.
+3. **Biometric Security**: Ensure all case status updates are authenticated via ESP32 hardware 2FA.`;
 
     return {
         source: "officerTool",

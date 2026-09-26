@@ -35,6 +35,7 @@ const INTENTS = {
     PENDING_CASES: "pending_cases",
     HOTSPOTS: "hotspots",
     TREND: "trend",
+    PREDICTION: "prediction",
     SUMMARY: "summary",
     REASONING: "reasoning",
     UNKNOWN: "unknown"
@@ -203,13 +204,29 @@ function detectIntent(question) {
         };
     }
 
+    // Real-Time Predictions & Forecasting
+    if (
+        q.includes("predict") ||
+        q.includes("forecast") ||
+        q.includes("projection") ||
+        q.includes("future") ||
+        q.includes("risk assessment") ||
+        q.includes("timeline risk") ||
+        q.includes("पूर्वानुमान") ||
+        q.includes("अनुमान") ||
+        q.includes("भविष्य") ||
+        q.includes("जोखिम")
+    ) {
+        return {
+            intent: INTENTS.PREDICTION
+        };
+    }
+
     // AI Reasoning & Analytics
     if (
         q.includes("why") ||
         q.includes("recommend") ||
         q.includes("suggest") ||
-        q.includes("predict") ||
-        q.includes("forecast") ||
         q.includes("explain") ||
         q.includes("roadmap") ||
         q.includes("कारण") ||

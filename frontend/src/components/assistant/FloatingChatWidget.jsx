@@ -283,26 +283,51 @@ const FloatingChatWidget = () => {
     let tableRows = [];
     let inTable = false;
 
+    const formatInline = (str) => {
+      if (!str) return "";
+      // Match backtick code and double asterisk bold
+      const parts = str.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
+      return parts.map((part, i) => {
+        if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+          return (
+            <code key={i} className="px-1 py-0.5 rounded bg-slate-900 border border-slate-800 text-blue-300 font-mono text-[9px]">
+              {part.slice(1, -1)}
+            </code>
+          );
+        }
+        if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+          return (
+            <strong key={i} className="text-white font-bold">
+              {part.slice(2, -2)}
+            </strong>
+          );
+        }
+        return part;
+      });
+    };
+
     const renderTable = (rows, key) => {
       if (rows.length === 0) return null;
       const headerCells = rows[0].split("|").map(c => c.trim()).filter(c => c);
       const bodyRows = rows.slice(2).map(r => r.split("|").map(c => c.trim()).filter(c => c));
 
       return (
-        <div key={key} className="my-2 overflow-x-auto border border-slate-800/80 rounded-lg bg-slate-950/60 shadow-inner max-w-full">
+        <div key={key} className="my-2.5 overflow-x-auto border border-slate-800/80 rounded-lg bg-slate-950/70 shadow-inner max-w-full">
           <table className="w-full text-left border-collapse font-mono text-[9px]">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-900/60 text-slate-400 font-bold uppercase">
+              <tr className="border-b border-slate-800 bg-slate-900/80 text-slate-300 font-bold uppercase tracking-wider">
                 {headerCells.map((h, idx) => (
-                  <th key={idx} className="py-1.5 px-3">{h}</th>
+                  <th key={idx} className="py-2 px-3 whitespace-nowrap">{formatInline(h)}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-900/40 text-slate-300">
+            <tbody className="divide-y divide-slate-900/60 text-slate-300">
               {bodyRows.map((row, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/20">
+                <tr key={idx} className="hover:bg-slate-900/30 transition-colors">
                   {row.map((cell, cidx) => (
-                    <td key={cidx} className="py-1.5 px-3">{cell}</td>
+                    <td key={cidx} className="py-1.5 px-3 whitespace-normal">
+                      {formatInline(cell)}
+                    </td>
                   ))}
                 </tr>
               ))}
@@ -310,11 +335,6 @@ const FloatingChatWidget = () => {
           </table>
         </div>
       );
-    };
-
-    const parseBold = (str) => {
-      const parts = str.split("**");
-      return parts.map((part, i) => i % 2 === 1 ? <strong key={i} className="text-white font-bold">{part}</strong> : part);
     };
 
     for (let i = 0; i < lines.length; i++) {
@@ -332,29 +352,49 @@ const FloatingChatWidget = () => {
         inTable = false;
       }
 
-      if (line.startsWith("###")) {
+      if (line.startsWith("####")) {
         elements.push(
-          <h3 key={i} className="text-[10px] font-bold text-blue-400 font-mono uppercase mt-3 mb-1 border-b border-slate-800 pb-0.5">
-            {parseBold(line.replace("###", "").trim())}
+          <h4 key={i} className="text-[10px] font-bold text-slate-200 font-mono uppercase mt-2.5 mb-1">
+            {formatInline(line.replace(/^####\s*/, ""))}
+          </h4>
+        );
+      } else if (line.startsWith("###")) {
+        elements.push(
+          <h3 key={i} className="text-[11px] font-bold text-blue-400 font-mono uppercase mt-3 mb-1.5 border-b border-slate-800 pb-0.5">
+            {formatInline(line.replace(/^###\s*/, ""))}
           </h3>
         );
-      } else if (line.startsWith("####")) {
+      } else if (line.startsWith("##")) {
         elements.push(
-          <h4 key={i} className="text-[9px] font-bold text-slate-200 font-mono uppercase mt-2 mb-1">
-            {parseBold(line.replace("####", "").trim())}
-          </h4>
+          <h3 key={i} className="text-[11px] font-bold text-blue-400 font-mono uppercase mt-3 mb-1.5 border-b border-slate-800 pb-0.5">
+            {formatInline(line.replace(/^##\s*/, ""))}
+          </h3>
+        );
+      } else if (line.startsWith("#")) {
+        elements.push(
+          <h3 key={i} className="text-[11px] font-bold text-blue-400 font-mono uppercase mt-3 mb-1.5 border-b border-slate-800 pb-0.5">
+            {formatInline(line.replace(/^#\s*/, ""))}
+          </h3>
+        );
+      } else if (/^\d+\.\s/.test(line)) {
+        const numMatch = line.match(/^(\d+\.)\s*(.*)$/);
+        elements.push(
+          <div key={i} className="flex items-start gap-1.5 pl-1 text-[10px] text-slate-300 my-0.5 font-sans leading-relaxed">
+            <span className="font-mono text-blue-400 font-bold flex-shrink-0 text-[9px]">{numMatch[1]}</span>
+            <span>{formatInline(numMatch[2])}</span>
+          </div>
         );
       } else if (line.startsWith("*") || line.startsWith("-")) {
         elements.push(
           <div key={i} className="flex items-start gap-1.5 pl-1 text-[10px] text-slate-300 my-0.5 font-sans leading-relaxed">
             <span className="h-1 w-1 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-            <span>{parseBold(line.substring(1).trim())}</span>
+            <span>{formatInline(line.substring(1).trim())}</span>
           </div>
         );
       } else if (line) {
         elements.push(
           <p key={i} className="text-[10px] leading-relaxed text-slate-400 my-1 font-sans">
-            {parseBold(line)}
+            {formatInline(line)}
           </p>
         );
       }

@@ -26,6 +26,7 @@ const officerTool = require("./tools/officerTool");
 const crimeTool = require("./tools/crimeTool");
 const trendTool = require("./tools/trendTool");
 const hotspotTool = require("./tools/hotspotTool");
+const predictionTool = require("./tools/predictionTool");
 
 /**
  * Route request.
@@ -90,6 +91,15 @@ async function route(intent, analytics, question) {
         case INTENTS.HOTSPOTS:
 
             return hotspotTool.hotspots(
+                analytics
+            );
+
+        /**
+         * Real-Time Database Predictions & Forecasts
+         */
+        case INTENTS.PREDICTION:
+
+            return predictionTool.generatePredictions(
                 analytics
             );
 
