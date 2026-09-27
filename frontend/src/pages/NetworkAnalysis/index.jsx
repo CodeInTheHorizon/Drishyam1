@@ -12,12 +12,17 @@ import {
 import { networkService } from "../../services/networkService";
 import { recordService } from "../../services/recordService";
 import { crimeService } from "../../services/crimeService";
+import { getArtifactCorrelationGraph } from "../../services/forensicCorrelationService";
+import { forensicEvidenceStore } from "../../services/forensicParserService";
 import NetworkFiltersToolbar from "../../components/network/NetworkFiltersToolbar";
 import CrossJurisdictionFinder from "../../components/network/CrossJurisdictionFinder";
 import NetworkGraphCanvas from "../../components/network/NetworkGraphCanvas";
 import NodeDetailsDossier from "../../components/network/NodeDetailsDossier";
+import { RiShieldFlashLine, RiArrowRightUpLine } from "react-icons/ri";
+import { Link } from "react-router-dom";
 
 export default function NetworkAnalysis() {
+  const [analysisMode, setAnalysisMode] = useState("FORENSIC"); // "FORENSIC" or "CCTNS"
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("Bhopal");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
@@ -30,25 +35,63 @@ export default function NetworkAnalysis() {
     SUSPECT: true,
     LOCATION: true,
     COMPLAINANT: true,
-    SYNDICATE: true
+    SYNDICATE: true,
+    VICTIM: true,
+    L1_MULE: true,
+    L2_MULE: true,
+    CASHOUT: true,
+    PHONE: true,
+    IMEI: true,
+    C2_SERVER: true,
+    MALWARE_APK: true,
+    EMAIL_SPOOF: true
   });
 
   // State to trigger re-renders on database sync
   const [dbVersion, setDbVersion] = useState(0);
+  const [forensicArtifactsCount, setForensicArtifactsCount] = useState(0);
 
-  // Subscribe to real-time database changes from recordService
+  // Subscribe to real-time database changes from recordService and forensicEvidenceStore
   useEffect(() => {
-    const unsubscribe = recordService.subscribe(() => {
+    const unsubRecords = recordService.subscribe(() => {
       setDbVersion((v) => v + 1);
     });
-    return () => unsubscribe();
+
+    setForensicArtifactsCount(forensicEvidenceStore.getArtifacts().length);
+    const unsubForensics = forensicEvidenceStore.subscribe((updated) => {
+      setForensicArtifactsCount(updated.length);
+      setDbVersion((v) => v + 1);
+    });
+
+    return () => {
+      unsubRecords();
+      unsubForensics();
+    };
   }, []);
 
   const districts = useMemo(() => crimeService.getDistricts(), []);
   const categories = useMemo(() => crimeService.getCategories(), []);
 
-  // Compute live graph data from database
+  // Compute live graph data based on active analysis mode
   const { allNodes, allEdges, metrics, crossDistrictSuspects } = useMemo(() => {
+    if (analysisMode === "FORENSIC") {
+      const forensicData = getArtifactCorrelationGraph();
+      return {
+        allNodes: forensicData.nodes,
+        allEdges: forensicData.edges,
+        metrics: {
+          totalNodes: forensicData.metrics.totalNodes,
+          suspectsCount: forensicData.metrics.muleNodesCount,
+          crossDistrictSuspectsCount: forensicData.metrics.cashoutNodesCount,
+          syndicatesCount: forensicData.metrics.sharedDevicesCount,
+          stationsCount: forensicData.metrics.c2ServersCount,
+          totalConnections: forensicData.metrics.totalEdges
+        },
+        crossDistrictSuspects: []
+      };
+    }
+
+    // Default CCTNS mode
     const data = networkService.getGraphData({
       district: selectedDistrict,
       category: selectedCategory,
@@ -63,7 +106,7 @@ export default function NetworkAnalysis() {
       metrics: data.metrics,
       crossDistrictSuspects: crossSuspects
     };
-  }, [selectedDistrict, selectedCategory, searchTerm, dbVersion]);
+  }, [analysisMode, selectedDistrict, selectedCategory, searchTerm, dbVersion]);
 
   // Filter nodes based on active entity layer toggles
   const filteredNodes = useMemo(() => {
@@ -109,29 +152,76 @@ export default function NetworkAnalysis() {
     >
       {/* Page Header Banner */}
       <div 
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/85 border border-slate-700/60 rounded-md backdrop-blur-md shadow-xl relative overflow-hidden"
-        style={{ padding: "22px 24px" }}
+        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/90 border border-slate-700/60 rounded-xl backdrop-blur-md shadow-xl relative overflow-hidden p-5"
       >
         <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
+              <RiSparklingFill className="text-amber-400" />
+              {analysisMode === "FORENSIC" ? "Multi-Artifact Cyber Fraud Correlator" : "CCTNS State Crime Registry"}
+            </span>
+          </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
-            <RiNodeTree className="text-blue-400 text-2xl" />
-            <span>Criminological Link & Network Analysis</span>
+            {analysisMode === "FORENSIC" ? (
+              <>
+                <RiShieldFlashLine className="text-amber-400 text-2xl" />
+                <span>Digital Artifact & Mule Account Flow Correlator</span>
+              </>
+            ) : (
+              <>
+                <RiNodeTree className="text-blue-400 text-2xl" />
+                <span>Criminological Suspect & Syndicate Link Matrix</span>
+              </>
+            )}
           </h1>
 
           <p className="text-xs text-slate-300 mt-1 max-w-2xl font-sans">
-            Cross-jurisdictional link matrix and syndicate mapping across Madhya Pradesh police stations.
+            {analysisMode === "FORENSIC"
+              ? "Directional fund flows (Victim ➔ Layer 1/2 Mules ➔ ATM/Crypto cashouts), shared IMEIs across SIMs, and C2 drop server linkages from uploaded evidence."
+              : "Cross-jurisdictional link matrix and syndicate mapping across Madhya Pradesh police stations."}
           </p>
         </div>
 
-        {/* Header Action Buttons */}
-        <div className="flex items-center gap-2 relative z-10">
+        {/* Mode Switcher: Forensic Correlator vs CCTNS Crime Network */}
+        <div className="flex flex-wrap items-center gap-3 relative z-10">
+          <div className="flex items-center p-1 bg-slate-950/80 border border-slate-700/80 rounded-xl shadow-inner">
+            <button
+              onClick={() => setAnalysisMode("FORENSIC")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                analysisMode === "FORENSIC"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <RiShieldFlashLine className="text-amber-400 text-sm" />
+              <span>Artifact & Mule Flow</span>
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                analysisMode === "FORENSIC" ? "bg-white/20 text-white" : "bg-slate-800 text-slate-400"
+              }`}>
+                {forensicArtifactsCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setAnalysisMode("CCTNS")}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                analysisMode === "CCTNS"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <RiBuilding2Line className="text-blue-400 text-sm" />
+              <span>CCTNS Crime Network</span>
+            </button>
+          </div>
+
           <button
             onClick={handleResetView}
-            className="flex items-center gap-2 text-cyan-400 hover:text-white transition-all duration-200 ease-in-out cursor-pointer group font-mono text-xs active:scale-95 py-1.5 px-3 rounded hover:bg-slate-800/60"
-            title="Reset Matrix View"
+            className="flex items-center gap-1.5 text-cyan-400 hover:text-white transition-all cursor-pointer font-mono text-xs py-2 px-3 rounded-lg border border-slate-700/80 bg-slate-800/60 hover:bg-slate-700"
+            title="Reset View"
           >
-            <RiRefreshLine className="text-sm text-cyan-400 group-hover:rotate-180 transition-transform duration-300 ease-in-out" />
-            <span className="font-bold tracking-wider uppercase text-[11px]">Reset Matrix</span>
+            <RiRefreshLine className="text-sm" />
+            <span className="font-bold tracking-wider uppercase text-[11px]">Reset View</span>
           </button>
         </div>
       </div>
@@ -203,59 +293,89 @@ export default function NetworkAnalysis() {
           style={{ padding: "18px 20px" }}
         >
           <div className="flex items-center justify-between text-slate-400 mb-1">
-            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">Stations</span>
+            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
+              {analysisMode === "FORENSIC" ? "C2 Servers" : "Stations"}
+            </span>
             <RiBuilding2Line className="text-blue-400 text-base" />
           </div>
           <p className="text-2xl font-extrabold text-blue-400 font-mono">{metrics.stationsCount}</p>
-          <span className="text-[9px] text-slate-400 font-sans mt-0.5">Precinct Nodes</span>
+          <span className="text-[9px] text-slate-400 font-sans mt-0.5">
+            {analysisMode === "FORENSIC" ? "Host Endpoints" : "Precinct Nodes"}
+          </span>
         </div>
       </div>
 
-      {/* Cross-Jurisdiction Connection Finder Banner */}
-      <CrossJurisdictionFinder
-        crossDistrictSuspects={crossDistrictSuspects}
-        selectedSuspectId={selectedNodeId}
-        onSelectSuspect={handleSelectSuspect}
-      />
+      {/* Forensic Empty State Banner if 0 artifacts */}
+      {analysisMode === "FORENSIC" && allNodes.length === 0 && (
+        <div className="p-8 rounded-xl bg-slate-900/90 border border-slate-800 text-center space-y-3">
+          <RiShieldFlashLine className="mx-auto text-4xl text-amber-400 mb-1" />
+          <h3 className="text-white font-bold text-base">No Digital Artifacts Ingested in Live Database</h3>
+          <p className="text-slate-400 text-xs max-w-md mx-auto">
+            Upload CDR/IPDR telecom logs, UPI settlement sheets, .eml headers or Android APK dumps in the Digital Forensic Triage to generate the automated entity correlation graph.
+          </p>
+          <div className="pt-2">
+            <Link
+              to="/forensics"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+            >
+              <span>Go to Digital Forensic Triage</span>
+              <RiArrowRightUpLine />
+            </Link>
+          </div>
+        </div>
+      )}
 
-      {/* Filter & Physics Toolbar */}
-      <NetworkFiltersToolbar
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedDistrict={selectedDistrict}
-        setSelectedDistrict={setSelectedDistrict}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        activeNodeTypes={activeNodeTypes}
-        toggleNodeType={toggleNodeType}
-        isSimulationActive={isSimulationActive}
-        setIsSimulationActive={setIsSimulationActive}
-        onResetView={handleResetView}
-        districts={districts}
-        categories={categories}
-      />
+      {/* Cross-Jurisdiction Connection Finder Banner (Only in CCTNS mode) */}
+      {analysisMode === "CCTNS" && (
+        <CrossJurisdictionFinder
+          crossDistrictSuspects={crossDistrictSuspects}
+          selectedSuspectId={selectedNodeId}
+          onSelectSuspect={handleSelectSuspect}
+        />
+      )}
+
+      {/* Filter & Physics Toolbar (in CCTNS mode) */}
+      {analysisMode === "CCTNS" && (
+        <NetworkFiltersToolbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedDistrict={selectedDistrict}
+          setSelectedDistrict={setSelectedDistrict}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          activeNodeTypes={activeNodeTypes}
+          toggleNodeType={toggleNodeType}
+          isSimulationActive={isSimulationActive}
+          setIsSimulationActive={setIsSimulationActive}
+          onResetView={handleResetView}
+          districts={districts}
+          categories={categories}
+        />
+      )}
 
       {/* Main Interactive Force-Directed Network Graph */}
-      <div className="relative">
-        <NetworkGraphCanvas
-          nodes={filteredNodes}
-          edges={filteredEdges}
-          selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
-          isSimulationActive={isSimulationActive}
-          zoomLevel={zoomLevel}
-          setZoomLevel={setZoomLevel}
-          panOffset={panOffset}
-          setPanOffset={setPanOffset}
-        />
+      {(analysisMode === "CCTNS" || allNodes.length > 0) && (
+        <div className="relative">
+          <NetworkGraphCanvas
+            nodes={filteredNodes}
+            edges={filteredEdges}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={setSelectedNodeId}
+            isSimulationActive={isSimulationActive}
+            zoomLevel={zoomLevel}
+            setZoomLevel={setZoomLevel}
+            panOffset={panOffset}
+            setPanOffset={setPanOffset}
+          />
 
-        {/* Selected Entity Dossier Flyout Panel */}
-        <NodeDetailsDossier
-          node={selectedNode}
-          onClose={() => setSelectedNodeId(null)}
-          onFocusNode={handleSelectSuspect}
-        />
-      </div>
+          {/* Selected Entity Dossier Flyout Panel */}
+          <NodeDetailsDossier
+            node={selectedNode}
+            onClose={() => setSelectedNodeId(null)}
+            onFocusNode={handleSelectSuspect}
+          />
+        </div>
+      )}
     </div>
   );
 }
