@@ -1,0 +1,21 @@
+Received: from mail-relay.bulletproof-proxy.nl (185.220.101.45)
+ by mx.victim-corporation.in (Postfix) with ESMTP id 4X9L1902
+ for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 13:58:12 +0530 (IST)
+Received: from fake-sbi-gateway.xyz (unknown [185.220.101.45])
+ by mail-relay.bulletproof-proxy.nl (8.15.2/8.15.2) with ESMTP id 3N9L901
+ for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 08:28:10 +0000
+Authentication-Results: mx.victim-corporation.in;
+ dkim=fail reason="signature missing or invalid";
+ spf=fail (mx.victim-corporation.in: domain of sbi-alert-verify.com does not designate 185.220.101.45 as permitted sender);
+ dmarc=fail action=none header.from=sbi.co.in;
+From: "State Bank Of India Security Team" <no-reply@sbi.co.in>
+Return-Path: <bounce@fake-sbi-gateway.xyz>
+To: <rajesh.verma@mp-gov.in>
+Subject: URGENT: Complete Mandatory NetBanking KYC Verification within 2 Hours
+Date: Fri, 25 Sep 2026 13:58:00 +0530
+Message-ID: <202609251358.SBI.PHISH.9982@fake-sbi-gateway.xyz>
+X-Originating-IP: [185.220.101.45]
+X-Mailer: DarkMailer v3.4 Phishing Engine
+Content-Type: text/html; charset="UTF-8"
+
+<html><body>Dear Customer, your SBI account will be blocked. Click here to verify KYC: http://sbi-kyc-update-portal.apk</body></html>

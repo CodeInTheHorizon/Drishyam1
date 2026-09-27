@@ -36,7 +36,15 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    setArtifacts(forensicEvidenceStore.getArtifacts());
+    // Completely purge legacy browser localStorage
+    try {
+      localStorage.removeItem("cctns_forensic_artifacts_v1");
+    } catch {}
+
+    forensicEvidenceStore.loadFromDatabase().then(() => {
+      setArtifacts(forensicEvidenceStore.getArtifacts());
+    });
+
     const unsubscribe = forensicEvidenceStore.subscribe((updated) => {
       setArtifacts(updated);
     });

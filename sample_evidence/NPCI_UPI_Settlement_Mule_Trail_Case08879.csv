@@ -1,0 +1,6 @@
+Txn_ID,Timestamp,Remitter_Name,Remitter_Account,Remitter_VPA,Beneficiary_Name,Beneficiary_Account,Beneficiary_VPA,Beneficiary_Bank,Amount_INR,Payment_Mode,Status,Client_IP
+TXN988102,2026-09-25T14:15:20Z,Rajesh Verma (Victim),SBIN0001234-9988,rajesh.verma@sbi,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,HDFC Bank,150000,UPI,SUCCESS,185.220.101.5
+TXN988103,2026-09-25T14:19:05Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ICICI Bank,75000,IMPS,SUCCESS,185.220.101.5
+TXN988104,2026-09-25T14:21:40Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Kotak Bank,70000,UPI,SUCCESS,185.220.101.5
+TXN988105,2026-09-25T14:32:10Z,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ATM Cashout Indore,ATM-IND-452001,N/A,ICICI ATM,50000,ATM_WITHDRAWAL,SUCCESS,22.7533_75.8937
+TXN988106,2026-09-25T14:38:50Z,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Crypto P2P Merchant,P2P-ESCROW-99,crypto.escrow@binance,Escrow Wallet,65000,P2P_TRANSFER,SUCCESS,103.208.220.12

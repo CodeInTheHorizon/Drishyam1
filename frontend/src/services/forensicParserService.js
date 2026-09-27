@@ -669,25 +669,25 @@ class ForensicEvidenceStore {
   constructor() {
     this.artifacts = [];
     this.listeners = new Set();
-    this.loadFromStorage();
-  }
-
-  loadFromStorage() {
+    // Strictly purge any legacy browser localStorage
     try {
-      const saved = localStorage.getItem("cctns_forensic_artifacts_v1");
-      if (saved) {
-        this.artifacts = JSON.parse(saved);
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.removeItem("cctns_forensic_artifacts_v1");
       }
-    } catch {
-      this.artifacts = [];
-    }
+    } catch {}
+    this.loadFromDatabase();
   }
 
-  saveToStorage() {
+  async loadFromDatabase() {
     try {
-      localStorage.setItem("cctns_forensic_artifacts_v1", JSON.stringify(this.artifacts));
-    } catch (e) {
-      console.warn("LocalStorage save limit exceeded:", e.message);
+      const res = await fetch("/api/forensics/evidence");
+      if (res.ok) {
+        const json = await res.json();
+        this.artifacts = Array.isArray(json.data) ? json.data : [];
+        this.notify();
+      }
+    } catch (err) {
+      console.warn("Live database evidence sync notice:", err.message);
     }
   }
 
@@ -699,23 +699,57 @@ class ForensicEvidenceStore {
     return this.artifacts.find((a) => a.id === id) || null;
   }
 
-  addArtifact(artifact) {
+  async addArtifact(artifact) {
+    // Add locally to state for instant UI responsiveness
+    this.artifacts = this.artifacts.filter((a) => a.id !== artifact.id);
     this.artifacts.unshift(artifact);
-    this.saveToStorage();
     this.notify();
+
+    // Persist directly to live database API
+    try {
+      const res = await fetch("/api/forensics/evidence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(artifact)
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          console.log("[ForensicStore] Evidence saved to live database & audit trail:", artifact.id);
+        }
+      }
+    } catch (err) {
+      console.warn("Failed persisting evidence to live database:", err.message);
+    }
+
     return artifact;
   }
 
-  removeArtifact(id) {
+  async removeArtifact(id) {
     this.artifacts = this.artifacts.filter((a) => a.id !== id);
-    this.saveToStorage();
     this.notify();
+
+    try {
+      await fetch(`/api/forensics/evidence/${id}`, { method: "DELETE" });
+    } catch (err) {
+      console.warn("Failed deleting evidence from live database:", err.message);
+    }
   }
 
-  clearAll() {
+  async clearAll() {
     this.artifacts = [];
-    this.saveToStorage();
+    try {
+      if (typeof window !== "undefined" && window.localStorage) {
+        window.localStorage.removeItem("cctns_forensic_artifacts_v1");
+      }
+    } catch {}
     this.notify();
+
+    try {
+      await fetch("/api/forensics/evidence", { method: "DELETE" });
+    } catch (err) {
+      console.warn("Failed clearing live database evidence:", err.message);
+    }
   }
 
   // Aggregate all extracted entities across all loaded evidence files

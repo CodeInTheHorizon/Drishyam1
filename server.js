@@ -38,6 +38,9 @@ const insightsHandler = require("./datathon-chatbot/functions/insights/index.js"
 const CrimeRepository = require("./datathon-chatbot/functions/chat/datastore.js");
 const hardwareManager = require("./backend/hardwareManager.js");
 
+// Live Digital Forensic Evidence Store
+let forensicEvidenceStoreBackend = [];
+
 const PORT = process.env.PORT || 3000;
 
 const MIME_TYPES = {
@@ -245,6 +248,47 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify({ success: false, error: err.message }));
             }
         });
+    } else if (pathname === "/api/forensics/evidence" && req.method === "GET") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, data: forensicEvidenceStoreBackend }));
+    } else if (pathname === "/api/forensics/evidence" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const artifact = JSON.parse(body);
+                // Prepend to live server store
+                forensicEvidenceStoreBackend = forensicEvidenceStoreBackend.filter(a => a.id !== artifact.id);
+                forensicEvidenceStoreBackend.unshift(artifact);
+
+                // Sync tamper-proof audit record to Catalyst BiometricAuditTrail table
+                try {
+                    await repo.createAuditTrailRecord({
+                        action: "FORENSIC_EVIDENCE_INGESTION",
+                        officerName: artifact.officerBadge || "Investigating Officer",
+                        details: `Ingested ${artifact.fileName} (${artifact.sourceType}) | SHA256: ${artifact.sha256} | Records: ${artifact.recordCount}`,
+                        status: "SUCCESS"
+                    });
+                } catch (auditErr) {
+                    console.warn("Audit trail record failed:", auditErr.message);
+                }
+
+                res.writeHead(201, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: artifact }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname.startsWith("/api/forensics/evidence/") && req.method === "DELETE") {
+        const id = pathname.replace("/api/forensics/evidence/", "");
+        forensicEvidenceStoreBackend = forensicEvidenceStoreBackend.filter(a => a.id !== id);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, message: `Deleted ${id}` }));
+    } else if (pathname === "/api/forensics/evidence" && req.method === "DELETE") {
+        forensicEvidenceStoreBackend = [];
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, message: "Cleared all forensic evidence" }));
     } else if (pathname === "/api/chat" && req.method === "POST") {
         let body = "";
         req.on("data", chunk => body += chunk.toString());
