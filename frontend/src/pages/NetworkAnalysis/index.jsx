@@ -366,6 +366,7 @@ export default function NetworkAnalysis() {
             setZoomLevel={setZoomLevel}
             panOffset={panOffset}
             setPanOffset={setPanOffset}
+            analysisMode={analysisMode}
           />
 
           {/* Selected Entity Dossier Flyout Panel */}

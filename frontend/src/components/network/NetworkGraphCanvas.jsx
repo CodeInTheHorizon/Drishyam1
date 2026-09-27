@@ -16,7 +16,8 @@ export default function NetworkGraphCanvas({
   zoomLevel,
   setZoomLevel,
   panOffset,
-  setPanOffset
+  setPanOffset,
+  analysisMode = "CCTNS"
 }) {
   const canvasRef = useRef(null);
   const simulationRef = useRef(null);
@@ -366,7 +367,8 @@ export default function NetworkGraphCanvas({
   const handleMouseUp = () => {
     setIsDragging(false);
     setDraggedNode(null);
-  };  const handleWheel = (e) => {
+  };
+  const handleWheel = (e) => {
     e.preventDefault();
     const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
     setZoomLevel((prev) => Math.max(0.4, Math.min(3.0, prev * zoomFactor)));
@@ -431,28 +433,73 @@ export default function NetworkGraphCanvas({
 
       {/* Node Legend Box */}
       <div 
-        className="absolute right-5 top-5 bg-slate-900/90 border border-slate-700/70 rounded-md shadow-xl backdrop-blur-md text-[11px] space-y-2 hidden sm:block"
+        className="absolute right-5 top-5 bg-slate-900/90 border border-slate-700/70 rounded-md shadow-xl backdrop-blur-md text-[11px] space-y-2 hidden sm:block max-w-[210px]"
         style={{ padding: "14px 16px" }}
       >
-        <p className="font-mono text-slate-300 font-bold uppercase text-[9.5px] tracking-wider mb-1">
-          Graph Legend
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
-          <span className="text-slate-200 font-medium text-[10.5px]">Suspect / Accused</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
-          <span className="text-slate-200 font-medium text-[10.5px]">Police Station / Unit</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-500/50" />
-          <span className="text-slate-200 font-medium text-[10.5px]">Complainant / Citizen</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50" />
-          <span className="text-slate-200 font-medium text-[10.5px]">Organized Syndicate</span>
-        </div>
+        {analysisMode === "FORENSIC" ? (
+          <>
+            <div className="flex items-center justify-between mb-1">
+              <p className="font-mono text-slate-300 font-bold uppercase text-[9.5px] tracking-wider">
+                Artifact Legend
+              </p>
+              <span className="text-[8.5px] px-1 rounded bg-amber-500/20 text-amber-300 font-mono">FLOW</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Victim Remitter</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Layer-1 Mule Account</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm shadow-orange-500/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Layer-2 Mule Account</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 shadow-sm shadow-red-600/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Cash-Out / ATM Node</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Shared Device (IMEI)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Suspect Phone (SIM)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shadow-sm shadow-rose-600/50" />
+              <span className="text-slate-200 font-medium text-[10px]">C2 Server / Drop IP</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-fuchsia-500 shadow-sm shadow-fuchsia-500/50" />
+              <span className="text-slate-200 font-medium text-[10px]">Banking Trojan APK</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="font-mono text-slate-300 font-bold uppercase text-[9.5px] tracking-wider mb-1">
+              CCTNS Crime Legend
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm shadow-red-500/50" />
+              <span className="text-slate-200 font-medium text-[10.5px]">Suspect / Accused</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50" />
+              <span className="text-slate-200 font-medium text-[10.5px]">Police Station / Unit</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm shadow-green-500/50" />
+              <span className="text-slate-200 font-medium text-[10.5px]">Complainant / Citizen</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50" />
+              <span className="text-slate-200 font-medium text-[10.5px]">Organized Syndicate</span>
+            </div>
+          </>
+        )}
         <div className="pt-1.5 border-t border-slate-700/60 text-[9.5px] text-amber-300 font-mono flex items-center gap-1">
           <RiInformationLine className="text-xs text-amber-400" />
           <span>Click node for dossier</span>
