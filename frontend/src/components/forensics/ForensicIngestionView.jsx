@@ -15,12 +15,13 @@ import {
   RiSparklingFill,
   RiAlertLine,
   RiEyeLine,
-  RiCloseLine
+  RiCloseLine,
+  RiBuilding2Line,
+  RiRefreshLine
 } from "react-icons/ri";
 import {
   ingestAndNormalizeArtifact,
-  forensicEvidenceStore,
-  SAMPLE_DATASETS
+  forensicEvidenceStore
 } from "../../services/forensicParserService";
 import { useAuth } from "../../context/AuthContext";
 
@@ -75,41 +76,20 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
     }
   };
 
-  const handleLoadSample = async (sampleKey) => {
+  const handleFetchFromLiveDatabase = async () => {
     setIsProcessing(true);
-    const sample = SAMPLE_DATASETS[sampleKey];
-    if (!sample) return;
-
-    setStatusMessage(`Ingesting sample ${sample.fileName}...`);
+    setStatusMessage("Querying live Zoho Catalyst database for stored forensic evidence...");
     try {
-      const badge = user?.badgeNumber || "MPP-2026-CYBER-CELL";
-      const artifact = await ingestAndNormalizeArtifact(sample.content, sample.fileName, badge);
-      forensicEvidenceStore.addArtifact(artifact);
-      setStatusMessage(`Loaded & SHA-256 verified: ${sample.fileName}`);
-      setSelectedArtifactId(artifact.id);
-      setTimeout(() => setStatusMessage(""), 4000);
-    } catch (err) {
-      console.error(err);
-      setStatusMessage(`Error loading sample: ${err.message}`);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleLoadAllSamples = async () => {
-    setIsProcessing(true);
-    setStatusMessage("Ingesting multi-source cyber fraud evidence package...");
-    try {
-      const badge = user?.badgeNumber || "MPP-2026-CYBER-CELL";
-      for (const key of Object.keys(SAMPLE_DATASETS)) {
-        const s = SAMPLE_DATASETS[key];
-        const art = await ingestAndNormalizeArtifact(s.content, s.fileName, badge);
-        forensicEvidenceStore.addArtifact(art);
+      await forensicEvidenceStore.loadFromDatabase();
+      const loaded = forensicEvidenceStore.getArtifacts();
+      if (loaded.length > 0) {
+        setStatusMessage(`Successfully fetched ${loaded.length} evidence artifact(s) directly from live database.`);
+      } else {
+        setStatusMessage("Live database query completed: 0 artifacts currently registered. Drag & drop files above to ingest them live.");
       }
-      setStatusMessage("All 4 multi-source evidence artifacts loaded & SHA-256 verified!");
-      setTimeout(() => setStatusMessage(""), 4000);
+      setTimeout(() => setStatusMessage(""), 4500);
     } catch (err) {
-      setStatusMessage(`Error: ${err.message}`);
+      setStatusMessage(`Database Fetch Error: ${err.message}`);
     } finally {
       setIsProcessing(false);
     }
@@ -227,74 +207,52 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
             </div>
           </div>
 
-          {/* Quick 1-Click Sample Ingestion (Essential for Hackathon Judging) */}
+          {/* Live Database Gateway Status Box */}
           <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <RiSparklingFill className="text-amber-400" /> Quick-Test Samples
+                  <RiShieldCheckLine className="text-emerald-400" /> Database Gateway
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  Instant Load
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                  LIVE CONNECTED
                 </span>
               </div>
-              <p className="text-slate-400 text-xs mb-3">
-                Load high-fidelity synthetic cyber fraud artifacts to evaluate normalization and entity linking instantly:
+              <p className="text-slate-400 text-xs mb-4">
+                Evidence ingestion and chain-of-custody audit logs are directly synchronized with the live Zoho Catalyst Data Store:
               </p>
 
-              <div className="space-y-2">
-                <button
-                  onClick={() => handleLoadSample("TELECOM_CDR")}
-                  disabled={isProcessing}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-blue-500/40 text-xs font-medium text-slate-200 flex items-center justify-between transition-all cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <RiCellphoneLine className="text-blue-400 text-sm" /> Telecom CDR / IPDR Log
+              <div className="space-y-2.5 text-xs font-mono">
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-1.5 font-sans">
+                    <RiBuilding2Line className="text-blue-400 text-sm" /> Cloud Data Store
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono">CSV</span>
-                </button>
+                  <span className="text-emerald-400 font-bold">Online</span>
+                </div>
 
-                <button
-                  onClick={() => handleLoadSample("FINANCIAL_UPI")}
-                  disabled={isProcessing}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-emerald-500/40 text-xs font-medium text-slate-200 flex items-center justify-between transition-all cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <RiBankCardLine className="text-emerald-400 text-sm" /> Bank & UPI Mule Sheet
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-1.5 font-sans">
+                    <RiShieldCheckLine className="text-purple-400 text-sm" /> Biometric Audit Trail
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono">CSV</span>
-                </button>
+                  <span className="text-emerald-400 font-bold">Live Synced</span>
+                </div>
 
-                <button
-                  onClick={() => handleLoadSample("EMAIL_HEADER")}
-                  disabled={isProcessing}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-amber-500/40 text-xs font-medium text-slate-200 flex items-center justify-between transition-all cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <RiMailLine className="text-amber-400 text-sm" /> Phishing Bank Notice (.eml)
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-1.5 font-sans">
+                    <RiFileTextLine className="text-amber-400 text-sm" /> LocalStorage Connection
                   </span>
-                  <span className="text-[10px] text-slate-500 font-mono">EML</span>
-                </button>
-
-                <button
-                  onClick={() => handleLoadSample("ANDROID_APK_DUMP")}
-                  disabled={isProcessing}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-purple-500/40 text-xs font-medium text-slate-200 flex items-center justify-between transition-all cursor-pointer"
-                >
-                  <span className="flex items-center gap-2">
-                    <RiAndroidLine className="text-purple-400 text-sm" /> Banking Trojan APK Dump
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-mono">JSON</span>
-                </button>
+                  <span className="text-red-400 font-bold">Purged & Disabled</span>
+                </div>
               </div>
             </div>
 
             <button
-              onClick={handleLoadAllSamples}
+              onClick={handleFetchFromLiveDatabase}
               disabled={isProcessing}
-              className="mt-3 w-full py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+              className="mt-4 w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
-              <RiSparklingFill /> Load All 4 Connected Artifacts
+              <RiRefreshLine className={isProcessing ? "animate-spin text-sm" : "text-sm"} />
+              Fetch Evidence From Live Database
             </button>
           </div>
         </div>

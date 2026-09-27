@@ -580,87 +580,8 @@ export async function ingestAndNormalizeArtifact(fileOrText, fileName = "artifac
 }
 
 // ----------------------------------------------------------------------------
-// Preloaded Synthetic Forensic Datasets for 1-Click Evaluation
+// Live Database Evidence Store (Zero Local Storage - Strictly Cloud API)
 // ----------------------------------------------------------------------------
-export const SAMPLE_DATASETS = {
-  TELECOM_CDR: {
-    fileName: "CCTNS_Evidence_CDR_Bhopal_Sept2026.csv",
-    type: "TELECOM_RECORDS",
-    content: `Call_Time,Calling_Number,Called_Number,Duration_Sec,Call_Type,IMEI,IMSI,First_Cell_ID,Tower_Location,Lat,Lng,Destination_IP
-2026-09-25T14:10:02Z,9876543210,9123456780,142,VOICE_CALL,358941098765432,404450123456789,CGI-MP-462001,MP Nagar Zone 1 Bhopal,23.2324,77.4332,185.220.101.5
-2026-09-25T14:25:15Z,9876543210,9123456781,215,VOICE_CALL,358941098765432,404450123456789,CGI-MP-462001,MP Nagar Zone 1 Bhopal,23.2324,77.4332,185.220.101.5
-2026-09-25T15:02:40Z,9400011223,9123456780,85,VOICE_CALL,358941098765432,404450998877665,CGI-MP-462003,TT Nagar Bhopal,23.2289,77.4045,185.220.101.5
-2026-09-25T16:11:10Z,9400011223,9899988811,0,SMS,358941098765432,404450998877665,CGI-MP-462003,TT Nagar Bhopal,23.2289,77.4045,103.208.220.12
-2026-09-25T18:45:30Z,9711223344,9899988811,310,VOICE_CALL,864210045566778,404450554433221,CGI-MP-452001,Vijay Nagar Indore,22.7533,75.8937,103.208.220.12`
-  },
-
-  FINANCIAL_UPI: {
-    fileName: "NPCI_UPI_Settlement_Mule_Trail_Case08879.csv",
-    type: "FINANCIAL_UPI_BANK",
-    content: `Txn_ID,Timestamp,Remitter_Name,Remitter_Account,Remitter_VPA,Beneficiary_Name,Beneficiary_Account,Beneficiary_VPA,Beneficiary_Bank,Amount_INR,Payment_Mode,Status,Client_IP
-TXN988102,2026-09-25T14:15:20Z,Rajesh Verma (Victim),SBIN0001234-9988,rajesh.verma@sbi,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,HDFC Bank,150000,UPI,SUCCESS,185.220.101.5
-TXN988103,2026-09-25T14:19:05Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ICICI Bank,75000,IMPS,SUCCESS,185.220.101.5
-TXN988104,2026-09-25T14:21:40Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Kotak Bank,70000,UPI,SUCCESS,185.220.101.5
-TXN988105,2026-09-25T14:32:10Z,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ATM Cashout Indore,ATM-IND-452001,N/A,ICICI ATM,50000,ATM_WITHDRAWAL,SUCCESS,22.7533_75.8937
-TXN988106,2026-09-25T14:38:50Z,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Crypto P2P Merchant,P2P-ESCROW-99,crypto.escrow@binance,Escrow Wallet,65000,P2P_TRANSFER,SUCCESS,103.208.220.12`
-  },
-
-  EMAIL_HEADER: {
-    fileName: "Phishing_SBI_KYC_Alert.eml",
-    type: "EMAIL_HEADER",
-    content: `Received: from mail-relay.bulletproof-proxy.nl (185.220.101.45)
- by mx.victim-corporation.in (Postfix) with ESMTP id 4X9L1902
- for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 13:58:12 +0530 (IST)
-Received: from fake-sbi-gateway.xyz (unknown [185.220.101.45])
- by mail-relay.bulletproof-proxy.nl (8.15.2/8.15.2) with ESMTP id 3N9L901
- for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 08:28:10 +0000
-Authentication-Results: mx.victim-corporation.in;
- dkim=fail reason="signature missing or invalid";
- spf=fail (mx.victim-corporation.in: domain of sbi-alert-verify.com does not designate 185.220.101.45 as permitted sender);
- dmarc=fail action=none header.from=sbi.co.in;
-From: "State Bank Of India Security Team" <no-reply@sbi.co.in>
-Return-Path: <bounce@fake-sbi-gateway.xyz>
-To: <rajesh.verma@mp-gov.in>
-Subject: URGENT: Complete Mandatory NetBanking KYC Verification within 2 Hours
-Date: Fri, 25 Sep 2026 13:58:00 +0530
-Message-ID: <202609251358.SBI.PHISH.9982@fake-sbi-gateway.xyz>
-X-Originating-IP: [185.220.101.45]
-X-Mailer: DarkMailer v3.4 Phishing Engine
-Content-Type: text/html; charset="UTF-8"
-
-<html><body>Dear Customer, your SBI account will be blocked. Click here to verify KYC: http://sbi-kyc-update-portal.apk</body></html>`
-  },
-
-  ANDROID_APK_DUMP: {
-    fileName: "Malware_SBI_Rewards_v4.apk.json",
-    type: "ANDROID_APK_DUMP",
-    content: JSON.stringify({
-      packages: [
-        {
-          packageName: "com.sbi.rewards.update2026",
-          appLabel: "SBI YONO Rewards & Instant KYC Update",
-          versionName: "4.2.1-trojan",
-          installTime: "2026-09-25T14:05:00Z",
-          permissions: [
-            "android.permission.BIND_ACCESSIBILITY_SERVICE",
-            "android.permission.SYSTEM_ALERT_WINDOW",
-            "android.permission.READ_SMS",
-            "android.permission.RECEIVE_SMS",
-            "android.permission.SEND_SMS",
-            "android.permission.RECEIVE_BOOT_COMPLETED",
-            "android.permission.INTERNET",
-            "android.permission.READ_PHONE_STATE"
-          ],
-          c2Endpoints: [
-            "185.220.101.45",
-            "http://c2-gateway.fake-sbi-portal.xyz/api/v1/collect"
-          ],
-          smsInterceptForwardTarget: "9876543210"
-        }
-      ]
-    }, null, 2)
-  }
-};
 
 // ----------------------------------------------------------------------------
 // In-Memory Evidence Store
