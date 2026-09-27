@@ -6,6 +6,7 @@ import {
   RiSettings4Line,
   RiNodeTree,
   RiTimeLine,
+  RiShieldFlashLine,
 } from "react-icons/ri";
 import { TbMapSearch } from "react-icons/tb";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
@@ -34,6 +35,11 @@ const menuCategories = [
         name: "Link & Network Analysis",
         path: "/network-analysis",
         icon: RiNodeTree,
+      },
+      {
+        name: "Digital Forensic Triage",
+        path: "/forensics",
+        icon: RiShieldFlashLine,
       },
       {
         name: "Diurnal Heat & Red-Zones",

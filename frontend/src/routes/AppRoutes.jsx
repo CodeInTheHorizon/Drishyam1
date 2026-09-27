@@ -10,6 +10,7 @@ import Officers from "../pages/Officers";
 import InsightsForecast from "../pages/InsightsForecast";
 import Reports from "../pages/Reports";
 import ManageRecords from "../pages/ManageRecords";
+import Forensics from "../pages/Forensics";
 
 import Login from "../pages/Login";
 import Settings from "../pages/Settings";
@@ -33,6 +34,8 @@ function AppRoutes() {
         <Route path="/network-analysis" element={<NetworkAnalysis />} />
         <Route path="/network" element={<NetworkAnalysis />} />
         <Route path="/link-analysis" element={<NetworkAnalysis />} />
+        <Route path="/forensics" element={<Forensics />} />
+        <Route path="/digital-forensics" element={<Forensics />} />
         <Route path="/spatiotemporal" element={<DiurnalMatrix />} />
         <Route path="/diurnal" element={<DiurnalMatrix />} />
         <Route path="/diurnal-matrix" element={<DiurnalMatrix />} />
