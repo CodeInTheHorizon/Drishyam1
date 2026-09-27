@@ -145,7 +145,7 @@ const FIRDetailModal = ({ isOpen, onClose, record, onToggleStatus }) => {
                 <span className="text-slate-200 font-bold">{record.allottedOfficerName} ({record.allottedOfficerRank})</span>
               </div>
               <div>
-                <span className="text-slate-500 font-mono block">Officer KGID:</span>
+                <span className="text-slate-500 font-mono block">Officer MPPID:</span>
                 <span className="text-slate-300 font-mono">{record.allottedOfficerKgid}</span>
               </div>
               <div>

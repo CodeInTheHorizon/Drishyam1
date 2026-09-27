@@ -1,21 +1,55 @@
-Received: from mail-relay.bulletproof-proxy.nl (185.220.101.45)
- by mx.victim-corporation.in (Postfix) with ESMTP id 4X9L1902
- for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 13:58:12 +0530 (IST)
-Received: from fake-sbi-gateway.xyz (unknown [185.220.101.45])
- by mail-relay.bulletproof-proxy.nl (8.15.2/8.15.2) with ESMTP id 3N9L901
- for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 08:28:10 +0000
-Authentication-Results: mx.victim-corporation.in;
- dkim=fail reason="signature missing or invalid";
- spf=fail (mx.victim-corporation.in: domain of sbi-alert-verify.com does not designate 185.220.101.45 as permitted sender);
- dmarc=fail action=none header.from=sbi.co.in;
-From: "State Bank Of India Security Team" <no-reply@sbi.co.in>
-Return-Path: <bounce@fake-sbi-gateway.xyz>
-To: <rajesh.verma@mp-gov.in>
-Subject: URGENT: Complete Mandatory NetBanking KYC Verification within 2 Hours
+Received: from mail-relay-04.bulletproof-proxy.nl (mail-relay-04.bulletproof-proxy.nl [185.220.101.45])
+	by mx.mp-gov.in (Postfix) with ESMTPS id 4X9L1902881
+	for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 13:58:12 +0530 (IST)
+Received: from fake-sbi-gateway.xyz (unknown [185.220.101.5])
+	by mail-relay-04.bulletproof-proxy.nl (8.15.2/8.15.2) with ESMTP id 3N9L90188
+	for <rajesh.verma@mp-gov.in>; Fri, 25 Sep 2026 08:28:10 +0000
+Received: from bulletproof-vps-c2.net (185.220.101.5)
+	by fake-sbi-gateway.xyz with HTTP; Fri, 25 Sep 2026 08:27:55 +0000
+Authentication-Results: mx.mp-gov.in;
+	dkim=fail reason="signature missing or body hash mismatch" header.d=sbi.co.in;
+	spf=fail (mx.mp-gov.in: domain of sbi-alert-verify.com does not designate 185.220.101.5 as permitted sender) smtp.mailfrom=bounce@sbi-alert-verify.com;
+	dmarc=fail (p=REJECT dis=NONE) header.from=sbi.co.in
+From: "State Bank of India Online Banking Security" <alerts-security@sbi.co.in>
+Reply-To: "KYC Verification Desk" <support@fake-sbi-gateway.xyz>
+Return-Path: <bounce@sbi-alert-verify.com>
+To: "Rajesh Verma" <rajesh.verma@mp-gov.in>
+Subject: URGENT NOTICE: Complete Mandatory NetBanking KYC Update within 2 Hours to Avoid Account Suspension
 Date: Fri, 25 Sep 2026 13:58:00 +0530
 Message-ID: <202609251358.SBI.PHISH.9982@fake-sbi-gateway.xyz>
-X-Originating-IP: [185.220.101.45]
-X-Mailer: DarkMailer v3.4 Phishing Engine
+X-Originating-IP: [185.220.101.5]
+X-Mailer: DarkMailer v3.4 Mass Phishing Engine
+X-Spam-Flag: YES
+X-Spam-Score: 18.4
+X-Phishing-Payload-URL: http://c2-gateway.fake-sbi-portal.xyz/api/v1/collect/Malware_SBI_Rewards_v4.apk
+MIME-Version: 1.0
 Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-<html><body>Dear Customer, your SBI account will be blocked. Click here to verify KYC: http://sbi-kyc-update-portal.apk</body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SBI Security Advisory</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #d1d5db;">
+    <h2 style="color: #0b3954; border-bottom: 2px solid #0b3954; padding-bottom: 10px;">State Bank of India — Mandatory KYC Advisory</h2>
+    <p>Dear Valued Customer,</p>
+    <p style="color: #b91c1c; font-weight: bold;">
+      Your Internet Banking & UPI access for Account SBIN0001234-9988 will be temporarily suspended today due to pending regulatory KYC compliance.
+    </p>
+    <p>
+      To prevent immediate account deactivation and transaction freeze, please download and run the verified SBI KYC Verification Utility APK on your registered Android device:
+    </p>
+    <div style="text-align: center; margin: 25px 0;">
+      <a href="http://c2-gateway.fake-sbi-portal.xyz/api/v1/collect/Malware_SBI_Rewards_v4.apk" style="background-color: #0077b6; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+        Download Instant KYC Update Utility (.apk)
+      </a>
+    </div>
+    <p style="font-size: 11px; color: #6b7280;">
+      Do not share your OTP or PIN with anyone. State Bank of India never asks for your password over phone or email.
+    </p>
+  </div>
+</body>
+</html>

@@ -596,20 +596,6 @@ class ForensicEvidenceStore {
         window.localStorage.removeItem("cctns_forensic_artifacts_v1");
       }
     } catch {}
-    this.loadFromDatabase();
-  }
-
-  async loadFromDatabase() {
-    try {
-      const res = await fetch("/api/forensics/evidence");
-      if (res.ok) {
-        const json = await res.json();
-        this.artifacts = Array.isArray(json.data) ? json.data : [];
-        this.notify();
-      }
-    } catch (err) {
-      console.warn("Live database evidence sync notice:", err.message);
-    }
   }
 
   getArtifacts() {
@@ -620,44 +606,20 @@ class ForensicEvidenceStore {
     return this.artifacts.find((a) => a.id === id) || null;
   }
 
-  async addArtifact(artifact) {
-    // Add locally to state for instant UI responsiveness
+  addArtifact(artifact) {
+    // Pure volatile in-memory storage for active triage session
     this.artifacts = this.artifacts.filter((a) => a.id !== artifact.id);
     this.artifacts.unshift(artifact);
     this.notify();
-
-    // Persist directly to live database API
-    try {
-      const res = await fetch("/api/forensics/evidence", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(artifact)
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data) {
-          console.log("[ForensicStore] Evidence saved to live database & audit trail:", artifact.id);
-        }
-      }
-    } catch (err) {
-      console.warn("Failed persisting evidence to live database:", err.message);
-    }
-
     return artifact;
   }
 
-  async removeArtifact(id) {
+  removeArtifact(id) {
     this.artifacts = this.artifacts.filter((a) => a.id !== id);
     this.notify();
-
-    try {
-      await fetch(`/api/forensics/evidence/${id}`, { method: "DELETE" });
-    } catch (err) {
-      console.warn("Failed deleting evidence from live database:", err.message);
-    }
   }
 
-  async clearAll() {
+  clearAll() {
     this.artifacts = [];
     try {
       if (typeof window !== "undefined" && window.localStorage) {
@@ -665,12 +627,6 @@ class ForensicEvidenceStore {
       }
     } catch {}
     this.notify();
-
-    try {
-      await fetch("/api/forensics/evidence", { method: "DELETE" });
-    } catch (err) {
-      console.warn("Failed clearing live database evidence:", err.message);
-    }
   }
 
   // Aggregate all extracted entities across all loaded evidence files

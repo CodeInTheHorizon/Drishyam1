@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   RiFileUploadLine,
   RiShieldCheckLine,
@@ -23,6 +23,8 @@ import {
   ingestAndNormalizeArtifact,
   forensicEvidenceStore
 } from "../../services/forensicParserService";
+import { generateOnePageSeizureBrief } from "../../services/forensicBriefService";
+import CyberSeizureBriefModal from "./CyberSeizureBriefModal";
 import { useAuth } from "../../context/AuthContext";
 
 export default function ForensicIngestionView({ onProceedToCorrelation }) {
@@ -34,17 +36,24 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
   const [selectedArtifactId, setSelectedArtifactId] = useState(null);
   const [copiedHash, setCopiedHash] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
+  const [isBriefModalOpen, setIsBriefModalOpen] = useState(false);
   const fileInputRef = useRef(null);
 
+  const briefData = useMemo(() => {
+    return generateOnePageSeizureBrief(
+      "FIR/MP/2026/08879", 
+      user?.name || "Inspector R. K. Sharma", 
+      user?.badgeNumber || user?.employeeId || "MPP-2026-IO"
+    );
+  }, [artifacts, user]);
+
   useEffect(() => {
-    // Completely purge legacy browser localStorage
+    // Strictly purge legacy browser localStorage
     try {
       localStorage.removeItem("cctns_forensic_artifacts_v1");
     } catch {}
 
-    forensicEvidenceStore.loadFromDatabase().then(() => {
-      setArtifacts(forensicEvidenceStore.getArtifacts());
-    });
+    setArtifacts(forensicEvidenceStore.getArtifacts());
 
     const unsubscribe = forensicEvidenceStore.subscribe((updated) => {
       setArtifacts(updated);
@@ -65,7 +74,7 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
         const artifact = await ingestAndNormalizeArtifact(file, file.name, badge);
         forensicEvidenceStore.addArtifact(artifact);
       }
-      setStatusMessage(`Successfully verified and normalized ${files.length} artifact(s).`);
+      setStatusMessage(`Successfully verified, SHA-256 signed, and normalized ${files.length} artifact(s) in active triage memory.`);
       setTimeout(() => setStatusMessage(""), 4000);
     } catch (err) {
       console.error("Ingestion failed:", err);
@@ -73,25 +82,6 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
     } finally {
       setIsProcessing(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const handleFetchFromLiveDatabase = async () => {
-    setIsProcessing(true);
-    setStatusMessage("Querying live Zoho Catalyst database for stored forensic evidence...");
-    try {
-      await forensicEvidenceStore.loadFromDatabase();
-      const loaded = forensicEvidenceStore.getArtifacts();
-      if (loaded.length > 0) {
-        setStatusMessage(`Successfully fetched ${loaded.length} evidence artifact(s) directly from live database.`);
-      } else {
-        setStatusMessage("Live database query completed: 0 artifacts currently registered. Drag & drop files above to ingest them live.");
-      }
-      setTimeout(() => setStatusMessage(""), 4500);
-    } catch (err) {
-      setStatusMessage(`Database Fetch Error: ${err.message}`);
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -157,6 +147,14 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
             {artifacts.length > 0 && (
               <>
                 <button
+                  onClick={() => setIsBriefModalOpen(true)}
+                  className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer"
+                  title="Generate standardized Section 91 CrPC One-Page Seizure Brief & Timeline report"
+                >
+                  <RiFileTextLine className="text-base" />
+                  <span>1-Page Seizure Brief (Sec 91)</span>
+                </button>
+                <button
                   onClick={handleExportJSON}
                   className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-sm font-medium flex items-center gap-2 transition-all cursor-pointer"
                   title="Export all normalized evidence in standardized JSON"
@@ -207,53 +205,51 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
             </div>
           </div>
 
-          {/* Live Database Gateway Status Box */}
+          {/* Volatile Triage Sandbox Status Box */}
           <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <RiShieldCheckLine className="text-emerald-400" /> Database Gateway
+                  <RiShieldCheckLine className="text-emerald-400" /> Triage Architecture
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
-                  LIVE CONNECTED
+                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">
+                  ZERO-RESIDUE RUNTIME
                 </span>
               </div>
               <p className="text-slate-400 text-xs mb-4">
-                Evidence ingestion and chain-of-custody audit logs are directly synchronized with the live Zoho Catalyst Data Store:
+                To honor schema datatype constraints (int, bool, varchar) and guarantee forensic zero-residue, files are parsed on-the-fly in volatile session memory:
               </p>
 
               <div className="space-y-2.5 text-xs font-mono">
                 <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
                   <span className="text-slate-400 flex items-center gap-1.5 font-sans">
-                    <RiBuilding2Line className="text-blue-400 text-sm" /> Cloud Data Store
+                    <RiBuilding2Line className="text-blue-400 text-sm" /> Database Storage
                   </span>
-                  <span className="text-emerald-400 font-bold">Online</span>
+                  <span className="text-amber-400 font-bold">Bypassed (Zero DB Write)</span>
                 </div>
 
                 <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
                   <span className="text-slate-400 flex items-center gap-1.5 font-sans">
-                    <RiShieldCheckLine className="text-purple-400 text-sm" /> Biometric Audit Trail
-                  </span>
-                  <span className="text-emerald-400 font-bold">Live Synced</span>
-                </div>
-
-                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-400 flex items-center gap-1.5 font-sans">
-                    <RiFileTextLine className="text-amber-400 text-sm" /> LocalStorage Connection
+                    <RiFileTextLine className="text-red-400 text-sm" /> Browser LocalStorage
                   </span>
                   <span className="text-red-400 font-bold">Purged & Disabled</span>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between">
+                  <span className="text-slate-400 flex items-center gap-1.5 font-sans">
+                    <RiShieldCheckLine className="text-emerald-400 text-sm" /> Triage Processing
+                  </span>
+                  <span className="text-emerald-400 font-bold">Live In-Memory</span>
                 </div>
               </div>
             </div>
 
-            <button
-              onClick={handleFetchFromLiveDatabase}
-              disabled={isProcessing}
-              className="mt-4 w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <RiRefreshLine className={isProcessing ? "animate-spin text-sm" : "text-sm"} />
-              Fetch Evidence From Live Database
-            </button>
+            <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+              <span className="text-xs text-slate-400">Session Artifacts:</span>
+              <span className="text-xs font-mono font-bold text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+                {artifacts.length} Active in Memory
+              </span>
+            </div>
           </div>
         </div>
 
@@ -654,8 +650,8 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
       </div>
 
       {/* Action Footer to Proceed to Entity Correlation & Graph */}
-      {artifacts.length > 0 && onProceedToCorrelation && (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-blue-900/40 to-indigo-900/40 border border-blue-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {artifacts.length > 0 && (
+        <div className="p-4 rounded-xl bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-purple-900/40 border border-blue-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h4 className="text-white font-semibold text-sm flex items-center gap-2">
               <RiSparklingFill className="text-blue-400" /> Ready for Automated Entity Correlation & Graph Synthesis
@@ -664,14 +660,31 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
               {artifacts.length} artifact(s) with {allEntities.length} extracted entities ready to map cross-artifact links (IMEI-to-Phone, Mule accounts, C2 drops).
             </p>
           </div>
-          <button
-            onClick={onProceedToCorrelation}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-          >
-            Launch Entity Correlation Graph ➔
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              onClick={() => setIsBriefModalOpen(true)}
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              <RiFileTextLine /> 1-Page Seizure Brief (Sec 91)
+            </button>
+            {onProceedToCorrelation && (
+              <button
+                onClick={onProceedToCorrelation}
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/30 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+              >
+                Launch Entity Correlation Graph ➔
+              </button>
+            )}
+          </div>
         </div>
       )}
+
+      {/* Cyber Seizure Brief Modal */}
+      <CyberSeizureBriefModal
+        briefData={briefData}
+        isOpen={isBriefModalOpen}
+        onClose={() => setIsBriefModalOpen(false)}
+      />
     </div>
   );
 }

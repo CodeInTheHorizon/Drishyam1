@@ -7,7 +7,16 @@ import {
   RiBuilding2Line,
   RiRefreshLine,
   RiDownload2Line,
-  RiSparklingFill
+  RiSparklingFill,
+  RiSearchLine,
+  RiPlayLine,
+  RiPauseLine,
+  RiFocus3Line,
+  RiAlertFill,
+  RiMoneyDollarCircleLine,
+  RiSmartphoneLine,
+  RiServerLine,
+  RiShieldCheckLine
 } from "react-icons/ri";
 import { networkService } from "../../services/networkService";
 import { recordService } from "../../services/recordService";
@@ -15,10 +24,13 @@ import { crimeService } from "../../services/crimeService";
 import { getArtifactCorrelationGraph } from "../../services/forensicCorrelationService";
 import { forensicEvidenceStore } from "../../services/forensicParserService";
 import NetworkFiltersToolbar from "../../components/network/NetworkFiltersToolbar";
+import ForensicFiltersToolbar from "../../components/network/ForensicFiltersToolbar";
 import CrossJurisdictionFinder from "../../components/network/CrossJurisdictionFinder";
 import NetworkGraphCanvas from "../../components/network/NetworkGraphCanvas";
 import NodeDetailsDossier from "../../components/network/NodeDetailsDossier";
-import { RiShieldFlashLine, RiArrowRightUpLine } from "react-icons/ri";
+import CyberSeizureBriefModal from "../../components/forensics/CyberSeizureBriefModal";
+import { generateOnePageSeizureBrief } from "../../services/forensicBriefService";
+import { RiShieldFlashLine, RiArrowRightUpLine, RiFileTextLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 export default function NetworkAnalysis() {
@@ -26,10 +38,13 @@ export default function NetworkAnalysis() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("Bhopal");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [selectedScope, setSelectedScope] = useState("ALL"); // "ALL", "FINANCIAL", "TELECOM", "CYBER"
+  const [selectedRiskFilter, setSelectedRiskFilter] = useState("ALL"); // "ALL", "CRITICAL", "HIGH", "LOW"
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [isSimulationActive, setIsSimulationActive] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(1.0);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isBriefModalOpen, setIsBriefModalOpen] = useState(false);
 
   const [activeNodeTypes, setActiveNodeTypes] = useState({
     SUSPECT: true,
@@ -47,11 +62,11 @@ export default function NetworkAnalysis() {
     EMAIL_SPOOF: true
   });
 
-  // State to trigger re-renders on database sync
+  // State to trigger re-renders on in-memory evidence updates
   const [dbVersion, setDbVersion] = useState(0);
   const [forensicArtifactsCount, setForensicArtifactsCount] = useState(0);
 
-  // Subscribe to real-time database changes from recordService and forensicEvidenceStore
+  // Subscribe to real-time changes
   useEffect(() => {
     const unsubRecords = recordService.subscribe(() => {
       setDbVersion((v) => v + 1);
@@ -85,6 +100,7 @@ export default function NetworkAnalysis() {
           crossDistrictSuspectsCount: forensicData.metrics.cashoutNodesCount,
           syndicatesCount: forensicData.metrics.sharedDevicesCount,
           stationsCount: forensicData.metrics.c2ServersCount,
+          criticalCount: forensicData.metrics.criticalRiskNodesCount,
           totalConnections: forensicData.metrics.totalEdges
         },
         crossDistrictSuspects: []
@@ -108,10 +124,47 @@ export default function NetworkAnalysis() {
     };
   }, [analysisMode, selectedDistrict, selectedCategory, searchTerm, dbVersion]);
 
-  // Filter nodes based on active entity layer toggles
+  const briefData = useMemo(() => {
+    return generateOnePageSeizureBrief("FIR/MP/2026/08879", "Inspector R. K. Sharma", "MPP-2026-IO");
+  }, [allNodes, allEdges]);
+
+  // Filter nodes based on active entity layer toggles, scope, risk, & search term
   const filteredNodes = useMemo(() => {
-    return allNodes.filter((n) => activeNodeTypes[n.type]);
-  }, [allNodes, activeNodeTypes]);
+    return allNodes.filter((n) => {
+      // 1. Layer toggle
+      if (!activeNodeTypes[n.type]) return false;
+
+      // 2. Scope filter (in Forensic mode)
+      if (analysisMode === "FORENSIC" && selectedScope !== "ALL") {
+        if (selectedScope === "FINANCIAL") {
+          if (!["VICTIM", "L1_MULE", "L2_MULE", "CASHOUT"].includes(n.type)) return false;
+        } else if (selectedScope === "TELECOM") {
+          if (!["PHONE", "IMEI"].includes(n.type)) return false;
+        } else if (selectedScope === "CYBER") {
+          if (!["C2_SERVER", "MALWARE_APK", "EMAIL_SPOOF"].includes(n.type)) return false;
+        }
+      }
+
+      // 3. Risk filter (in Forensic mode)
+      if (analysisMode === "FORENSIC" && selectedRiskFilter !== "ALL") {
+        const score = n.riskScore || 0;
+        if (selectedRiskFilter === "CRITICAL" && score < 80) return false;
+        if (selectedRiskFilter === "HIGH" && score < 65) return false;
+        if (selectedRiskFilter === "LOW" && score > 40) return false;
+      }
+
+      // 4. Search query
+      if (searchTerm) {
+        const q = searchTerm.toLowerCase();
+        const matchName = (n.name || "").toLowerCase().includes(q);
+        const matchSub = (n.subtitle || "").toLowerCase().includes(q);
+        const matchDetails = JSON.stringify(n.details || {}).toLowerCase().includes(q);
+        return matchName || matchSub || matchDetails;
+      }
+
+      return true;
+    });
+  }, [allNodes, activeNodeTypes, searchTerm, analysisMode, selectedScope, selectedRiskFilter]);
 
   // Filter edges connected only to visible nodes
   const filteredEdges = useMemo(() => {
@@ -138,6 +191,9 @@ export default function NetworkAnalysis() {
     setZoomLevel(1.0);
     setPanOffset({ x: 0, y: 0 });
     setSelectedNodeId(null);
+    setSearchTerm("");
+    setSelectedScope("ALL");
+    setSelectedRiskFilter("ALL");
   };
 
   const handleSelectSuspect = (suspectId) => {
@@ -147,7 +203,7 @@ export default function NetworkAnalysis() {
 
   return (
     <div 
-      className="flex flex-col gap-6 animate-in fade-in duration-300 pb-12"
+      className="flex flex-col gap-6 animate-in fade-in duration-300 pb-12 font-sans"
       style={{ display: "flex", flexDirection: "column", gap: "24px" }}
     >
       {/* Page Header Banner */}
@@ -158,14 +214,17 @@ export default function NetworkAnalysis() {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
               <RiSparklingFill className="text-amber-400" />
-              {analysisMode === "FORENSIC" ? "Multi-Artifact Cyber Fraud Correlator" : "CCTNS State Crime Registry"}
+              {analysisMode === "FORENSIC" ? "Feature 2: Automated Entity Correlator" : "CCTNS State Crime Registry"}
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+              <RiShieldCheckLine /> Directional Mule Visualizer
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
             {analysisMode === "FORENSIC" ? (
               <>
                 <RiShieldFlashLine className="text-amber-400 text-2xl" />
-                <span>Digital Artifact & Mule Account Flow Correlator</span>
+                <span>Entity Correlation & Directional Mule Graph Engine</span>
               </>
             ) : (
               <>
@@ -177,7 +236,7 @@ export default function NetworkAnalysis() {
 
           <p className="text-xs text-slate-300 mt-1 max-w-2xl font-sans">
             {analysisMode === "FORENSIC"
-              ? "Directional fund flows (Victim ➔ Layer 1/2 Mules ➔ ATM/Crypto cashouts), shared IMEIs across SIMs, and C2 drop server linkages from uploaded evidence."
+              ? "Synthesizes directional fund flows (Victim ➔ L1 Mule ➔ L2 Mule ➔ Cashout ATM/Crypto), shared IMEIs across SIMs, and Trojan APK to C2 exfiltration trails from ingested artifacts."
               : "Cross-jurisdictional link matrix and syndicate mapping across Madhya Pradesh police stations."}
           </p>
         </div>
@@ -218,11 +277,22 @@ export default function NetworkAnalysis() {
           <button
             onClick={handleResetView}
             className="flex items-center gap-1.5 text-cyan-400 hover:text-white transition-all cursor-pointer font-mono text-xs py-2 px-3 rounded-lg border border-slate-700/80 bg-slate-800/60 hover:bg-slate-700"
-            title="Reset View"
+            title="Recenter & Reset View"
           >
             <RiRefreshLine className="text-sm" />
-            <span className="font-bold tracking-wider uppercase text-[11px]">Reset View</span>
+            <span className="font-bold tracking-wider uppercase text-[11px]">Center View</span>
           </button>
+
+          {analysisMode === "FORENSIC" && allNodes.length > 0 && (
+            <button
+              onClick={() => setIsBriefModalOpen(true)}
+              className="flex items-center gap-1.5 text-white bg-emerald-600 hover:bg-emerald-500 transition-all cursor-pointer font-mono text-xs py-2 px-3 rounded-lg shadow-md shadow-emerald-600/30 font-bold"
+              title="Generate Section 91 CrPC One-Page Seizure Brief & Timeline report"
+            >
+              <RiFileTextLine className="text-sm" />
+              <span className="tracking-wider uppercase text-[11px]">1-Page Seizure Brief</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -233,59 +303,15 @@ export default function NetworkAnalysis() {
           style={{ padding: "18px 20px" }}
         >
           <div className="flex items-center justify-between text-slate-400 mb-1">
-            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">Total Entities</span>
+            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
+              {analysisMode === "FORENSIC" ? "Extracted Entities" : "Total Entities"}
+            </span>
             <RiNodeTree className="text-blue-400 text-base" />
           </div>
           <p className="text-2xl font-extrabold text-white font-mono">{metrics.totalNodes}</p>
-          <span className="text-[9px] text-slate-400 font-sans mt-0.5">In Active Scope</span>
-        </div>
-
-        <div 
-          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
-          style={{ padding: "18px 20px" }}
-        >
-          <div className="flex items-center justify-between text-slate-400 mb-1">
-            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">Suspects</span>
-            <RiShieldUserLine className="text-red-400 text-base" />
-          </div>
-          <p className="text-2xl font-extrabold text-red-400 font-mono">{metrics.suspectsCount}</p>
-          <span className="text-[9px] text-slate-400 font-sans mt-0.5">Accused Entities</span>
-        </div>
-
-        <div 
-          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
-          style={{ padding: "18px 20px" }}
-        >
-          <div className="flex items-center justify-between text-slate-400 mb-1">
-            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">Multi-District</span>
-            <RiRouteLine className="text-amber-400 text-base" />
-          </div>
-          <p className="text-2xl font-extrabold text-amber-300 font-mono">{metrics.crossDistrictSuspectsCount}</p>
-          <span className="text-[9px] text-amber-400/90 font-medium font-sans mt-0.5">Cross-Jurisdiction</span>
-        </div>
-
-        <div 
-          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
-          style={{ padding: "18px 20px" }}
-        >
-          <div className="flex items-center justify-between text-slate-400 mb-1">
-            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">Crime Rings</span>
-            <RiTeamLine className="text-purple-400 text-base" />
-          </div>
-          <p className="text-2xl font-extrabold text-purple-300 font-mono">{metrics.syndicatesCount}</p>
-          <span className="text-[9px] text-slate-400 font-sans mt-0.5">Active Syndicates</span>
-        </div>
-
-        <div 
-          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
-          style={{ padding: "18px 20px" }}
-        >
-          <div className="flex items-center justify-between text-slate-400 mb-1">
-            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">Co-Accused</span>
-            <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
-          </div>
-          <p className="text-2xl font-extrabold text-white font-mono">{metrics.coAccusedLinksCount}</p>
-          <span className="text-[9px] text-slate-400 font-sans mt-0.5">Shared Offences</span>
+          <span className="text-[9px] text-slate-400 font-sans mt-0.5">
+            {analysisMode === "FORENSIC" ? "Cross-Correlated" : "In Active Scope"}
+          </span>
         </div>
 
         <div 
@@ -294,13 +320,79 @@ export default function NetworkAnalysis() {
         >
           <div className="flex items-center justify-between text-slate-400 mb-1">
             <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
-              {analysisMode === "FORENSIC" ? "C2 Servers" : "Stations"}
+              {analysisMode === "FORENSIC" ? "Mule Layers (L1/L2)" : "Suspects"}
             </span>
-            <RiBuilding2Line className="text-blue-400 text-base" />
+            <RiShieldUserLine className="text-amber-400 text-base" />
           </div>
-          <p className="text-2xl font-extrabold text-blue-400 font-mono">{metrics.stationsCount}</p>
+          <p className="text-2xl font-extrabold text-amber-400 font-mono">{metrics.suspectsCount}</p>
           <span className="text-[9px] text-slate-400 font-sans mt-0.5">
-            {analysisMode === "FORENSIC" ? "Host Endpoints" : "Precinct Nodes"}
+            {analysisMode === "FORENSIC" ? "Intermediary Nodes" : "Accused Entities"}
+          </span>
+        </div>
+
+        <div 
+          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
+          style={{ padding: "18px 20px" }}
+        >
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
+              {analysisMode === "FORENSIC" ? "Cash-Out Points" : "Multi-District"}
+            </span>
+            <RiMoneyDollarCircleLine className="text-red-400 text-base" />
+          </div>
+          <p className="text-2xl font-extrabold text-red-400 font-mono">{metrics.crossDistrictSuspectsCount}</p>
+          <span className="text-[9px] text-red-400/90 font-medium font-sans mt-0.5">
+            {analysisMode === "FORENSIC" ? "ATM / Crypto Escrow" : "Cross-Jurisdiction"}
+          </span>
+        </div>
+
+        <div 
+          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
+          style={{ padding: "18px 20px" }}
+        >
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
+              {analysisMode === "FORENSIC" ? "Shared Hardware" : "Crime Rings"}
+            </span>
+            <RiSmartphoneLine className="text-purple-400 text-base" />
+          </div>
+          <p className="text-2xl font-extrabold text-purple-300 font-mono">{metrics.syndicatesCount}</p>
+          <span className="text-[9px] text-slate-400 font-sans mt-0.5">
+            {analysisMode === "FORENSIC" ? "IMEI SIM Swaps" : "Active Syndicates"}
+          </span>
+        </div>
+
+        <div 
+          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
+          style={{ padding: "18px 20px" }}
+        >
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
+              {analysisMode === "FORENSIC" ? "C2 / Proxy IPs" : "Co-Accused"}
+            </span>
+            <RiServerLine className="text-rose-400 text-base" />
+          </div>
+          <p className="text-2xl font-extrabold text-rose-400 font-mono">{metrics.stationsCount}</p>
+          <span className="text-[9px] text-slate-400 font-sans mt-0.5">
+            {analysisMode === "FORENSIC" ? "Command Endpoints" : "Shared Offences"}
+          </span>
+        </div>
+
+        <div 
+          className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
+          style={{ padding: "18px 20px" }}
+        >
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9.5px] font-mono font-bold uppercase tracking-wider">
+              {analysisMode === "FORENSIC" ? "Critical Risk" : "Stations"}
+            </span>
+            <RiAlertFill className="text-red-500 text-base" />
+          </div>
+          <p className="text-2xl font-extrabold text-red-500 font-mono">
+            {analysisMode === "FORENSIC" ? (metrics.criticalCount || 0) : metrics.stationsCount}
+          </p>
+          <span className="text-[9px] text-slate-400 font-sans mt-0.5">
+            {analysisMode === "FORENSIC" ? "Risk Score ≥ 80%" : "Precinct Nodes"}
           </span>
         </div>
       </div>
@@ -309,9 +401,9 @@ export default function NetworkAnalysis() {
       {analysisMode === "FORENSIC" && allNodes.length === 0 && (
         <div className="p-8 rounded-xl bg-slate-900/90 border border-slate-800 text-center space-y-3">
           <RiShieldFlashLine className="mx-auto text-4xl text-amber-400 mb-1" />
-          <h3 className="text-white font-bold text-base">No Digital Artifacts Ingested in Live Database</h3>
+          <h3 className="text-white font-bold text-base">No Digital Artifacts Active in Triage Memory</h3>
           <p className="text-slate-400 text-xs max-w-md mx-auto">
-            Upload CDR/IPDR telecom logs, UPI settlement sheets, .eml headers or Android APK dumps in the Digital Forensic Triage to generate the automated entity correlation graph.
+            Upload CDR/IPDR telecom logs, UPI settlement sheets, .eml headers or Android APK dumps in the Digital Forensic Triage section to automatically synthesize the directional mule graph.
           </p>
           <div className="pt-2">
             <Link
@@ -323,6 +415,24 @@ export default function NetworkAnalysis() {
             </Link>
           </div>
         </div>
+      )}
+
+      {/* Forensic Filters & Physics Toolbar (in Forensic Mode) */}
+      {analysisMode === "FORENSIC" && allNodes.length > 0 && (
+        <ForensicFiltersToolbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedScope={selectedScope}
+          setSelectedScope={setSelectedScope}
+          selectedRiskFilter={selectedRiskFilter}
+          setSelectedRiskFilter={setSelectedRiskFilter}
+          activeNodeTypes={activeNodeTypes}
+          toggleNodeType={toggleNodeType}
+          isSimulationActive={isSimulationActive}
+          setIsSimulationActive={setIsSimulationActive}
+          onResetView={handleResetView}
+          totalEntitiesCount={allNodes.length}
+        />
       )}
 
       {/* Cross-Jurisdiction Connection Finder Banner (Only in CCTNS mode) */}
@@ -377,6 +487,13 @@ export default function NetworkAnalysis() {
           />
         </div>
       )}
+
+      {/* Cyber Seizure Brief Modal */}
+      <CyberSeizureBriefModal
+        briefData={briefData}
+        isOpen={isBriefModalOpen}
+        onClose={() => setIsBriefModalOpen(false)}
+      />
     </div>
   );
 }

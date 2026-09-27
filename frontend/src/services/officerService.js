@@ -31,7 +31,7 @@ const saveCustomOfficers = (customMap) => {
   cachedOfficersMap = customMap || {};
 };
 
-import { recordService } from "./recordService";
+import { recordService } from "./recordService.js";
 
 const getAuthUserByBadgeOrName = (badgeNumber, name) => {
   const off = cachedOfficersMap[badgeNumber];
@@ -51,6 +51,7 @@ export const officerService = {
             const cleanName = (emp.name || "").toLowerCase().replace(/[^a-z0-9]/g, '');
             freshMap[badge] = {
               badgeNumber: badge,
+              mppid: badge,
               name: emp.name,
               rank: emp.rank || "Police Inspector",
               unit: emp.unit || "General Unit",
@@ -98,6 +99,7 @@ export const officerService = {
       const authUser = getAuthUserByBadgeOrName(key, mergedMap[key].name);
       return {
         badgeNumber: key,
+        mppid: key,
         name: authUser?.name || mergedMap[key].name,
         rank: authUser?.rank || mergedMap[key].rank,
         unit: authUser?.unit || mergedMap[key].unit,

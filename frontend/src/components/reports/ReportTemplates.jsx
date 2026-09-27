@@ -1,4 +1,3 @@
-import React from "react";
 import {
   FaFileSignature,
   FaMapMarkedAlt,
@@ -6,7 +5,8 @@ import {
   FaFolderOpen,
   FaClipboardList,
   FaChartLine,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaShieldAlt
 } from "react-icons/fa";
 
 const iconMap = {
@@ -16,7 +16,8 @@ const iconMap = {
   FaFolderOpen,
   FaClipboardList,
   FaChartLine,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaShieldAlt
 };
 
 const ReportTemplates = ({ templates, activeTemplateId, onSelectTemplate }) => {
@@ -29,7 +30,7 @@ const ReportTemplates = ({ templates, activeTemplateId, onSelectTemplate }) => {
         </h3>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8">
         {templates.map((t) => {
           const Icon = iconMap[t.icon] || FaFileSignature;
           const isActive = t.id === activeTemplateId;

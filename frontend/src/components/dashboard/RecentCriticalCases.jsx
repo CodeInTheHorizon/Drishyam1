@@ -134,7 +134,7 @@ const RecentCriticalCases = ({ cases }) => {
                                 <FaUser className="text-[9px] text-slate-500" />
                                 <span className="text-slate-300 font-bold">{c.investigating_officer.RankName} {c.investigating_officer.FirstName}</span>
                               </div>
-                              <span className="text-[9px] text-slate-600 block pl-4 mt-0.5">KGID: {c.investigating_officer.KGID}</span>
+                              <span className="text-[9px] text-slate-600 block pl-4 mt-0.5">MPPID: {c.investigating_officer.KGID}</span>
                             </div>
 
                             <div className="border-t border-slate-800/20 pt-3">

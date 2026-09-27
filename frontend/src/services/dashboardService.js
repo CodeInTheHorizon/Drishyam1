@@ -68,7 +68,7 @@ export const fetchDashboardData = async (selectedDistrict = "") => {
         BriefFacts: `${r.type} recorded at ${r.location}. Assigned to ${r.officer}.`,
         investigating_officer: {
           FirstName: r.officer,
-          KGID: "KSP-RECORDED",
+          KGID: "MPP-RECORDED",
           RankName: "PSI"
         },
         suspects: [],

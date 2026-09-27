@@ -358,7 +358,7 @@ const HardwareBiometricAuthModal = ({
                 <span className="font-semibold text-white">{currentUser?.name || "Active Officer"}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">Badge / KGID:</span>
+                <span className="text-slate-400">Badge / MPPID:</span>
                 <span className="font-mono text-cyan-400">{currentUser?.kgid || currentUser?.badge || "MPP-2026-901"}</span>
               </div>
               <div className="flex justify-between items-center">

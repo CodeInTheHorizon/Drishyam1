@@ -80,7 +80,7 @@ const IntelligencePanel = ({ selectionName, metrics, selectedMarker, onDossierCl
           <div>
             <span className="text-[8.5px] text-slate-400 uppercase tracking-wider block mb-1">Investigating Officer</span>
             <span className="text-white font-bold block text-[11px]">{selectedMarker.assignedOfficer.name}</span>
-            <span className="text-slate-400 text-[8.5px] block mt-0.5">KGID: {selectedMarker.assignedOfficer.kgid}</span>
+            <span className="text-slate-400 text-[8.5px] block mt-0.5">MPPID: {selectedMarker.assignedOfficer.kgid}</span>
           </div>
 
           <div>

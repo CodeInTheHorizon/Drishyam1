@@ -498,12 +498,12 @@ const Settings = () => {
                 <span className="font-semibold text-white">{currentUser?.unit || "Madhya Pradesh Police Command HQ"}</span>
               </div>
               <div>
-                <span className="text-slate-400 text-[9px] block font-mono uppercase leading-none mb-1">KGID NUMBER</span>
+                <span className="text-slate-400 text-[9px] block font-mono uppercase leading-none mb-1">MPPID</span>
                 <button
                   type="button"
                   onClick={() => handleCopy(currentUser?.kgid || "MPP-ADMIN-01", "kgid")}
                   className="font-semibold font-mono text-cyan-300 hover:text-cyan-200 flex items-center gap-1.5 transition-colors cursor-pointer"
-                  title="Click to copy KGID"
+                  title="Click to copy MPPID"
                 >
                   <span>{currentUser?.kgid || "MPP-ADMIN-01"}</span>
                   {copiedKey === "kgid" ? <FaCheck className="text-emerald-400 text-[10px]" /> : <FaCopy className="text-[10px] opacity-60 hover:opacity-100" />}
@@ -955,7 +955,7 @@ const Settings = () => {
               <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
               <input
                 type="text"
-                placeholder="Search by name, KGID, unit..."
+                placeholder="Search by name, MPPID, unit..."
                 value={officerSearch}
                 onChange={(e) => setOfficerSearch(e.target.value)}
                 className="w-full h-10 rounded-lg bg-slate-950/80 border border-slate-800 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-inter placeholder-slate-600 shadow-inner"
@@ -985,7 +985,7 @@ const Settings = () => {
                 <thead>
                   <tr className="bg-slate-950 text-slate-300 font-bold border-b border-slate-800 uppercase text-[10px] tracking-wider font-space">
                     <th className="py-3.5 px-6 border border-slate-800">Officer Name</th>
-                    <th className="py-3.5 px-6 border border-slate-800">Rank & KGID</th>
+                    <th className="py-3.5 px-6 border border-slate-800">Rank & MPPID</th>
                     <th className="py-3.5 px-6 border border-slate-800">Login Username</th>
                     <th className="py-3.5 px-6 border border-slate-800">Active Passphrase</th>
                     <th className="py-3.5 px-6 border border-slate-800">Assigned Unit</th>
@@ -1068,7 +1068,7 @@ const Settings = () => {
                       <option value="">-- Choose Officer Account --</option>
                       {usersList.map((off) => (
                         <option key={off.id} value={off.id}>
-                          {off.name} (KGID: {off.kgid || off.badge} • User: {off.username})
+                          {off.name} (MPPID: {off.kgid || off.badge} • User: {off.username})
                         </option>
                       ))}
                     </select>

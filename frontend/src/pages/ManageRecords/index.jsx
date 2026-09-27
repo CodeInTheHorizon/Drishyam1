@@ -165,10 +165,17 @@ const ManageRecords = () => {
     );
   };
 
-  const handleDeleteRecord = (id) => {
-    recordService.deleteRecord(id);
-    setDeleteConfirmId(null);
-    reloadRecords();
+  const handleDeleteRecord = async (id) => {
+    try {
+      await recordService.deleteRecord(id);
+      await recordService.fetchRemoteRecords();
+      reloadRecords();
+    } catch (err) {
+      console.error("Failed to delete record:", err);
+      alert("Failed to delete record from Catalyst Data Store: " + err.message);
+    } finally {
+      setDeleteConfirmId(null);
+    }
   };
 
   // Statistics Summary
@@ -427,7 +434,7 @@ const ManageRecords = () => {
                       {/* Allotted Officer */}
                       <td className="py-4 px-4 font-mono">
                         <div className="font-bold text-slate-200 text-xs">{r.allottedOfficerName}</div>
-                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">{r.allottedOfficerRank} • {r.allottedOfficerKgid}</div>
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5">{r.allottedOfficerRank} • MPPID: {r.allottedOfficerKgid}</div>
                       </td>
 
                       {/* Suspect */}

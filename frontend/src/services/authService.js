@@ -31,6 +31,7 @@ const INITIAL_USERS = [
     role: "ADMIN",
     rank: "Command Director",
     kgid: "MPP-ADMIN-01",
+    mppid: "MPP-ADMIN-01",
     badge: "MPP-ADMIN-01",
     unit: "MP Police Intelligence HQ",
     avatar: OFFICER_PHOTOS[0]
@@ -146,6 +147,7 @@ export const authService = {
               role: "OFFICER",
               rank: emp.rank || existing?.rank || "DSP",
               kgid: badge,
+              mppid: badge,
               badge: badge,
               unit: emp.unit || existing?.unit || "Bhopal Central Cyber Cell",
               avatar: emp.avatar || existing?.avatar || defaultAvatars[idx % defaultAvatars.length]
@@ -236,8 +238,9 @@ export const authService = {
       name: name || "Officer",
       role: "OFFICER",
       rank: rank || "PSI",
-      kgid: kgid || badge || `KSP-${Date.now().toString().slice(-4)}`,
-      badge: badge || kgid || `KSP-${Date.now().toString().slice(-4)}`,
+      kgid: kgid || badge || `MPP-${Date.now().toString().slice(-4)}`,
+      mppid: kgid || badge || `MPP-${Date.now().toString().slice(-4)}`,
+      badge: badge || kgid || `MPP-${Date.now().toString().slice(-4)}`,
       unit: unit || "General Range"
     };
 

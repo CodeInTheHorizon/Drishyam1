@@ -37,6 +37,58 @@ try {
 }
 
 const ROWID_MAPPING_PATH = path.join(__dirname, "../../../scripts/rowid_mapping.json");
+const CASE_META_PATH = path.join(__dirname, "case_meta_store.json");
+
+function loadAllCaseMeta() {
+    try {
+        if (fs.existsSync(CASE_META_PATH)) {
+            return JSON.parse(fs.readFileSync(CASE_META_PATH, "utf-8"));
+        }
+    } catch (e) {
+        console.warn("[CrimeRepository] Failed to read case_meta_store:", e.message);
+    }
+    return {};
+}
+
+function saveAllCaseMeta(metaMap) {
+    try {
+        fs.writeFileSync(CASE_META_PATH, JSON.stringify(metaMap, null, 2), "utf-8");
+    } catch (e) {
+        console.warn("[CrimeRepository] Failed to write case_meta_store:", e.message);
+    }
+}
+
+function getCaseMeta(key) {
+    if (!key) return null;
+    const metaMap = loadAllCaseMeta();
+    return metaMap[String(key)] || null;
+}
+
+function setCaseMeta(keys, data) {
+    if (!keys || !data) return;
+    const metaMap = loadAllCaseMeta();
+    const keyList = Array.isArray(keys) ? keys : [keys];
+    keyList.forEach(k => {
+        if (k) metaMap[String(k)] = { ...(metaMap[String(k)] || {}), ...data };
+    });
+    saveAllCaseMeta(metaMap);
+}
+
+function deleteCaseMeta(keys) {
+    if (!keys) return;
+    const metaMap = loadAllCaseMeta();
+    const keyList = Array.isArray(keys) ? keys : [keys];
+    let changed = false;
+    keyList.forEach(k => {
+        if (k && metaMap[String(k)]) {
+            delete metaMap[String(k)];
+            changed = true;
+        }
+    });
+    if (changed) {
+        saveAllCaseMeta(metaMap);
+    }
+}
 
 if (!global.__officer_meta_cache) {
     global.__officer_meta_cache = {};
@@ -351,6 +403,12 @@ class CrimeRepository {
         const caseNo = String(row.CaseNo || row.caseNo || `2026${String(caseMasterId).padStart(5, "0")}`);
         const regDateStr = String(row.CrimeRegisteredDate || row.regDate || new Date().toISOString().split("T")[0]);
 
+        // Rich user metadata lookup
+        const meta = (row.ROWID && getCaseMeta(row.ROWID)) ||
+                     getCaseMeta(caseMasterId) ||
+                     getCaseMeta(crimeNo) ||
+                     getCaseMeta(`fir-${caseMasterId}`) || {};
+
         const CATEGORY_MAP = {
             1: "CDR / IPDR",
             2: "Bank / UPI Logs",
@@ -384,37 +442,41 @@ class CrimeRepository {
             3: "Closed / Resolved"
         };
 
-        let officerName = row.OfficerName || row.allottedOfficerName;
-        let officerRank = row.allottedOfficerRank || "Police Inspector";
-        let officerKgid = row.allottedOfficerKgid || `MPP-2026-${String(row.PolicePersonID || 101).padStart(3, '0')}`;
+        const OFFICER_BY_EMP_ID = {
+            5882: { name: "Kartik Singhal", rank: "Police Inspector", kgid: "MPP-2026-5882" },
+            8359: { name: "Medhavi Agrawal", rank: "Police Inspector", kgid: "MPP-2026-8359" },
+            592383: { name: "Kshitij Soni", rank: "Police Inspector", kgid: "MPP-2026-3003" },
+            392386: { name: "Hitesh Sanghi", rank: "Police Inspector", kgid: "MPP-2026-9344" }
+        };
+
+        const empMatch = row.PolicePersonID && OFFICER_BY_EMP_ID[row.PolicePersonID];
+
+        let officerName = meta.allottedOfficerName || row.OfficerName || row.allottedOfficerName || empMatch?.name;
+        let officerRank = meta.allottedOfficerRank || row.allottedOfficerRank || empMatch?.rank || "Police Inspector";
+        let officerKgid = meta.allottedOfficerKgid || row.allottedOfficerKgid || empMatch?.kgid || (row.PolicePersonID ? `MPP-2026-${row.PolicePersonID}` : "MPP-2026-901");
+
         if (!officerName) {
-            const officerList = [
-                "Inspector Rajesh Sharma",
-                "DSP Ananya Verma",
-                "SI Amit Patel",
-                "Inspector Vikram Singh",
-                "SI Priya Chouhan"
-            ];
-            const idx = Math.abs(Number(caseMasterId) || 0) % officerList.length;
-            officerName = officerList[idx];
+            officerName = "Kartik Singhal";
+            officerRank = "Police Inspector";
+            officerKgid = "MPP-2026-5882";
         }
 
-        let stationName = row.PoliceStation || row.unit;
+        let stationName = meta.unit || row.PoliceStation || row.unit;
         if (!stationName && row.PoliceStationID) {
             stationName = STATION_MAP[row.PoliceStationID] || liveLookups.units?.[row.PoliceStationID];
         }
-        stationName = stationName || "Bhopal Central Cyber Cell";
+        stationName = stationName || "Gwalior Cyber Police Station";
 
-        let districtName = row.District || row.district;
+        let districtName = meta.district || row.District || row.district;
         if (!districtName && row.DistrictID) {
             districtName = DISTRICT_MAP[row.DistrictID] || liveLookups.districts?.[row.DistrictID];
         }
         if (!districtName && row.PoliceStationID && STATION_MAP[row.PoliceStationID]) {
             districtName = STATION_MAP[row.PoliceStationID].split(" ")[0];
         }
-        districtName = districtName || "Bhopal";
+        districtName = districtName || "Gwalior";
 
-        let categoryName = row.CrimeCategory || row.crimeHead;
+        let categoryName = meta.crimeHead || row.CrimeCategory || row.crimeHead;
         if (!categoryName || typeof categoryName !== "string" || !categoryName.trim()) {
             if (row.CaseCategoryID && CATEGORY_MAP[row.CaseCategoryID]) {
                 categoryName = CATEGORY_MAP[row.CaseCategoryID];
@@ -424,22 +486,22 @@ class CrimeRepository {
             }
         }
 
-        let subHeadName = row.crimeSubHead || "General Cyber Forensic";
+        let subHeadName = meta.crimeSubHead || row.crimeSubHead || "General Cyber Forensic";
 
-        let severity = row.Severity || row.severity;
+        let severity = meta.severity || row.Severity || row.severity;
         if (!severity && row.GravityOffenceID != null) {
             severity = SEVERITY_MAP[row.GravityOffenceID] || liveLookups.gravity?.[row.GravityOffenceID];
         }
         severity = severity || "MEDIUM";
 
-        let statusName = row.Status || row.status;
+        let statusName = meta.status || row.Status || row.status;
         if (!statusName && row.CaseStatusID) {
             statusName = STATUS_MAP[row.CaseStatusID] || liveLookups.caseStatuses?.[row.CaseStatusID];
         }
         statusName = statusName || "Under Investigation";
 
-        let compName = row.ComplainantName || row.complainantName || "Citizen Complainant";
-        let accName = row.AccusedName || row.accusedName || "Unidentified Suspect";
+        let compName = meta.complainantName || row.ComplainantName || row.complainantName || "Citizen Complainant";
+        let accName = meta.accusedName || row.AccusedName || row.accusedName || "Unidentified Suspect";
 
         return {
             CaseMasterID: caseMasterId,
@@ -458,8 +520,8 @@ class CrimeRepository {
             crimeHead: categoryName,
             CrimeCategory: categoryName,
             crimeSubHead: subHeadName,
-            actSections: row.ActSections || row.actSections || "IT Act Sec 66C / 66D",
-            ActSections: row.ActSections || row.actSections || "IT Act Sec 66C / 66D",
+            actSections: meta.actSections || row.ActSections || row.actSections || "IT Act Sec 66C / 66D",
+            ActSections: meta.actSections || row.ActSections || row.actSections || "IT Act Sec 66C / 66D",
             severity: severity,
             Severity: severity,
             status: statusName,
@@ -472,14 +534,14 @@ class CrimeRepository {
             allottedOfficerKgid: officerKgid,
             accusedName: accName,
             AccusedName: accName,
-            briefFacts: row.BriefFacts || row.briefFacts || "Incident logged and evidence registered.",
-            BriefFacts: row.BriefFacts || row.briefFacts || "Incident logged and evidence registered.",
-            propertyDescription: row.propertyDescription || "Digital forensic exhibits catalogued",
-            estimatedValue: Number(row.EstimatedValue || row.estimatedValue || 0),
+            briefFacts: meta.briefFacts || row.BriefFacts || row.briefFacts || "Incident logged and evidence registered.",
+            BriefFacts: meta.briefFacts || row.BriefFacts || row.briefFacts || "Incident logged and evidence registered.",
+            propertyDescription: meta.propertyDescription || row.propertyDescription || "Digital forensic exhibits catalogued",
+            estimatedValue: Number(meta.estimatedValue || row.EstimatedValue || row.estimatedValue || 0),
             officialReportImage: "https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=800&auto=format&fit=crop",
-            lat: Number(row.latiutude || row.latitude || row.lat || 23.2599),
-            lng: Number(row.longitude || row.lng || 77.4126),
-            locationStreet: row.locationStreet || `${districtName} Cyber Unit Road`
+            lat: Number(meta.lat || row.latiutude || row.latitude || row.lat || 26.2183),
+            lng: Number(meta.lng || row.longitude || row.lng || 78.1828),
+            locationStreet: meta.locationStreet || row.locationStreet || `${districtName} Cyber Unit Road`
         };
     }
 
@@ -554,14 +616,57 @@ class CrimeRepository {
         const caseNo = String(recordData.caseNo || `CR-2026-${serialNo}`);
         const regDateStr = formatCatalystDate(recordData.regDate || recordData.CrimeRegisteredDate);
 
+        // Map district and station to IDs
+        let stationId = Number(recordData.policeStationId || recordData.PoliceStationID);
+        let districtId = Number(recordData.districtId || recordData.DistrictID);
+
+        const districtLower = String(recordData.district || "").toLowerCase();
+        const unitLower = String(recordData.unit || "").toLowerCase();
+
+        if (!stationId) {
+            if (districtLower.includes("gwalior") || unitLower.includes("gwalior")) {
+                stationId = 204;
+                districtId = 4;
+            } else if (districtLower.includes("indore") || unitLower.includes("indore")) {
+                stationId = 202;
+                districtId = 2;
+            } else if (districtLower.includes("jabalpur") || unitLower.includes("jabalpur")) {
+                stationId = 203;
+                districtId = 3;
+            } else if (districtLower.includes("ujjain") || unitLower.includes("ujjain")) {
+                stationId = 205;
+                districtId = 5;
+            } else {
+                stationId = 201;
+                districtId = 1;
+            }
+        }
+
+        // Map officer to EmployeeID for PolicePersonID
+        let policePersonId = Number(recordData.policePersonId || recordData.PolicePersonID);
+        const officerLower = String(recordData.allottedOfficerName || "").toLowerCase();
+        if (!policePersonId || policePersonId === 101) {
+            if (officerLower.includes("kartik")) {
+                policePersonId = 5882;
+            } else if (officerLower.includes("medhavi")) {
+                policePersonId = 8359;
+            } else if (officerLower.includes("kshitij")) {
+                policePersonId = 592383;
+            } else if (officerLower.includes("hitesh")) {
+                policePersonId = 392386;
+            } else {
+                policePersonId = 5882;
+            }
+        }
+
         // Non-relational schema for Zoho Catalyst CaseMaster
         const catalystCaseMasterRow = {
             CaseMasterID: Number(caseMasterId),
             CrimeNo: crimeNo,
             CaseNo: caseNo,
             CrimeRegisteredDate: regDateStr,
-            PolicePersonID: Number(recordData.policePersonId || recordData.PolicePersonID || 101),
-            PoliceStationID: Number(recordData.policeStationId || recordData.PoliceStationID || 201),
+            PolicePersonID: policePersonId,
+            PoliceStationID: stationId,
             CaseCategoryID: Number(recordData.caseCategoryId || recordData.CaseCategoryID || 1),
             GravityOffenceID: Number(recordData.gravityOffenceId || recordData.GravityOffenceID || 2),
             CrimeMajorHeadID: Number(recordData.crimeMajorHeadId || recordData.CrimeMajorHeadID || 1),
@@ -571,8 +676,8 @@ class CrimeRepository {
             IncidentFromDate: formatCatalystDatetime(recordData.incidentFromDate || recordData.IncidentFromDate, "10:00:00"),
             IncidentToDate: formatCatalystDatetime(recordData.incidentToDate || recordData.IncidentToDate, "11:30:00"),
             InfoReceivedPSDate: formatCatalystDatetime(recordData.infoReceivedPSDate || recordData.InfoReceivedPSDate, "12:00:00"),
-            latiutude: Number(recordData.lat || recordData.latiutude || recordData.latitude) || 23.2599,
-            longitude: Number(recordData.lng || recordData.longitude) || 77.4126,
+            latiutude: Number(recordData.lat || recordData.latiutude || recordData.latitude) || 26.2183,
+            longitude: Number(recordData.lng || recordData.longitude) || 78.1828,
             BriefFacts: String(recordData.briefFacts || recordData.Description || `FIR #${crimeNo} registered at ${recordData.unit || 'Cyber Police Station'}.`).slice(0, 250)
         };
 
@@ -595,17 +700,133 @@ class CrimeRepository {
             propertyDescription: String(recordData.propertyDescription || "")
         };
 
-        const norm = this.normalizeRow(fullRecord);
-
         try {
             console.log("[CrimeRepository] Inserting new FIR directly into Zoho Catalyst Online Data Store...");
             const insertRes = await callCatalystDatastoreApi('/table/CaseMaster/row', 'POST', [catalystCaseMasterRow]);
             if (insertRes.status === 200 && insertRes.data && insertRes.data.data && insertRes.data.data[0]) {
                 const cloudRow = insertRes.data.data[0];
                 console.log("✅ [CrimeRepository] Catalyst Online Data Store INSERT SUCCESS. ROWID:", cloudRow.ROWID);
+
+                // Store rich metadata to case_meta_store
+                setCaseMeta([cloudRow.ROWID, String(caseMasterId), crimeNo, `fir-${caseMasterId}`], {
+                    ...fullRecord,
+                    ROWID: cloudRow.ROWID,
+                    CaseMasterID: caseMasterId,
+                    PoliceStationID: stationId,
+                    PolicePersonID: policePersonId,
+                    district: recordData.district,
+                    unit: recordData.unit,
+                    complainantName: recordData.complainantName,
+                    accusedName: recordData.accusedName,
+                    allottedOfficerName: recordData.allottedOfficerName,
+                    allottedOfficerRank: recordData.allottedOfficerRank,
+                    allottedOfficerKgid: recordData.allottedOfficerKgid,
+                    briefFacts: recordData.briefFacts,
+                    locationStreet: recordData.locationStreet,
+                    actSections: recordData.actSections,
+                    crimeHead: recordData.crimeHead,
+                    crimeSubHead: recordData.crimeSubHead,
+                    severity: recordData.severity,
+                    status: recordData.status,
+                    lat: recordData.lat,
+                    lng: recordData.lng
+                });
+
                 const cloudNorm = this.normalizeRow({ ...fullRecord, ...cloudRow });
                 
                 this.masterRecords.unshift(cloudNorm);
+
+                const caseMasterIdNum = Number(caseMasterId);
+
+                // 1. Relational Ingestion: ComplainantDetails
+                try {
+                    const compId = generateUniqueIntId();
+                    await callCatalystDatastoreApi('/table/ComplainantDetails/row', 'POST', [{
+                        ComplainantID: Number(compId),
+                        CaseMasterID: caseMasterIdNum,
+                        ComplainantName: String(recordData.complainantName || "Citizen Complainant"),
+                        AgeYear: Number(recordData.complainantAge) || 28,
+                        OccupationID: 1,
+                        ReligionID: 1,
+                        CastelD: 1,
+                        GenderlD: recordData.complainantGender === "Female" ? 2 : 1
+                    }]);
+                    console.log("✅ [CrimeRepository] Relational ComplainantDetails inserted for case:", caseMasterIdNum);
+                } catch (compErr) {
+                    console.warn("[CrimeRepository] ComplainantDetails insert error:", compErr.message);
+                }
+
+                // 2. Relational Ingestion: Accused
+                try {
+                    const accusedId = generateUniqueIntId();
+                    await callCatalystDatastoreApi('/table/Accused/row', 'POST', [{
+                        AccusedMasterID: Number(accusedId),
+                        CaseMasterID: caseMasterIdNum,
+                        AccusedName: String(recordData.accusedName || "Unidentified Suspect"),
+                        AgeYear: Number(recordData.accusedAge) || 32,
+                        GenderlD: 1,
+                        PersonID: String(recordData.accusedPersonId || `ACC-${String(caseMasterIdNum).slice(-4)}`)
+                    }]);
+                    console.log("✅ [CrimeRepository] Relational Accused inserted for case:", caseMasterIdNum);
+                } catch (accErr) {
+                    console.warn("[CrimeRepository] Accused insert error:", accErr.message);
+                }
+
+                // 3. Relational Ingestion: Victim
+                try {
+                    const victimId = generateUniqueIntId();
+                    await callCatalystDatastoreApi('/table/Victim/row', 'POST', [{
+                        VictimMasterID: Number(victimId),
+                        CaseMasterID: caseMasterIdNum,
+                        AgeYear: Number(recordData.complainantAge) || 28,
+                        GenderlD: recordData.complainantGender === "Female" ? 2 : 1,
+                        VictimPolice: "Civilian"
+                    }]);
+                    console.log("✅ [CrimeRepository] Relational Victim inserted for case:", caseMasterIdNum);
+                } catch (vicErr) {
+                    console.warn("[CrimeRepository] Victim insert error:", vicErr.message);
+                }
+
+                // 4. Relational Ingestion: ActSectionAssociation
+                try {
+                    let actId = 1;
+                    let sectionId = 1;
+                    const actsLower = String(recordData.actSections || "").toLowerCase();
+                    if (actsLower.includes("bns")) {
+                        actId = 2;
+                        sectionId = 3;
+                    } else if (actsLower.includes("ipc")) {
+                        actId = 3;
+                        sectionId = 4;
+                    }
+                    await callCatalystDatastoreApi('/table/ActSectionAssociation/row', 'POST', [{
+                        CaseMasterID: caseMasterIdNum,
+                        ActID: actId,
+                        SectionID: sectionId,
+                        ActOrderlD: 1,
+                        SectionOrderlD: 1
+                    }]);
+                    console.log("✅ [CrimeRepository] Relational ActSectionAssociation inserted for case:", caseMasterIdNum);
+                } catch (actErr) {
+                    console.warn("[CrimeRepository] ActSectionAssociation insert error:", actErr.message);
+                }
+
+                // 5. Relational Ingestion: ChargesheetDetails (if closed/chargesheeted)
+                if (recordData.status === "Chargesheeted" || recordData.status === "Case Closed / Completed") {
+                    try {
+                        const csId = generateUniqueIntId();
+                        await callCatalystDatastoreApi('/table/ChargesheetDetails/row', 'POST', [{
+                            CSID: Number(csId),
+                            CaseMasterID: caseMasterIdNum,
+                            csdate: formatCatalystDatetime(recordData.regDate || new Date().toISOString(), "12:00:00"),
+                            cstype: recordData.status === "Case Closed / Completed" ? "Final Report / Closure" : "Prima Facie Chargesheet",
+                            PolicePersonID: policePersonId
+                        }]);
+                        console.log("✅ [CrimeRepository] Relational ChargesheetDetails inserted for case:", caseMasterIdNum);
+                    } catch (csErr) {
+                        console.warn("[CrimeRepository] ChargesheetDetails insert error:", csErr.message);
+                    }
+                }
 
                 // Automatically log to BiometricAuditTrail in Zoho Catalyst
                 await this.createAuditTrailRecord({
@@ -633,17 +854,31 @@ class CrimeRepository {
     }
 
     async updateCrimeRecord(id, updatedData) {
-        const index = this.masterRecords.findIndex(r => String(r.CaseMasterID) === String(id) || String(r.id) === String(id) || String(r.ROWID) === String(id));
+        let targetRowId = null;
+        if (/^\d{16,}$/.test(String(id))) {
+            targetRowId = String(id);
+        }
+        if (!targetRowId) {
+            const meta = getCaseMeta(id);
+            if (meta && meta.ROWID) targetRowId = String(meta.ROWID);
+        }
+        if (!targetRowId && this.masterRecords) {
+            const match = this.masterRecords.find(r => String(r.id) === String(id) || String(r.CaseMasterID) === String(id) || String(r.ROWID) === String(id));
+            if (match && match.ROWID) targetRowId = String(match.ROWID);
+        }
+
+        const index = (this.masterRecords || []).findIndex(r => String(r.CaseMasterID) === String(id) || String(r.id) === String(id) || String(r.ROWID) === String(id) || (targetRowId && String(r.ROWID) === String(targetRowId)));
         if (index !== -1) {
             this.masterRecords[index] = { ...this.masterRecords[index], ...updatedData };
         }
 
+        setCaseMeta([id, targetRowId], updatedData);
+
         try {
-            const rowId = (this.masterRecords[index] && this.masterRecords[index].ROWID) || id;
-            if (rowId && String(rowId).length > 10) {
+            if (targetRowId && /^\d{16,}$/.test(targetRowId)) {
                 await callCatalystDatastoreApi(`/table/CaseMaster/row`, 'PUT', [{
-                    ROWID: String(rowId),
-                    CaseStatusID: Number(updatedData.CaseStatusID || 2),
+                    ROWID: String(targetRowId),
+                    CaseStatusID: Number(updatedData.CaseStatusID || (updatedData.status === "Case Closed / Completed" ? 3 : 1)),
                     BriefFacts: String(updatedData.briefFacts || updatedData.Description || "Updated FIR record").slice(0, 250)
                 }]);
                 console.log("✅ [CrimeRepository] Online Catalyst Data Store row updated.");
@@ -652,8 +887,8 @@ class CrimeRepository {
                 await this.createAuditTrailRecord({
                     action: "UPDATE_CASE",
                     targetTable: "CaseMaster",
-                    targetRecordId: String(rowId),
-                    changesSummary: `Updated case status / details for record ${rowId}`
+                    targetRecordId: String(targetRowId),
+                    changesSummary: `Updated case status / details for record ${targetRowId}`
                 });
             }
         } catch (e) {
@@ -663,20 +898,105 @@ class CrimeRepository {
     }
 
     async deleteCrimeRecord(id) {
-        const index = this.masterRecords.findIndex(r => String(r.CaseMasterID) === String(id) || String(r.id) === String(id) || String(r.ROWID) === String(id));
-        if (index !== -1) {
-            this.masterRecords.splice(index, 1);
+        let targetRowId = null;
+
+        // 1. If id is already a 16+ digit numeric string, it's directly a Catalyst ROWID
+        if (/^\d{16,}$/.test(String(id))) {
+            targetRowId = String(id);
         }
 
-        try {
-            if (id && String(id).length > 10) {
-                await callCatalystDatastoreApi(`/table/CaseMaster/row/${id}`, 'DELETE');
-                console.log("✅ [CrimeRepository] Online Catalyst Data Store row deleted.");
+        // 2. Check metadata store
+        if (!targetRowId) {
+            const meta = getCaseMeta(id);
+            if (meta && meta.ROWID && /^\d{16,}$/.test(String(meta.ROWID))) {
+                targetRowId = String(meta.ROWID);
             }
-        } catch (e) {
-            console.warn("[CrimeRepository] Online Catalyst deleteRow failed:", e.message);
         }
-        return { success: true, id };
+
+        // 3. Search in current masterRecords
+        if (!targetRowId && this.masterRecords && this.masterRecords.length > 0) {
+            const match = this.masterRecords.find(r =>
+                String(r.id) === String(id) ||
+                String(r.CaseMasterID) === String(id) ||
+                String(r.crimeNo) === String(id) ||
+                String(r.CrimeNo) === String(id) ||
+                String(r.ROWID) === String(id)
+            );
+            if (match && match.ROWID && /^\d{16,}$/.test(String(match.ROWID))) {
+                targetRowId = String(match.ROWID);
+            }
+        }
+
+        // 4. Fetch live records from Catalyst to find matching row
+        if (!targetRowId) {
+            try {
+                const liveRecords = await this.getAllCrimeRecords();
+                const match = liveRecords.find(r =>
+                    String(r.id) === String(id) ||
+                    String(r.CaseMasterID) === String(id) ||
+                    String(r.crimeNo) === String(id) ||
+                    String(r.CrimeNo) === String(id) ||
+                    String(r.ROWID) === String(id)
+                );
+                if (match && match.ROWID && /^\d{16,}$/.test(String(match.ROWID))) {
+                    targetRowId = String(match.ROWID);
+                }
+            } catch (e) {
+                console.warn("[CrimeRepository] Could not fetch live records to resolve delete ROWID:", e.message);
+            }
+        }
+
+        // 5. Cascade delete child relational tables in Catalyst
+        let targetCaseMasterId = null;
+        if (this.masterRecords) {
+            const m = this.masterRecords.find(r => String(r.ROWID) === String(targetRowId) || String(r.id) === String(id) || String(r.CaseMasterID) === String(id));
+            if (m) targetCaseMasterId = m.CaseMasterID;
+        }
+        if (!targetCaseMasterId) {
+            const meta = getCaseMeta(id) || (targetRowId && getCaseMeta(targetRowId));
+            if (meta && meta.CaseMasterID) targetCaseMasterId = meta.CaseMasterID;
+        }
+
+        if (targetCaseMasterId) {
+            const childTables = ["ComplainantDetails", "Accused", "Victim", "ActSectionAssociation", "ChargesheetDetails"];
+            for (const table of childTables) {
+                try {
+                    const res = await callCatalystDatastoreApi(`/table/${table}/row`, 'GET');
+                    if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
+                        const matches = res.data.data.filter(r => String(r.CaseMasterID) === String(targetCaseMasterId));
+                        for (const childRow of matches) {
+                            if (childRow.ROWID) {
+                                await callCatalystDatastoreApi(`/table/${table}/row/${childRow.ROWID}`, 'DELETE');
+                                console.log(`✅ [CrimeRepository] Cascade deleted ${table} ROWID ${childRow.ROWID} for CaseMasterID: ${targetCaseMasterId}`);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`[CrimeRepository] Cascade delete for ${table} warning:`, e.message);
+                }
+            }
+        }
+
+        // 6. Execute DELETE on CaseMaster in Catalyst
+        if (targetRowId) {
+            console.log(`[CrimeRepository] Permanently deleting CaseMaster ROWID ${targetRowId} from Catalyst Data Store...`);
+            const delRes = await callCatalystDatastoreApi(`/table/CaseMaster/row/${targetRowId}`, 'DELETE');
+            console.log(`✅ [CrimeRepository] Catalyst Data Store response:`, delRes.status, delRes.data?.status);
+        } else {
+            console.warn(`[CrimeRepository] No valid 16+ digit Catalyst ROWID resolved for deletion target: ${id}`);
+        }
+
+        // Purge from in-memory list
+        this.masterRecords = (this.masterRecords || []).filter(r =>
+            String(r.ROWID) !== String(targetRowId) &&
+            String(r.id) !== String(id) &&
+            String(r.ROWID) !== String(id)
+        );
+
+        // Purge from case_meta_store
+        deleteCaseMeta([id, targetRowId]);
+
+        return { success: true, id, targetRowId };
     }
 
     // --- BiometricAuditTrail Live Zoho Catalyst Data Store Methods ---
@@ -742,11 +1062,13 @@ class CrimeRepository {
                         global.__officer_meta_cache[emp.EmployeeID] ||
                         global.__officer_meta_cache[cleanName]
                     )) || {};
+                    const badge = (emp.KGID ? String(emp.KGID).replace(/^KSP-/i, "MPP-") : null) || `MPP-${emp.ROWID || emp.EmployeeID}`;
                     return {
                         id: `u-${emp.ROWID || emp.EmployeeID || emp.KGID}`,
-                        badgeNumber: emp.KGID || `MPP-${emp.EmployeeID}`,
+                        badgeNumber: badge,
+                        mppid: badge,
                         name: emp.FirstName,
-                        rank: cachedMeta.rank || "DSP",
+                        rank: cachedMeta.rank || "Police Inspector",
                         unit: cachedMeta.unit || "Bhopal Central Cyber Cell",
                         station: cachedMeta.station || "Bhopal Range",
                         yearsOfService: cachedMeta.yearsOfService || 5,
@@ -870,4 +1192,5 @@ class CrimeRepository {
     }
 }
 
+CrimeRepository.callCatalystDatastoreApi = callCatalystDatastoreApi;
 module.exports = CrimeRepository;

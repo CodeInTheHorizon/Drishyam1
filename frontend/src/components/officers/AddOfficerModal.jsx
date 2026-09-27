@@ -110,7 +110,7 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
     }
 
     if (!formData.badgeNumber?.trim()) {
-      setError("Please enter the officer's badge/KGID number.");
+      setError("Please enter the officer's badge/MPPID number.");
       setActiveTab("dossier");
       return;
     }
@@ -315,7 +315,7 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      KGID / Badge Number <span className="text-rose-500 font-bold ml-1">*</span>
+                      MPPID / Badge Number <span className="text-rose-500 font-bold ml-1">*</span>
                     </label>
                     <input
                       type="text"

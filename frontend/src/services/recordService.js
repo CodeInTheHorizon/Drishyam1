@@ -259,7 +259,11 @@ export const recordService = {
   },
 
   deleteRecord: async (id) => {
-    const res = await fetch(`${API_BASE}/${id}`, {
+    const list = loadStorage();
+    const target = list.find((r) => String(r.id) === String(id) || String(r.ROWID) === String(id) || String(r.CaseMasterID) === String(id));
+    const deleteId = (target && target.ROWID) || id;
+
+    const res = await fetch(`${API_BASE}/${deleteId}`, {
       method: "DELETE"
     });
     if (!res.ok) {
@@ -267,8 +271,7 @@ export const recordService = {
       throw new Error(errJson.error || "Failed to delete record from Catalyst Data Store");
     }
 
-    const list = loadStorage();
-    const filtered = list.filter((r) => String(r.id) !== String(id) && String(r.ROWID) !== String(id));
+    const filtered = list.filter((r) => String(r.id) !== String(id) && String(r.ROWID) !== String(id) && String(r.ROWID) !== String(deleteId));
     saveStorage(filtered);
     return true;
   },

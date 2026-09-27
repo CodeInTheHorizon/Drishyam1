@@ -1,6 +1,13 @@
-import { recordService } from "./recordService";
+import { recordService } from "./recordService.js";
+import { generateOnePageSeizureBrief } from "./forensicBriefService.js";
 
 const templates = [
+  {
+    id: "cyber_seizure_brief",
+    title: "One-Page Cyber Seizure Brief (Sec 91 CrPC)",
+    desc: "Court-admissible golden-hour seizure report summarizing prime suspects, mule clusters, timeline, and asset freeze directives.",
+    icon: "FaShieldAlt"
+  },
   {
     id: "exec_summary",
     title: "Executive Crime Summary",
@@ -59,6 +66,43 @@ const generateReportContent = (templateId, config) => {
   const scope = config.scope || "Detailed";
   const priority = config.priority || "Routine";
   const dateRange = `${config.startDate || "2026-01-01"} TO ${config.endDate || "2026-07-19"}`;
+
+  // Specialized One-Page Cyber Seizure Brief (Section 91 CrPC)
+  if (templateId === "cyber_seizure_brief") {
+    const brief = generateOnePageSeizureBrief(
+      config.crimeNo || "FIR/MP/2026/08879",
+      officerName || "Inspector R. K. Sharma",
+      "MPP-2026-IO"
+    );
+
+    return {
+      id: "cyber_seizure_brief",
+      isCyberBrief: true,
+      title: "INVESTIGATIVE SEIZURE BRIEF & TIMELINE REPORT",
+      subtitle: "ISSUED UNDER SECTION 91 & 102 Cr.P.C. / SECTION 94 BNSS 2023 (GOLDEN-HOUR ASSET FREEZING)",
+      classification: "SECRET / MOST IMMEDIATE",
+      date: `${brief.generatedDate} ${brief.generatedTime}`,
+      meta: {
+        district: districtName || "STATE CYBER CRIME INVESTIGATION CELL (BHOPAL)",
+        category: "FINANCIAL CYBER FRAUD / MULE NETWORK",
+        officer: officerName || "Inspector R. K. Sharma (MPP-2026-IO)",
+        dateRange: "GOLDEN-HOUR REAL-TIME TRIAGE",
+        scope: "Section 91 CrPC Statutory Seizure Notice",
+        priority: "CRITICAL / MOST IMMEDIATE"
+      },
+      summary: `Standardized golden-hour seizure report for Case Ref ${brief.caseReference}. Correlated ${brief.evidentiarySummary.totalArtifacts} multi-source forensic evidence artifacts, establishing total fraudulent siphoned volume of ₹${brief.evidentiarySummary.totalVolumeSiphonedINR.toLocaleString("en-IN")} across ${brief.suspectMules.length} verified mule account layers, with automated asset debit freeze directives.`,
+      kpis: brief.kpis,
+      findings: [
+        `Identified ${brief.suspectMules.length} mule accounts funneled across Layer-1 and Layer-2 rapid dispersal chains.`,
+        `Terminal cashouts detected at ${brief.cashoutEndpoints.length} physical ATM & P2P escrow points within 35 minutes of initial victim exfiltration.`,
+        `Cryptographic chain-of-custody established with SHA-256 integrity hashes for all evidence files under Section 65B Indian Evidence Act / BSA 2023.`,
+        `Banking Trojan APK (${brief.certInSummary.trojanPackage}) confirmed intercepting SMS OTP credentials to C2 endpoint ${brief.certInSummary.c2Endpoint}.`
+      ],
+      recommendations: brief.seizureDirectives.map(sd => `${sd.targetType}: ${sd.instructions[0]}`),
+      cyberBriefData: brief,
+      recordsTable: []
+    };
+  }
 
   // Fetch all database records and filter using config parameters
   const allRecords = recordService.getRecords();

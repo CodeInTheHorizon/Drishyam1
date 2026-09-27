@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import PageHeader from "../../components/dashboard/PageHeader";
+import ReportTemplates from "../../components/reports/ReportTemplates";
 import ReportConfiguration from "../../components/reports/ReportConfiguration";
 import ReportPreview from "../../components/reports/ReportPreview";
 import RecentReports from "../../components/reports/RecentReports";
@@ -7,7 +7,7 @@ import { reportService } from "../../services/reportService";
 
 const Reports = () => {
   const [templates, setTemplates] = useState([]);
-  const [activeTemplateId, setActiveTemplateId] = useState("exec_summary");
+  const [activeTemplateId, setActiveTemplateId] = useState("cyber_seizure_brief");
   const [config, setConfig] = useState({
     district: "",
     category: "",
@@ -31,15 +31,15 @@ const Reports = () => {
     setRecentReports(reportService.getRecentReports());
     
     // Auto-generate default preview on mount
-    reportService.generateReport("exec_summary", {
+    reportService.generateReport("cyber_seizure_brief", {
       district: "Bhopal",
       category: "Cyber Crimes",
-      officerName: "",
+      officerName: "Inspector R. K. Sharma",
       startDate: "2026-06-01",
       endDate: "2026-07-17",
       format: "PDF",
       scope: "Detailed",
-      priority: "Routine"
+      priority: "Critical"
     }).then(res => setPreviewData(res));
   }, []);
 
@@ -144,7 +144,14 @@ const Reports = () => {
         subtitle="Configure, compile, and export operational police logs, trial briefs, and executive summaries"
       />
 
-      <div style={{ height: "32px" }} />
+      {/* Template Selection Strip */}
+      <ReportTemplates
+        templates={templates}
+        activeTemplateId={activeTemplateId}
+        onSelectTemplate={handleSelectTemplate}
+      />
+
+      <div style={{ height: "28px" }} />
 
       {/* Main Core Columns Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">

@@ -1,6 +1,17 @@
 Txn_ID,Timestamp,Remitter_Name,Remitter_Account,Remitter_VPA,Beneficiary_Name,Beneficiary_Account,Beneficiary_VPA,Beneficiary_Bank,Amount_INR,Payment_Mode,Status,Client_IP
-TXN988102,2026-09-25T14:15:20Z,Rajesh Verma (Victim),SBIN0001234-9988,rajesh.verma@sbi,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,HDFC Bank,150000,UPI,SUCCESS,185.220.101.5
+TXN988101,2026-09-25T14:05:10Z,Sunita Meena (Victim - Indore),PUNB0005678-4321,sunita.meena@pnb,Amit Chaurasia (L1 Mule),BARB0009812-7714,amit.mule@ibl,Bank of Baroda,200000,UPI,SUCCESS,185.220.101.45
+TXN988102,2026-09-25T14:15:20Z,Rajesh Verma (Victim - Bhopal),SBIN0001234-9988,rajesh.verma@sbi,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,HDFC Bank,150000,UPI,SUCCESS,185.220.101.5
 TXN988103,2026-09-25T14:19:05Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ICICI Bank,75000,IMPS,SUCCESS,185.220.101.5
 TXN988104,2026-09-25T14:21:40Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Kotak Bank,70000,UPI,SUCCESS,185.220.101.5
-TXN988105,2026-09-25T14:32:10Z,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ATM Cashout Indore,ATM-IND-452001,N/A,ICICI ATM,50000,ATM_WITHDRAWAL,SUCCESS,22.7533_75.8937
-TXN988106,2026-09-25T14:38:50Z,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Crypto P2P Merchant,P2P-ESCROW-99,crypto.escrow@binance,Escrow Wallet,65000,P2P_TRANSFER,SUCCESS,103.208.220.12
+TXN988105,2026-09-25T14:28:15Z,Amit Chaurasia (L1 Mule),BARB0009812-7714,amit.mule@ibl,Deepak Soni (L2 Mule),AXIS0002133-8891,deepak.soni@axisbank,Axis Bank,95000,NEFT,SUCCESS,185.220.101.45
+TXN988106,2026-09-25T14:30:50Z,Amit Chaurasia (L1 Mule),BARB0009812-7714,amit.mule@ibl,Rahul Jain (L2 Mule),IDFB0007788-3312,rahul.jain@okicici,IDFC First Bank,95000,UPI,SUCCESS,185.220.101.45
+TXN988107,2026-09-25T14:32:10Z,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ATM Cashout Indore (Vijay Nagar),ATM-IND-452001,N/A,ICICI ATM,50000,ATM_WITHDRAWAL,SUCCESS,22.7533_75.8937
+TXN988108,2026-09-25T14:36:00Z,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,Hawala Cash-Drop Ujjain,HWL-UJJ-456001,N/A,Cash Courier,22000,CASH_SETTLEMENT,SUCCESS,103.208.220.12
+TXN988109,2026-09-25T14:38:50Z,Vikas Yadav (L2 Mule),KKBK0000877-6621,vikas.yadav@ybl,Crypto P2P Merchant Escrow (Binance),P2P-ESCROW-99,crypto.escrow@binance,Escrow Wallet,65000,P2P_TRANSFER,SUCCESS,103.208.220.12
+TXN988110,2026-09-25T14:45:12Z,Deepak Soni (L2 Mule),AXIS0002133-8891,deepak.soni@axisbank,ATM Cashout Bhopal (New Market),ATM-BPL-462003,N/A,Axis ATM,80000,ATM_WITHDRAWAL,SUCCESS,23.2289_77.4045
+TXN988111,2026-09-25T14:50:30Z,Deepak Soni (L2 Mule),AXIS0002133-8891,deepak.soni@axisbank,Hawala Cash-Drop Ujjain,HWL-UJJ-456001,N/A,Cash Courier,12000,CASH_SETTLEMENT,SUCCESS,103.208.220.12
+TXN988112,2026-09-25T14:55:00Z,Rahul Jain (L2 Mule),IDFB0007788-3312,rahul.jain@okicici,Crypto P2P Merchant Escrow (Binance),P2P-ESCROW-99,crypto.escrow@binance,Escrow Wallet,90000,P2P_TRANSFER,SUCCESS,185.220.101.45
+TXN988113,2026-09-25T15:10:20Z,Pawan Kumar (L1 Mule),HDFC0004512-1002,pawan.paytm@paytm,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ICICI Bank,4500,UPI,SUCCESS,185.220.101.5
+TXN988114,2026-09-25T15:25:40Z,Amit Chaurasia (L1 Mule),BARB0009812-7714,amit.mule@ibl,Deepak Soni (L2 Mule),AXIS0002133-8891,deepak.soni@axisbank,Axis Bank,8000,IMPS,SUCCESS,185.220.101.45
+TXN988115,2026-09-25T15:40:15Z,Sunil Sharma (L2 Mule),ICIC0001899-3341,sunil.sharma@okaxis,ATM Cashout Indore (Vijay Nagar),ATM-IND-452001,N/A,ICICI ATM,4000,ATM_WITHDRAWAL,SUCCESS,22.7533_75.8937
+TXN988116,2026-09-25T16:05:00Z,Deepak Soni (L2 Mule),AXIS0002133-8891,deepak.soni@axisbank,ATM Cashout Bhopal (New Market),ATM-BPL-462003,N/A,Axis ATM,7500,ATM_WITHDRAWAL,SUCCESS,23.2289_77.4045

@@ -11,6 +11,7 @@ import {
   FaExclamationCircle,
   FaCheckCircle
 } from "react-icons/fa";
+import { officerService } from "../../services/officerService";
 
 const MP_DISTRICTS = [
   "Bhopal",
@@ -92,10 +93,69 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
     officialReportImage: ""
   });
 
+  const [registeredOfficers, setRegisteredOfficers] = useState([]);
+
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
+
+  // Fetch registered officers roster from cloud database
+  useEffect(() => {
+    const loadOfficers = async () => {
+      try {
+        await officerService.fetchRemoteOfficers();
+      } catch (err) {
+        console.warn("Could not fetch remote officers:", err);
+      }
+      const list = officerService.getOfficers();
+      if (list && list.length > 0) {
+        setRegisteredOfficers(list);
+        // If creating new FIR, auto-select first registered officer if not set or default
+        if (!initialData) {
+          const first = list[0];
+          setFormData((prev) => {
+            if (!prev.allottedOfficerName || prev.allottedOfficerName === "Inspector Rajesh Sharma") {
+              return {
+                ...prev,
+                allottedOfficerName: first.name,
+                allottedOfficerRank: first.rank || "Police Inspector",
+                allottedOfficerKgid: first.mppid || first.badgeNumber || "MPP-2026-101"
+              };
+            }
+            return prev;
+          });
+        }
+      }
+    };
+
+    if (isOpen) {
+      loadOfficers();
+    }
+  }, [isOpen, initialData]);
+
+  const handleOfficerChange = (e) => {
+    const selectedName = e.target.value;
+    const officer = registeredOfficers.find((o) => o.name === selectedName);
+    if (officer) {
+      const fullProf = officerService.getOfficerProfile(officer.badgeNumber || officer.mppid);
+      const officerRank = fullProf?.rank || officer.rank || "Police Inspector";
+      const officerMppid = officer.mppid || officer.badgeNumber || "MPP-2026-101";
+
+      setFormData((prev) => ({
+        ...prev,
+        allottedOfficerName: officer.name,
+        allottedOfficerRank: officerRank,
+        allottedOfficerKgid: officerMppid
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        allottedOfficerName: selectedName
+      }));
+    }
+    if (error) setError("");
+  };
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -144,9 +204,9 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
         landmark: "",
         lat: "23.2599",
         lng: "77.4126",
-        allottedOfficerName: "Inspector Rajesh Sharma",
-        allottedOfficerRank: "Police Inspector",
-        allottedOfficerKgid: "MPP-2026-901",
+        allottedOfficerName: registeredOfficers[0]?.name || "Inspector Rajesh Sharma",
+        allottedOfficerRank: registeredOfficers[0]?.rank || "Police Inspector",
+        allottedOfficerKgid: registeredOfficers[0]?.mppid || registeredOfficers[0]?.badgeNumber || "MPP-2026-901",
         accusedName: "Unidentified Suspect",
         accusedStatus: "Unidentified",
         briefFacts: "",
@@ -163,6 +223,32 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "district") {
+      const DISTRICT_PRESETS = {
+        "Gwalior": { unit: "Gwalior Cyber Police Station", lat: "26.2183", lng: "78.1828" },
+        "Indore": { unit: "Indore Cyber Police Station", lat: "22.7196", lng: "75.8577" },
+        "Jabalpur": { unit: "Jabalpur Cyber Unit", lat: "23.1815", lng: "79.9864" },
+        "Ujjain": { unit: "Ujjain Cyber Unit", lat: "23.1765", lng: "75.7885" },
+        "Bhopal": { unit: "Bhopal Central Cyber Cell", lat: "23.2599", lng: "77.4126" },
+        "Sagar": { unit: "Bhopal Central Cyber Cell", lat: "23.8388", lng: "78.7378" },
+        "Rewa": { unit: "Jabalpur Cyber Unit", lat: "24.5362", lng: "81.3037" },
+        "Satna": { unit: "Jabalpur Cyber Unit", lat: "24.6005", lng: "80.8322" },
+        "Chhindwara": { unit: "Jabalpur Cyber Unit", lat: "22.0574", lng: "78.9382" },
+        "Ratlam": { unit: "Indore Cyber Police Station", lat: "23.3315", lng: "75.0367" }
+      };
+      const preset = DISTRICT_PRESETS[value];
+      if (preset) {
+        setFormData((prev) => ({
+          ...prev,
+          district: value,
+          unit: preset.unit,
+          lat: preset.lat,
+          lng: preset.lng
+        }));
+        if (error) setError("");
+        return;
+      }
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
   };
@@ -678,51 +764,69 @@ const FIRFormModal = ({ isOpen, onClose, onSave, initialData = null }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">
-                    Investigating Officer (IO) Name <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
-                  </label>
-                  <input
-                    type="text"
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Investigating Officer (IO) <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-800/40 px-2 py-0.5 rounded">
+                      Registered Roster
+                    </span>
+                  </div>
+                  <select
                     name="allottedOfficerName"
                     value={formData.allottedOfficerName}
-                    onChange={handleChange}
-                    placeholder="e.g. Inspector Rajesh Sharma"
-                    required
-                    className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">
-                    Officer Rank <span className="text-rose-500 font-bold ml-1" title="Mandatory Field">*</span>
-                  </label>
-                  <select
-                    name="allottedOfficerRank"
-                    value={formData.allottedOfficerRank}
-                    onChange={handleChange}
+                    onChange={handleOfficerChange}
                     required
                     className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner cursor-pointer"
                   >
-                    <option value="Police Inspector">Police Inspector</option>
-                    <option value="PSI">PSI (Police Sub-Inspector)</option>
-                    <option value="CPI">CPI (Circle Police Inspector)</option>
-                    <option value="ASI">ASI (Assistant Sub-Inspector)</option>
-                    <option value="DSP">DSP (Deputy Superintendent)</option>
-                    <option value="ACP">ACP (Assistant Commissioner)</option>
+                    <option value="">-- Choose Registered Officer --</option>
+                    {registeredOfficers.map((off) => (
+                      <option key={off.badgeNumber || off.mppid || off.name} value={off.name}>
+                        {off.name} — {off.rank} ({off.mppid || off.badgeNumber})
+                      </option>
+                    ))}
+                    {formData.allottedOfficerName && !registeredOfficers.some((o) => o.name === formData.allottedOfficerName) && (
+                      <option value={formData.allottedOfficerName}>
+                        {formData.allottedOfficerName} (Current)
+                      </option>
+                    )}
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">
-                    Officer Badge / KGID Number
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Officer Rank
+                    </label>
+                    <span className="text-[10px] font-mono text-emerald-400">
+                      Auto-filled
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    name="allottedOfficerRank"
+                    value={formData.allottedOfficerRank}
+                    readOnly
+                    className="w-full h-11 rounded-xl bg-slate-900/80 border border-slate-800 px-4 text-xs text-slate-200 font-mono shadow-inner cursor-not-allowed select-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-semibold text-slate-300">
+                      Officer Badge / MPPID
+                    </label>
+                    <span className="text-[10px] font-mono text-emerald-400">
+                      Auto-filled
+                    </span>
+                  </div>
                   <input
                     type="text"
                     name="allottedOfficerKgid"
                     value={formData.allottedOfficerKgid}
-                    onChange={handleChange}
+                    readOnly
                     placeholder="e.g. MPP-2026-901"
-                    className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
+                    className="w-full h-11 rounded-xl bg-slate-900/80 border border-slate-800 px-4 text-xs text-cyan-300 font-mono font-semibold shadow-inner cursor-not-allowed select-none"
                   />
                 </div>
 
