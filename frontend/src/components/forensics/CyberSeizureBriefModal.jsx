@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { 
   RiCloseLine, 
   RiPrinterLine, 
@@ -15,6 +16,20 @@ import {
 
 export default function CyberSeizureBriefModal({ briefData, isOpen, onClose }) {
   const [copiedNotice, setCopiedNotice] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen || !briefData) return null;
 
@@ -63,13 +78,21 @@ State Cyber Crime Investigation Cell, Madhya Pradesh Police
     setTimeout(() => setCopiedNotice(false), 3000);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn font-sans">
+  const modalContent = (
+    <div 
+      className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-8 overflow-y-auto animate-fadeIn font-sans"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       {/* Modal Container */}
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      <div 
+        className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col max-h-[88vh] my-auto overflow-hidden relative z-10"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Modal Top Control Bar (Hidden on Print) */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/90 print:hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/95 sticky top-0 z-20 shrink-0 print:hidden">
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-sm">
               <RiShieldCheckLine />
@@ -342,4 +365,6 @@ State Cyber Crime Investigation Cell, Madhya Pradesh Police
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { 
-  RiNodeTree, 
-  RiRouteLine, 
-  RiShieldUserLine, 
-  RiTeamLine, 
+import {
+  RiNodeTree,
+  RiRouteLine,
+  RiShieldUserLine,
+  RiTeamLine,
   RiBuilding2Line,
   RiRefreshLine,
   RiDownload2Line,
@@ -210,72 +210,61 @@ export default function NetworkAnalysis() {
   };
 
   return (
-    <div 
+    <div
       className="flex flex-col gap-6 animate-in fade-in duration-300 pb-12 font-sans"
       style={{ display: "flex", flexDirection: "column", gap: "24px" }}
     >
       {/* Page Header Banner */}
-      <div 
-        className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-900/90 border border-slate-700/60 rounded-xl backdrop-blur-md shadow-xl relative overflow-hidden p-5"
+      <div
+        className="flex flex-col lg:flex-row items-center justify-around gap-6 bg-gradient-to-r from-slate-900/95 via-slate-900/90 to-slate-950/95 border border-slate-700/70 rounded-xl backdrop-blur-md shadow-2xl relative overflow-hidden py-8 sm:py-9 px-6 sm:px-8 min-h-[125px]"
       >
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
-              <RiSparklingFill className="text-amber-400" />
-              {analysisMode === "FORENSIC" ? "Features 2, 3 & 4: Unified Mule Graph & Triage Matrix" : "CCTNS State Crime Registry"}
-            </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-              <RiShieldCheckLine /> AI Anomaly Scoring
+        <div className="relative z-10 min-w-0 flex flex-col justify-center">
+          <div className="flex items-center gap-2.5 mb-2.5">
+            <span className="px-3 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 flex items-center gap-1.5 shadow-sm">
+              <RiShieldCheckLine className="text-xs" />
+              <span>AI Anomaly Scoring</span>
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+
+          <h1 className="text-xl sm:text-2xl lg:text-[24px] font-extrabold text-white tracking-tight flex items-center gap-3">
             {analysisMode === "FORENSIC" ? (
               <>
-                <RiShieldFlashLine className="text-amber-400 text-2xl" />
-                <span>Forensic Triage, Risk Scoring & Mule Network Matrix</span>
+                <RiShieldFlashLine className="text-amber-400 text-2xl shrink-0" />
+                <span className="leading-snug">Forensic Triage, Risk Scoring & Mule Network Matrix</span>
               </>
             ) : (
               <>
-                <RiNodeTree className="text-blue-400 text-2xl" />
-                <span>Criminological Suspect & Syndicate Link Matrix</span>
+                <RiNodeTree className="text-blue-400 text-2xl shrink-0" />
+                <span className="leading-snug">Criminological Suspect & Syndicate Link Matrix</span>
               </>
             )}
           </h1>
-
-          <p className="text-xs text-slate-300 mt-1 max-w-2xl font-sans">
-            {analysisMode === "FORENSIC"
-              ? "Assigns explainable risk scores (0–100) based on fund velocity (<3m turnaround), SIM multiplexing, email header forging, and trojan C2 exfiltration. Cross-correlates directional mule flows."
-              : "Cross-jurisdictional link matrix and syndicate mapping across Madhya Pradesh police stations."}
-          </p>
         </div>
 
-        {/* Mode Switcher: Forensic Correlator vs CCTNS Crime Network */}
-        <div className="flex flex-wrap items-center gap-3 relative z-10">
-          <div className="flex items-center p-1 bg-slate-950/80 border border-slate-700/80 rounded-xl shadow-inner">
+        {/* Mode Switcher & Actions: Forensic Correlator vs CCTNS Crime Network */}
+        <div className="flex flex-wrap items-center justify-center lg:justify-end gap-4 relative z-10 shrink-0">
+          <div className="inline-flex items-center p-1.5 bg-slate-950/90 border border-slate-700/80 rounded-md shadow-inner gap-2 shrink-0">
             <button
               onClick={() => setAnalysisMode("FORENSIC")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                analysisMode === "FORENSIC"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+              className={`px-4 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${analysisMode === "FORENSIC"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 font-bold"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
-              <RiShieldFlashLine className="text-amber-400 text-sm" />
-              <span>Artifact & Mule Flow</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                analysisMode === "FORENSIC" ? "bg-white/20 text-white" : "bg-slate-800 text-slate-400"
-              }`}>
+              <RiShieldFlashLine className="text-amber-400 space-around text-sm" />
+              <span className="space-around">Artifact & Mule Flow</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${analysisMode === "FORENSIC" ? "bg-white/20 text-white" : "bg-slate-800 text-slate-400"
+                }`}>
                 {forensicArtifactsCount}
               </span>
             </button>
 
             <button
               onClick={() => setAnalysisMode("CCTNS")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                analysisMode === "CCTNS"
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+              className={`px-4 py-2.5 rounded-md text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${analysisMode === "CCTNS"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 font-bold"
                   : "text-slate-400 hover:text-white"
-              }`}
+                }`}
             >
               <RiBuilding2Line className="text-blue-400 text-sm" />
               <span>CCTNS Crime Network</span>
@@ -284,7 +273,7 @@ export default function NetworkAnalysis() {
 
           <button
             onClick={handleResetView}
-            className="flex items-center gap-1.5 text-cyan-400 hover:text-white transition-all cursor-pointer font-mono text-xs py-2 px-3 rounded-lg border border-slate-700/80 bg-slate-800/60 hover:bg-slate-700"
+            className="flex items-center gap-2 text-cyan-400 hover:text-white transition-all cursor-pointer font-mono text-xs py-2.5 px-4 rounded-md border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700 shadow-sm whitespace-nowrap shrink-0"
             title="Recenter & Reset View"
           >
             <RiRefreshLine className="text-sm" />
@@ -294,7 +283,7 @@ export default function NetworkAnalysis() {
           {analysisMode === "FORENSIC" && allNodes.length > 0 && (
             <button
               onClick={() => setIsBriefModalOpen(true)}
-              className="flex items-center gap-1.5 text-white bg-emerald-600 hover:bg-emerald-500 transition-all cursor-pointer font-mono text-xs py-2 px-3 rounded-lg shadow-md shadow-emerald-600/30 font-bold"
+              className="flex items-center gap-2 text-white bg-emerald-600 hover:bg-emerald-500 transition-all cursor-pointer font-mono text-xs py-2.5 px-4 rounded-md shadow-lg shadow-emerald-600/30 font-bold whitespace-nowrap shrink-0"
               title="Generate Section 91 CrPC One-Page Seizure Brief & Timeline report"
             >
               <RiFileTextLine className="text-sm" />
@@ -306,7 +295,7 @@ export default function NetworkAnalysis() {
 
       {/* KPI Metric Summary Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-        <div 
+        <div
           className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
           style={{ padding: "18px 20px" }}
         >
@@ -322,7 +311,7 @@ export default function NetworkAnalysis() {
           </span>
         </div>
 
-        <div 
+        <div
           className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
           style={{ padding: "18px 20px" }}
         >
@@ -338,7 +327,7 @@ export default function NetworkAnalysis() {
           </span>
         </div>
 
-        <div 
+        <div
           className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
           style={{ padding: "18px 20px" }}
         >
@@ -354,7 +343,7 @@ export default function NetworkAnalysis() {
           </span>
         </div>
 
-        <div 
+        <div
           className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
           style={{ padding: "18px 20px" }}
         >
@@ -370,7 +359,7 @@ export default function NetworkAnalysis() {
           </span>
         </div>
 
-        <div 
+        <div
           className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
           style={{ padding: "18px 20px" }}
         >
@@ -386,7 +375,7 @@ export default function NetworkAnalysis() {
           </span>
         </div>
 
-        <div 
+        <div
           className="bg-slate-900/85 border border-slate-700/60 rounded-md shadow-md flex flex-col justify-between"
           style={{ padding: "18px 20px" }}
         >
@@ -431,11 +420,10 @@ export default function NetworkAnalysis() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setForensicViewMode("GRAPH")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${
-                forensicViewMode === "GRAPH"
+              className={`px-4 py-2 rounded-lg text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${forensicViewMode === "GRAPH"
                   ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-500/50"
                   : "bg-slate-950/60 text-slate-400 hover:text-white border border-slate-800"
-              }`}
+                }`}
             >
               <RiNodeTree className="text-sm" />
               <span>Interactive Mule Flow Canvas</span>
@@ -443,11 +431,10 @@ export default function NetworkAnalysis() {
 
             <button
               onClick={() => setForensicViewMode("TRIAGE_MATRIX")}
-              className={`px-4 py-2 rounded-lg text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${
-                forensicViewMode === "TRIAGE_MATRIX"
+              className={`px-4 py-2 rounded-lg text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${forensicViewMode === "TRIAGE_MATRIX"
                   ? "bg-red-600 text-white shadow-md shadow-red-600/30 border border-red-500/50"
                   : "bg-slate-950/60 text-red-400 hover:text-red-300 border border-slate-800 hover:border-red-500/30"
-              }`}
+                }`}
             >
               <RiAlertFill className="text-sm text-red-400 animate-pulse" />
               <span>Feature 4: Forensic Triage & Risk Matrix</span>
