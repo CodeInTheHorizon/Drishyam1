@@ -1049,6 +1049,16 @@ class CrimeRepository {
         let cloudOfficers = [];
         try {
             const res = await callCatalystDatastoreApi('/table/Employee/row', 'GET');
+            let bioRows = [];
+            try {
+                const bioRes = await callCatalystDatastoreApi('/table/OfficerBiometric/row', 'GET');
+                if (bioRes.status === 200 && bioRes.data && Array.isArray(bioRes.data.data)) {
+                    bioRows = bioRes.data.data;
+                }
+            } catch (bioE) {
+                console.warn("[CrimeRepository] OfficerBiometric fetch skipped:", bioE.message);
+            }
+
             if (res.status === 200 && res.data && Array.isArray(res.data.data)) {
                 cloudOfficers = res.data.data.map((emp, idx) => {
                     const cleanName = (emp.FirstName || "").toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1063,6 +1073,16 @@ class CrimeRepository {
                         global.__officer_meta_cache[cleanName]
                     )) || {};
                     const badge = (emp.KGID ? String(emp.KGID).replace(/^KSP-/i, "MPP-") : null) || `MPP-${emp.ROWID || emp.EmployeeID}`;
+                    
+                    // Match live biometric face photo from Catalyst OfficerBiometric table
+                    const bioMatch = bioRows.find(b => 
+                        (b.KGID && String(b.KGID).trim().toLowerCase() === badge.toLowerCase()) || 
+                        (b.EmployeeID && String(b.EmployeeID) === String(emp.EmployeeID))
+                    );
+                    const livePhotoUrl = (bioMatch && bioMatch.DeviceID && bioMatch.DeviceID.startsWith("http")) 
+                        ? bioMatch.DeviceID 
+                        : (cachedMeta.photoUrl || cachedMeta.avatar || defaultAvatars[idx % defaultAvatars.length]);
+
                     return {
                         id: `u-${emp.ROWID || emp.EmployeeID || emp.KGID}`,
                         badgeNumber: badge,
@@ -1077,10 +1097,11 @@ class CrimeRepository {
                         EmployeeID: emp.EmployeeID,
                         username: cachedMeta.username || `mpp.${cleanName}`,
                         password: cachedMeta.password || "password",
-                        avatar: cachedMeta.avatar || defaultAvatars[idx % defaultAvatars.length]
+                        avatar: livePhotoUrl,
+                        photoUrl: livePhotoUrl
                     };
                 });
-                console.log(`[CrimeRepository] Fetched ${cloudOfficers.length} officer employees directly from Zoho Catalyst Online Data Store.`);
+                console.log(`[CrimeRepository] Fetched ${cloudOfficers.length} officer employees with live face photos directly from Zoho Catalyst.`);
             }
         } catch (e) {
             console.warn("[CrimeRepository] Online Catalyst Employee fetch failed:", e.message);
@@ -1147,6 +1168,7 @@ class CrimeRepository {
         const rank = String(officerData.rank.trim());
         const unit = String(officerData.unit.trim());
         const station = String(officerData.station.trim());
+        const photoUrl = officerData.photoUrl || officerData.avatar || "";
 
         const catalystEmployeeRow = {
             EmployeeID: empId,
@@ -1170,10 +1192,31 @@ class CrimeRepository {
             console.error("❌ [CrimeRepository] Catalyst Employee Insert Exception:", e.message);
         }
 
+        // Live Catalyst OfficerBiometric Insertion storing Cloudinary face reference
+        const catalystBiometricRow = {
+            EmployeeID: Number(empId) || 101,
+            KGID: badge,
+            BiometricID: Number(Date.now().toString().slice(-6)),
+            DeviceID: photoUrl ? String(photoUrl) : "CV-FACE-CAMERA-01",
+            FingerprintTemplateID: 101,
+            EnrolledBy: "56116000000013007",
+            EnrolledDate: new Date().toISOString().replace('T', ' ').split('.')[0]
+        };
+
+        try {
+            console.log("[CrimeRepository] Storing Cloudinary Face Biometric in Catalyst OfficerBiometric table...");
+            const bioInsertRes = await callCatalystDatastoreApi('/table/OfficerBiometric/row', 'POST', [catalystBiometricRow]);
+            if (bioInsertRes.status === 200) {
+                console.log("✅ [CrimeRepository] Catalyst OfficerBiometric Face URL Saved. ROWID:", bioInsertRes.data?.data?.[0]?.ROWID);
+            }
+        } catch (bioErr) {
+            console.warn("[CrimeRepository] Catalyst OfficerBiometric save warning:", bioErr.message);
+        }
+
         if (cloudRow?.ROWID) {
             if (!global.__officer_meta_cache) global.__officer_meta_cache = {};
             global.__officer_meta_cache[cloudRow.ROWID] = {
-                rank, unit, station, yearsOfService: Number(officerData.yearsOfService) || 5
+                rank, unit, station, yearsOfService: Number(officerData.yearsOfService) || 5, photoUrl
             };
             global.__officer_meta_cache[badge] = global.__officer_meta_cache[cloudRow.ROWID];
         }
@@ -1187,7 +1230,9 @@ class CrimeRepository {
             yearsOfService: Number(officerData.yearsOfService) || 5,
             status: "On Duty",
             ROWID: cloudRow?.ROWID || `emp-${empId}`,
-            EmployeeID: empId
+            EmployeeID: empId,
+            photoUrl: photoUrl,
+            avatar: photoUrl
         };
     }
 }

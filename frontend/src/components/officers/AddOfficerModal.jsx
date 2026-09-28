@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { 
   FaTimes, 
   FaUserPlus, 
@@ -6,7 +7,7 @@ import {
   FaShieldAlt, 
   FaSave,
   FaBuilding,
-  FaFingerprint,
+  FaCamera,
   FaCheckCircle,
   FaExclamationCircle,
   FaMicrochip,
@@ -14,7 +15,7 @@ import {
   FaArrowLeft,
   FaTv
 } from "react-icons/fa";
-import BiometricEnrollmentWidget from "../hardware/BiometricEnrollmentWidget";
+import FaceEnrollmentWidget from "../hardware/FaceEnrollmentWidget";
 
 const MP_DISTRICTS = [
   "Bhopal",
@@ -50,14 +51,24 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
     specialArea: "Cyber Forensics & Threat Intelligence",
     username: "",
     password: "Officer@123",
-    biometricTemplateId: ""
+    photoUrl: "",
+    avatar: ""
   });
 
   const [biometricEnrolled, setBiometricEnrolled] = useState(false);
   const [biometricData, setBiometricData] = useState(null);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  const faceWidgetRef = useRef(null);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,13 +78,13 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
       // Auto-generate suggested username if name changes and username not manually touched
       if (name === "name" && value.trim()) {
         const cleanName = value.trim().toLowerCase().replace(/\s+/g, "");
-        updated.username = `mpp.${cleanName}`;
-      }
-      
-      // Auto-generate suggested badge if name changes
-      if (name === "name" && value.trim()) {
-        const rand = Math.floor(1000 + Math.random() * 9000);
-        updated.badgeNumber = `MPP-2026-${rand}`;
+        if (!prev.username || prev.username.startsWith("mpp.")) {
+          updated.username = `mpp.${cleanName}`;
+        }
+        if (!prev.badgeNumber || prev.badgeNumber === "MPP-2026-901") {
+          const rand = Math.floor(1000 + Math.random() * 9000);
+          updated.badgeNumber = `MPP-2026-${rand}`;
+        }
       }
 
       return updated;
@@ -86,75 +97,105 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
     setBiometricData(info);
     setFormData((prev) => ({
       ...prev,
-      biometricTemplateId: info.biometricTemplateId,
-      biometricSlot: info.slot
+      photoUrl: info.photoUrl,
+      avatar: info.photoUrl,
+      biometricTemplateId: info.photoUrl || "CV-FACE-MODEL",
+      biometricSlot: 1
     }));
     setError("");
+  };
+
+  const validateDossier = () => {
+    if (!formData.name.trim()) {
+      setError("Please enter the officer's full name.");
+      setActiveTab("dossier");
+      return false;
+    }
+    if (!formData.rank?.trim()) {
+      setError("Please select the officer's rank.");
+      setActiveTab("dossier");
+      return false;
+    }
+    if (!formData.badgeNumber?.trim()) {
+      setError("Please enter the officer's badge/MPPID number.");
+      setActiveTab("dossier");
+      return false;
+    }
+    if (!formData.unit?.trim()) {
+      setError("Please specify the assigned division or cyber unit.");
+      setActiveTab("dossier");
+      return false;
+    }
+    if (!formData.station?.trim()) {
+      setError("Please specify the district jurisdiction.");
+      setActiveTab("dossier");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  const validateCredentials = () => {
+    if (!formData.username.trim()) {
+      setError("Please specify a login username for the officer.");
+      setActiveTab("credentials");
+      return false;
+    }
+    if (!formData.password || formData.password.length < 4) {
+      setError("Password must be at least 4 characters long.");
+      setActiveTab("credentials");
+      return false;
+    }
+    setError("");
+    return true;
+  };
+
+  const handleNextFromDossier = () => {
+    if (validateDossier()) {
+      setActiveTab("credentials");
+    }
+  };
+
+  const handleNextFromCredentials = () => {
+    if (validateDossier() && validateCredentials()) {
+      setActiveTab("biometrics");
+    }
   };
 
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     setError("");
 
-    // --- Validations ---
-    if (!formData.name.trim()) {
-      setError("Please enter the officer's full name.");
-      setActiveTab("dossier");
-      return;
-    }
+    if (!validateDossier()) return;
+    if (!validateCredentials()) return;
 
-    if (!formData.rank?.trim()) {
-      setError("Please select the officer's rank.");
-      setActiveTab("dossier");
-      return;
-    }
-
-    if (!formData.badgeNumber?.trim()) {
-      setError("Please enter the officer's badge/MPPID number.");
-      setActiveTab("dossier");
-      return;
-    }
-
-    if (!formData.unit?.trim()) {
-      setError("Please specify the assigned division or cyber unit.");
-      setActiveTab("dossier");
-      return;
-    }
-
-    if (!formData.station?.trim()) {
-      setError("Please specify the district jurisdiction.");
-      setActiveTab("dossier");
-      return;
-    }
-
-    if (!formData.username.trim()) {
-      setError("Please specify a login username for the officer.");
-      setActiveTab("credentials");
-      return;
-    }
-
-    if (!formData.password || formData.password.length < 4) {
-      setError("Password must be at least 4 characters long.");
-      setActiveTab("credentials");
-      return;
-    }
-
-    if (!biometricEnrolled) {
-      setError("MANDATORY BIOMETRIC REGISTRATION: Please capture and enroll the officer's fingerprint via the ESP32 scanner below.");
+    const livePhoto = formData.photoUrl || biometricData?.photoUrl;
+    if (!livePhoto) {
+      setError("MANDATORY FACIAL ENROLLMENT: Officer face photo must be captured before registration.");
       setActiveTab("biometrics");
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      await onAdd(formData);
+      await onAdd({
+        ...formData,
+        photoUrl: livePhoto,
+        avatar: livePhoto
+      });
       onClose();
     } catch (err) {
-      setError(err.message || "Failed to register officer.");
+      setError(err.message || "Failed to register officer into database.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-3 sm:p-4 overflow-y-auto font-jakarta">
+      {/* Backdrop */}
+      <div className="fixed inset-0 -z-10" onClick={onClose} />
+
       <div 
         className="w-full max-w-4xl rounded-2xl border border-slate-700/80 bg-[#081220] shadow-[0_0_60px_-15px_rgba(0,0,0,0.85)] relative overflow-hidden font-jakarta my-auto animate-fade-in"
         onClick={(e) => e.stopPropagation()}
@@ -177,16 +218,16 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                 </h2>
                 {biometricEnrolled ? (
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold flex items-center gap-1">
-                    <FaCheckCircle /> BIOMETRIC CAPTURED (#{biometricData?.slot || 1})
+                    <FaCheckCircle /> FACE PHOTO CAPTURED
                   </span>
                 ) : (
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold flex items-center gap-1 animate-pulse">
-                    <FaFingerprint /> BIOMETRIC REQUIRED
+                    <FaCamera /> FACE PHOTO REQUIRED
                   </span>
                 )}
               </div>
               <p className="text-xs text-slate-400 font-sans mt-0.5">
-                Admin Dossier Provisioning • ESP32 Biometric Template Capture & CCTNS Access
+                Admin Dossier Provisioning • Mandatory Cloudinary CV Face Enrollment
               </p>
             </div>
           </div>
@@ -201,7 +242,7 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
           </button>
         </div>
 
-        {/* 3-Step Wizard Navigation Bar (Fully Responsive, Never Hidden) */}
+        {/* 3-Step Wizard Navigation Bar */}
         <div className="border-b border-slate-800 bg-slate-950/80 grid grid-cols-3 text-xs font-mono">
           <button
             type="button"
@@ -219,7 +260,9 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
 
           <button
             type="button"
-            onClick={() => setActiveTab("credentials")}
+            onClick={() => {
+              if (validateDossier()) setActiveTab("credentials");
+            }}
             className={`py-3.5 px-3 flex items-center justify-center gap-2 border-b-2 font-bold uppercase transition-all cursor-pointer ${
               activeTab === "credentials"
                 ? "border-blue-500 text-blue-400 bg-blue-500/10"
@@ -233,89 +276,74 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
 
           <button
             type="button"
-            onClick={() => setActiveTab("biometrics")}
+            onClick={() => {
+              if (validateDossier() && validateCredentials()) setActiveTab("biometrics");
+            }}
             className={`py-3.5 px-3 flex items-center justify-center gap-2 border-b-2 font-bold uppercase transition-all cursor-pointer relative ${
               activeTab === "biometrics"
                 ? "border-cyan-400 text-cyan-300 bg-cyan-500/15"
                 : "border-transparent text-slate-400 hover:text-slate-200"
             }`}
           >
-            <FaFingerprint className={`text-xs ${!biometricEnrolled ? "text-amber-400 animate-pulse" : "text-emerald-400"}`} />
-            <span className="hidden sm:inline">3. Biometric (ESP32)</span>
-            <span className="sm:hidden">3. Biometric</span>
-            {biometricEnrolled ? (
-              <span className="h-2 w-2 rounded-full bg-emerald-400 ml-1" />
-            ) : (
-              <span className="h-2 w-2 rounded-full bg-amber-400 animate-ping ml-1" />
+            <FaCamera className={`text-xs ${!biometricEnrolled ? "text-amber-400 animate-pulse" : "text-emerald-400"}`} />
+            <span className="hidden sm:inline">3. Face Photo Enrollment</span>
+            <span className="sm:hidden">3. Face Capture</span>
+            {biometricEnrolled && (
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 absolute top-2 right-2" />
             )}
           </button>
         </div>
 
         {/* Modal Form Body */}
-        <form onSubmit={handleSubmit} className="flex flex-col">
+        <form onSubmit={handleSubmit}>
           
-          <div className="max-h-[60vh] overflow-y-auto space-y-6 px-6 py-5 sm:px-8 sm:py-6">
-            
-            {error && (
-              <div className="p-3.5 rounded-xl bg-rose-950/70 border border-rose-800 text-rose-300 text-xs flex items-center gap-2.5 font-medium animate-fade-in shadow-lg">
-                <FaExclamationCircle className="text-rose-400 text-base flex-shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
+          <div className="p-6 sm:p-8 max-h-[65vh] overflow-y-auto space-y-6">
 
-            {/* TAB 1: Officer Dossier Profile */}
+            {/* TAB 1: Core Dossier */}
             {activeTab === "dossier" && (
               <div className="space-y-5 animate-fade-in">
-                <div className="flex items-center justify-between border-b border-slate-800/70 pb-2">
-                  <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <FaShieldAlt className="text-blue-400 text-xs" /> OFFICER SERVICE PARTICULARS
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500">Step 1 of 3</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 text-xs">
-                  
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Officer Full Name & Title <span className="text-rose-500 font-bold ml-1">*</span>
+                      Officer Full Name <span className="text-rose-500 font-bold ml-1">*</span>
                     </label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      placeholder="e.g. Inspector Rajesh Sharma"
+                      placeholder="e.g. Rajesh Sharma"
                       required
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
+                      autoFocus
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner placeholder-slate-500"
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Officer Rank <span className="text-rose-500 font-bold ml-1">*</span>
+                      Rank / Designation <span className="text-rose-500 font-bold ml-1">*</span>
                     </label>
                     <select
                       name="rank"
                       value={formData.rank}
                       onChange={handleChange}
-                      required
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner cursor-pointer"
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-3 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner cursor-pointer"
                     >
-                      <option value="Director General of Police (DGP)">Director General of Police (DGP)</option>
-                      <option value="Inspector General of Police (IGP)">Inspector General of Police (IGP)</option>
-                      <option value="Deputy Inspector General (DIG)">Deputy Inspector General (DIG)</option>
+                      <option value="Police Inspector">Police Inspector (PI)</option>
+                      <option value="Sub-Inspector">Sub-Inspector (PSI)</option>
+                      <option value="Assistant Sub-Inspector">Assistant Sub-Inspector (ASI)</option>
+                      <option value="Deputy Superintendent of Police (DSP)">Deputy Superintendent of Police (DSP)</option>
                       <option value="Superintendent of Police (SP)">Superintendent of Police (SP)</option>
-                      <option value="Deputy SP (DySP)">Deputy SP (DySP)</option>
-                      <option value="Police Inspector">Police Inspector</option>
-                      <option value="Sub-Inspector (PSI)">Sub-Inspector (PSI)</option>
-                      <option value="Assistant Sub-Inspector (ASI)">Assistant Sub-Inspector (ASI)</option>
-                      <option value="Head Constable (HC)">Head Constable (HC)</option>
+                      <option value="Inspector General of Police (IGP)">Inspector General of Police (IGP)</option>
                     </select>
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      MPPID / Badge Number <span className="text-rose-500 font-bold ml-1">*</span>
+                      Badge / KGID Number <span className="text-rose-500 font-bold ml-1">*</span>
                     </label>
                     <input
                       type="text"
@@ -324,8 +352,24 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                       onChange={handleChange}
                       placeholder="MPP-2026-901"
                       required
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-cyan-300 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono font-bold shadow-inner"
                     />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-300">
+                      District Jurisdiction <span className="text-rose-500 font-bold ml-1">*</span>
+                    </label>
+                    <select
+                      name="station"
+                      value={formData.station}
+                      onChange={handleChange}
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-3 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner cursor-pointer"
+                    >
+                      {MP_DISTRICTS.map((dist) => (
+                        <option key={dist} value={dist}>{dist} District</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="space-y-1.5">
@@ -335,89 +379,66 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                     <input
                       type="number"
                       name="yearsOfService"
+                      min="1"
+                      max="40"
                       value={formData.yearsOfService}
                       onChange={handleChange}
-                      placeholder="5"
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-mono shadow-inner placeholder-slate-500"
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner"
                     />
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
                       Assigned Division / Unit <span className="text-rose-500 font-bold ml-1">*</span>
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="unit"
                       value={formData.unit}
                       onChange={handleChange}
-                      placeholder="e.g. Bhopal Central Cyber Cell"
-                      required
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
-                    />
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-3 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner cursor-pointer"
+                    >
+                      {MP_STATIONS.map((stn) => (
+                        <option key={stn} value={stn}>{stn}</option>
+                      ))}
+                      <option value="General Crime Investigation Unit">General Crime Investigation Unit</option>
+                      <option value="State Special Task Force (STF)">State Special Task Force (STF)</option>
+                    </select>
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Specialization Area
+                      Specialized Domain / Focus
                     </label>
                     <input
                       type="text"
                       name="specialArea"
                       value={formData.specialArea}
                       onChange={handleChange}
-                      placeholder="e.g. Cyber Forensics & Threat Intelligence"
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner placeholder-slate-500"
+                      placeholder="e.g. Financial Fraud & Mule Link Analysis"
+                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 font-medium shadow-inner placeholder-slate-500"
                     />
                   </div>
-
-                  <div className="space-y-1.5 md:col-span-2">
-                    <label className="block text-xs font-semibold text-slate-300">
-                      District Jurisdiction Headquarters <span className="text-rose-500 font-bold ml-1">*</span>
-                    </label>
-                    <select
-                      name="station"
-                      value={formData.station}
-                      onChange={handleChange}
-                      required
-                      className="w-full h-11 rounded-xl bg-slate-950/80 border border-slate-800 px-4 text-xs text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 shadow-inner cursor-pointer"
-                    >
-                      {MP_DISTRICTS.map((d) => (
-                        <option key={d} value={d}>{d}</option>
-                      ))}
-                    </select>
-                  </div>
-
                 </div>
 
-                <div className="pt-2 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("credentials")}
-                    className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-all"
-                  >
-                    <span>Continue to Login & Biometrics</span>
-                    <FaArrowRight />
-                  </button>
-                </div>
               </div>
             )}
 
-            {/* TAB 2: Login Credentials & Access Account + EMBEDDED BIOMETRIC SCANNER */}
+            {/* TAB 2: Credentials */}
             {activeTab === "credentials" && (
-              <div className="space-y-6 animate-fade-in">
-                <div className="flex items-center justify-between border-b border-slate-800/70 pb-2">
-                  <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                    <FaKey className="text-blue-400 text-xs" /> AUTHENTICATION CREDENTIALS & SECURITY
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500">Step 2 of 3</span>
+              <div className="space-y-5 animate-fade-in">
+                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs flex items-start gap-2.5">
+                  <FaKey className="text-base text-blue-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold">System Credentials Provisioning:</span> The officer will use these credentials along with Facial Recognition 2FA to access the CCTNS portal.
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 text-xs">
-                  
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-300">
-                      Officer Login Username <span className="text-rose-500 font-bold ml-1">*</span>
+                      Login Username <span className="text-rose-500 font-bold ml-1">*</span>
                     </label>
                     <input
                       type="text"
@@ -450,132 +471,62 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                       Temporary password; officer can update in Settings once logged in.
                     </p>
                   </div>
-
-                </div>
-
-                {/* DIRECT EMBEDDED BIOMETRIC ENROLLMENT CARD (Prominently displayed right here!) */}
-                <div className="pt-2">
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800/80">
-                    <div className="flex items-center gap-2">
-                      <FaFingerprint className="text-cyan-400 text-sm" />
-                      <span className="text-xs font-bold font-space uppercase tracking-wider text-white">
-                        Biometric Fingerprint Registration (Required)
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("biometrics")}
-                      className="text-[11px] font-mono text-cyan-400 hover:underline flex items-center gap-1"
-                    >
-                      <span>Open Full Sensor Console</span>
-                      <FaArrowRight className="text-[10px]" />
-                    </button>
-                  </div>
-
-                  <BiometricEnrollmentWidget
-                    officerData={formData}
-                    isEnrolled={biometricEnrolled}
-                    enrolledInfo={biometricData}
-                    onEnrollmentComplete={handleEnrollmentSuccess}
-                  />
-                </div>
-
-                <div className="pt-2 flex justify-between items-center">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("dossier")}
-                    className="px-4 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-mono text-xs flex items-center gap-2 cursor-pointer transition-all"
-                  >
-                    <FaArrowLeft />
-                    <span>Back to Dossier</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("biometrics")}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-all shadow-lg shadow-cyan-600/20"
-                  >
-                    <span>View ESP32 Hardware Console</span>
-                    <FaArrowRight />
-                  </button>
                 </div>
 
               </div>
             )}
 
-            {/* TAB 3: Full ESP32 Hardware Biometric Enrollment & OLED Console */}
+            {/* TAB 3: Computer Vision Facial Photo Enrollment & Cloudinary Storage */}
             {activeTab === "biometrics" && (
               <div className="space-y-5 animate-fade-in">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <div>
                     <h3 className="text-sm font-bold font-space text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                      <FaMicrochip /> Officer Biometric Registration • ESP32 + R307 Sensor
+                      <FaCamera /> Mandatory Facial Photo Enrollment • Cloudinary AI
                     </h3>
                     <p className="text-xs text-slate-400 mt-1">
-                      Capture and bind the officer's biometric fingerprint template. Required for subsequent 2-Factor Biometric authentication when performing FIR actions or modifying personnel records.
+                      Capture and enroll the officer's facial photo into Cloudinary. This photo is permanently bound to the officer's ID in Zoho Catalyst for Computer Vision 2FA verification during FIR CRUD actions.
                     </p>
                   </div>
                   <span className="text-[10px] font-mono text-slate-500">Step 3 of 3</span>
                 </div>
 
-                {/* Active Biometric Widget */}
-                <BiometricEnrollmentWidget
+                {/* Active Face Enrollment Camera Widget */}
+                <FaceEnrollmentWidget
+                  ref={faceWidgetRef}
                   officerData={formData}
                   isEnrolled={biometricEnrolled}
                   enrolledInfo={biometricData}
                   onEnrollmentComplete={handleEnrollmentSuccess}
                 />
-
-                {/* OLED Display Mirror for Registration */}
-                <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-                    <span className="flex items-center gap-1.5 text-cyan-400 font-bold">
-                      <FaTv /> ESP32 Physical OLED Screen Mirror
-                    </span>
-                    <span className="text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded">
-                      I2C 0x3C Active
-                    </span>
-                  </div>
-
-                  <div className="rounded-lg border-2 border-slate-800 bg-[#020712] p-3 text-center font-mono text-xs space-y-1 text-cyan-300 drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]">
-                    <div className="font-bold text-cyan-200 border-b border-cyan-900/40 pb-1">
-                      ENROLL BIOMETRIC
-                    </div>
-                    <div>
-                      NAME: {formData.name ? formData.name.slice(0, 16) : "NEW OFFICER"}
-                    </div>
-                    <div className="text-amber-300 font-bold">
-                      {biometricEnrolled
-                        ? `SLOT #${biometricData?.slot || 1} SAVED & BOUND`
-                        : "PLACE FINGERPRINT ON SENSOR"}
-                    </div>
-                    <div className="text-[10px] text-cyan-500">
-                      {biometricEnrolled ? ">> ENROLLMENT OK <<" : "AWAITING SENSOR TOUCH..."}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 flex justify-start">
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("credentials")}
-                    className="px-4 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-mono text-xs flex items-center gap-2 cursor-pointer transition-all"
-                  >
-                    <FaArrowLeft />
-                    <span>Back to Credentials</span>
-                  </button>
-                </div>
               </div>
             )}
 
           </div>
 
-          {/* Modal Footer */}
+          {/* Prominent Error Banner */}
+          {error && (
+            <div className="px-6 py-2.5 mx-6 mb-2 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs flex items-center justify-between gap-2 shadow-sm animate-shake">
+              <div className="flex items-center gap-2">
+                <FaExclamationCircle className="text-rose-400 flex-shrink-0 text-sm" />
+                <span className="font-medium">{error}</span>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setError("")}
+                className="text-rose-400 hover:text-white text-xs cursor-pointer"
+              >
+                <FaTimes />
+              </button>
+            </div>
+          )}
+
+          {/* Modal Footer Controls */}
           <div 
             className="py-4 sm:py-5 bg-slate-900/90 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 sm:px-8"
           >
             <div className="text-xs text-slate-400 font-sans">
-              <span className="text-rose-500 font-bold">*</span> Mandatory fields • Biometric capture required before registration
+              <span className="text-rose-500 font-bold">*</span> Mandatory fields • Facial photo required before database registration
             </div>
             
             <div className="flex items-center gap-3 self-end sm:self-auto">
@@ -587,33 +538,85 @@ const AddOfficerModal = ({ isOpen, onClose, onAdd }) => {
                 Cancel
               </button>
 
-              <button
-                type="submit"
-                className={`h-11 px-6 rounded-xl font-space text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border-none text-white ${
-                  biometricEnrolled
-                    ? "bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30"
-                    : "bg-blue-600 hover:bg-blue-500 shadow-blue-600/25"
-                }`}
-              >
-                {biometricEnrolled ? (
-                  <>
-                    <FaCheckCircle className="text-sm" />
-                    <span>Register Officer & Bind Biometric</span>
-                  </>
-                ) : (
-                  <>
-                    <FaFingerprint className="text-sm" />
-                    <span>Capture Biometric & Register</span>
-                  </>
-                )}
-              </button>
+              {/* Wizard Step 1 Action */}
+              {activeTab === "dossier" && (
+                <button
+                  type="button"
+                  onClick={handleNextFromDossier}
+                  className="h-11 px-6 rounded-xl font-space text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border-none text-white bg-blue-600 hover:bg-blue-500 shadow-blue-600/25 active:scale-95"
+                >
+                  <span>Next: Login Credentials</span>
+                  <FaArrowRight className="text-xs" />
+                </button>
+              )}
+
+              {/* Wizard Step 2 Action */}
+              {activeTab === "credentials" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("dossier")}
+                    className="h-11 px-4 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                  >
+                    <FaArrowLeft className="text-[10px]" />
+                    <span>Back</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextFromCredentials}
+                    className="h-11 px-6 rounded-xl font-space text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border-none text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-cyan-600/25 active:scale-95"
+                  >
+                    <span>Next: Face Photo</span>
+                    <FaArrowRight className="text-xs" />
+                  </button>
+                </>
+              )}
+
+              {/* Wizard Step 3 Action */}
+              {activeTab === "biometrics" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("credentials")}
+                    className="h-11 px-4 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                  >
+                    <FaArrowLeft className="text-[10px]" />
+                    <span>Back</span>
+                  </button>
+
+                  {!biometricEnrolled ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setError("");
+                        faceWidgetRef.current?.capture();
+                      }}
+                      className="h-11 px-6 rounded-xl font-space text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border-none text-white bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500 hover:from-blue-500 hover:to-teal-400 shadow-cyan-500/30 active:scale-95 animate-pulse"
+                    >
+                      <FaCamera className="text-sm" />
+                      <span>Capture Officer Photo</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="h-11 px-6 rounded-xl font-space text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border-none text-white bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30 active:scale-95 disabled:opacity-50"
+                    >
+                      <FaCheckCircle className="text-sm" />
+                      <span>{isSubmitting ? "Registering Officer..." : "Register Officer & Save Photo"}</span>
+                    </button>
+                  )}
+                </>
+              )}
+
             </div>
           </div>
 
         </form>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

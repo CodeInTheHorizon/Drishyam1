@@ -1,18 +1,18 @@
 /**
  * hardwareService.js
  * 
- * Client service for ESP32 + OLED Display + Biometric Scanner hardware module.
- * Coordinates 2-Factor Biometric Fingerprint verification and dynamic OLED OTP authentication.
+ * Client service for ESP32 + OLED Display + AI Computer Vision Face Recognition module.
+ * Coordinates Cloudinary face verification, dynamic OLED OTP authentication, and tamper-proof live audit trails.
  */
 
 const API_BASE = "/api/hardware";
 
 export const hardwareService = {
   getDeviceStatus: async () => {
-    return hardwareService.getStatus();
+    return hardwareService.checkDeviceConnection();
   },
 
-  // Check if hardware biometric device is connected
+  // Check if hardware biometric camera / OLED device is connected
   checkDeviceConnection: async () => {
     try {
       const res = await fetch(`${API_BASE}/status`);
@@ -21,7 +21,7 @@ export const hardwareService = {
         const connected = Boolean(json.data?.isConnected ?? json.data?.isOnline);
         return {
           connected,
-          label: connected ? "Biometric device connected" : "Biometric device not connected",
+          label: connected ? "CV Face Recognition & 2FA Online" : "Biometric camera not connected",
           data: json.data
         };
       }
@@ -30,7 +30,7 @@ export const hardwareService = {
     }
     return {
       connected: false,
-      label: "Biometric device not connected",
+      label: "Biometric camera not connected",
       data: null
     };
   },
@@ -51,31 +51,16 @@ export const hardwareService = {
     }
   },
 
-  // 1. Start Biometric Fingerprint Enrollment for New Officer
-  startEnrollment: async (officerData) => {
-    const res = await fetch(`${API_BASE}/enroll`, {
+  // 1. Upload Officer Face Photo to Cloudinary
+  uploadFacePhoto: async (base64Image) => {
+    const res = await fetch("/api/face/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(officerData)
+      body: JSON.stringify({ image: base64Image })
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Failed to initiate biometric enrollment on ESP32.");
-    }
-    const json = await res.json();
-    return json.data;
-  },
-
-  // Confirm Biometric Fingerprint Enrollment
-  confirmEnrollment: async (enrollData) => {
-    const res = await fetch(`${API_BASE}/confirm-enroll`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(enrollData)
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Failed to store biometric template.");
+      throw new Error(err.error || "Failed to upload photo to Cloudinary.");
     }
     const json = await res.json();
     return json.data;
@@ -96,7 +81,22 @@ export const hardwareService = {
     return json.data;
   },
 
-  // 3. Scan Fingerprint on ESP32 Biometric Scanner
+  // 3. Scan & Match Face against Database via Cloudinary CV Face Recognition
+  matchFaceAuth: async ({ sessionId, image }) => {
+    const res = await fetch(`${API_BASE}/face-auth-match`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId, image })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Facial recognition match failed: Officer not recognized.");
+    }
+    const json = await res.json();
+    return json.data;
+  },
+
+  // Fallback / legacy biometric scan
   scanBiometric: async (sessionId, officerData) => {
     const res = await fetch(`${API_BASE}/scan-biometric`, {
       method: "POST",
@@ -105,7 +105,7 @@ export const hardwareService = {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Biometric fingerprint verification failed.");
+      throw new Error(err.error || "Biometric face verification failed.");
     }
     const json = await res.json();
     return json.data;
@@ -120,9 +120,10 @@ export const hardwareService = {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Invalid 2FA OTP.");
+      throw new Error(err.error || "Invalid 2FA OTP. Please check the OLED display.");
     }
     const json = await res.json();
     return json.data;
   }
 };
+

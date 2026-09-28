@@ -37,6 +37,7 @@ const chatHandler = require("./datathon-chatbot/functions/chat/index.js");
 const insightsHandler = require("./datathon-chatbot/functions/insights/index.js");
 const CrimeRepository = require("./datathon-chatbot/functions/chat/datastore.js");
 const hardwareManager = require("./backend/hardwareManager.js");
+const cloudinaryService = require("./backend/cloudinaryService.js");
 
 // Live Digital Forensic Evidence Store
 let forensicEvidenceStoreBackend = [];
@@ -401,13 +402,49 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify({ success: false, error: err.message }));
             }
         });
+    } else if (pathname === "/api/face/upload" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const { image } = body ? JSON.parse(body) : {};
+                if (!image) {
+                    throw new Error("No image payload provided for facial enrollment.");
+                }
+                const uploadResult = await cloudinaryService.uploadFaceImage(image);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: uploadResult }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/face-auth-match" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const scanData = body ? JSON.parse(body) : {};
+                const result = await hardwareManager.scanFaceAndMatch(scanData.sessionId, scanData, repo);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
     } else if (pathname === "/api/hardware/scan-biometric" && req.method === "POST") {
         let body = "";
         req.on("data", chunk => body += chunk.toString());
-        req.on("end", () => {
+        req.on("end", async () => {
             try {
                 const scanData = body ? JSON.parse(body) : {};
-                const result = hardwareManager.scanBiometric(scanData.sessionId, scanData);
+                let result = null;
+                if (scanData.image || scanData.photo) {
+                    result = await hardwareManager.scanFaceAndMatch(scanData.sessionId, scanData, repo);
+                } else {
+                    result = hardwareManager.scanBiometric(scanData.sessionId, scanData);
+                }
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: true, data: result }));
             } catch (err) {

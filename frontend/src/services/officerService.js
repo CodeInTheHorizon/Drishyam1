@@ -169,13 +169,17 @@ export const officerService = {
     const { name, rank, badgeNumber, unit, station, yearsOfService, specialArea, username, password, avatar } = officerData;
     const badgeKey = badgeNumber || `MPP-${new Date().getFullYear()}-${Date.now().toString().slice(-4)}`;
 
+    const photoUrl = officerData.photoUrl || officerData.avatar || avatar || "";
+
     const payload = {
       badgeNumber: badgeKey,
       name,
       rank: rank || "Police Inspector",
       unit: unit || "General Crime Unit",
       station: station || "Bhopal Range",
-      yearsOfService: Number(yearsOfService) || 5
+      yearsOfService: Number(yearsOfService) || 5,
+      photoUrl,
+      avatar: photoUrl
     };
 
     let createdOfficer = null;
