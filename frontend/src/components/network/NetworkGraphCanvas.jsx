@@ -362,6 +362,17 @@ export default function NetworkGraphCanvas({
       ctx.globalAlpha = isDimmed ? 0.18 : 1.0;
 
       // Glow effect on selected/hovered/path nodes
+      // Pulsing Critical Risk Halo (Feature 4: Triage Visual Indicator)
+      if (node.riskScore && node.riskScore >= 85 && !isDimmed) {
+        const pulse = (Math.sin(Date.now() / 240) + 1) / 2;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius + 5 + pulse * 7, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(239, 68, 68, ${0.35 + pulse * 0.5})`;
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+      }
+
+      // Glow effect on selected/hovered/path nodes
       if (isSelected || isHovered || (isInPath && hasPathHighlight)) {
         ctx.beginPath();
         ctx.arc(node.x, node.y, node.radius + (isSelected ? 12 : 8), 0, Math.PI * 2);
@@ -408,9 +419,30 @@ export default function NetworkGraphCanvas({
         node.y + node.radius + 4
       );
 
+      // Turnaround Velocity Badge (if rapid multi-hop detected)
+      if (node.turnaroundFormatted && !isDimmed) {
+        const velText = `⚡ ${node.turnaroundFormatted}`;
+        ctx.font = "bold 7.5px monospace";
+        const velWidth = ctx.measureText(velText).width + 6;
+        const velX = node.x - velWidth / 2;
+        const velY = node.y + node.radius + 18;
+
+        ctx.fillStyle = "rgba(245, 158, 11, 0.9)";
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(velX, velY, velWidth, 12, 3);
+        else ctx.rect(velX, velY, velWidth, 12);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(velText, node.x, velY + 6);
+      }
+
       // Risk Score Pill Banner (if riskScore >= 65)
       if (node.riskScore && node.riskScore >= 65 && !isDimmed) {
-        const pillText = `RISK ${node.riskScore}%`;
+        const isCrit = node.riskScore >= 85;
+        const pillText = isCrit ? `🚨 CRIT ${node.riskScore}%` : `RISK ${node.riskScore}%`;
         ctx.font = "bold 8px monospace";
         const textWidth = ctx.measureText(pillText).width;
         const pillWidth = textWidth + 8;
@@ -418,7 +450,7 @@ export default function NetworkGraphCanvas({
         const pillX = node.x - pillWidth / 2;
         const pillY = node.y - node.radius - 16;
 
-        ctx.fillStyle = node.riskScore >= 85 ? "rgba(220, 38, 38, 0.95)" : "rgba(234, 88, 12, 0.95)";
+        ctx.fillStyle = isCrit ? "rgba(220, 38, 38, 0.95)" : "rgba(234, 88, 12, 0.95)";
         ctx.beginPath();
         if (ctx.roundRect) {
           ctx.roundRect(pillX, pillY, pillWidth, pillHeight, 3);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { 
   RiCloseLine, 
   RiShieldUserLine, 
@@ -19,7 +19,10 @@ import {
   RiExchangeDollarLine,
   RiShieldCheckLine,
   RiArrowRightLine,
-  RiSparklingFill
+  RiSparklingFill,
+  RiFlashlightFill,
+  RiFileCopyLine,
+  RiCheckDoubleLine
 } from "react-icons/ri";
 
 export default function NodeDetailsDossier({
@@ -27,7 +30,15 @@ export default function NodeDetailsDossier({
   onClose,
   onFocusNode
 }) {
+  const [copiedDirective, setCopiedDirective] = useState(false);
   if (!node) return null;
+
+  const copyText = (txt) => {
+    if (!txt) return;
+    navigator.clipboard.writeText(txt);
+    setCopiedDirective(true);
+    setTimeout(() => setCopiedDirective(false), 2500);
+  };
 
   const isForensicNode = [
     "VICTIM", "L1_MULE", "L2_MULE", "CASHOUT", 
@@ -138,15 +149,17 @@ export default function NodeDetailsDossier({
         {/* Forensic Specific View */}
         {isForensicNode ? (
           <>
-            {/* Risk Gauge Bar */}
-            <div className="bg-slate-950/80 border border-slate-800 rounded-lg p-3 space-y-2">
+            {/* Feature 4: Explainable Triage & Anomaly Risk Assessment */}
+            <div className="bg-slate-950/80 border border-slate-800 rounded-lg p-3 space-y-2.5">
               <div className="flex items-center justify-between text-[11px] font-mono">
-                <span className="text-slate-400 uppercase font-semibold flex items-center gap-1.5">
+                <span className="text-slate-300 uppercase font-bold flex items-center gap-1.5">
                   <RiAlertFill className={riskScore >= 70 ? "text-red-400" : "text-amber-400"} />
-                  Heuristic Anomaly Index
+                  Explainable Risk Index ({node.triageTier || "PRIORITY"})
                 </span>
-                <span className="font-bold text-white">{riskScore}/100</span>
+                <span className="font-bold text-white text-xs">{riskScore}/100</span>
               </div>
+
+              {/* Overall Risk Bar */}
               <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${
@@ -155,7 +168,63 @@ export default function NodeDetailsDossier({
                   style={{ width: `${Math.max(5, riskScore)}%` }}
                 />
               </div>
+
+              {/* Granular Anomaly Factors Breakdown */}
+              {node.riskBreakdown && (
+                <div className="grid grid-cols-2 gap-1.5 pt-1 text-[10px] font-mono">
+                  <div className="bg-slate-900/90 border border-slate-800/80 rounded p-1.5 flex items-center justify-between">
+                    <span className="text-slate-400">⚡ Velocity:</span>
+                    <span className={node.riskBreakdown.velocityScore > 0 ? "text-amber-400 font-bold" : "text-slate-500"}>
+                      {node.riskBreakdown.velocityScore}/35
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-900/90 border border-slate-800/80 rounded p-1.5 flex items-center justify-between">
+                    <span className="text-slate-400">📱 Hardware:</span>
+                    <span className={node.riskBreakdown.hardwareScore > 0 ? "text-purple-300 font-bold" : "text-slate-500"}>
+                      {node.riskBreakdown.hardwareScore}/35
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-900/90 border border-slate-800/80 rounded p-1.5 flex items-center justify-between">
+                    <span className="text-slate-400">✉️ Spoofing:</span>
+                    <span className={node.riskBreakdown.headerScore > 0 ? "text-yellow-400 font-bold" : "text-slate-500"}>
+                      {node.riskBreakdown.headerScore}/35
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-900/90 border border-slate-800/80 rounded p-1.5 flex items-center justify-between">
+                    <span className="text-slate-400">🛡️ Trojan/C2:</span>
+                    <span className={node.riskBreakdown.malwareScore > 0 ? "text-fuchsia-300 font-bold" : "text-slate-500"}>
+                      {node.riskBreakdown.malwareScore}/45
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Fund Routing Velocity Callout (if financial endpoint) */}
+            {node.turnaroundSeconds !== undefined && (
+              <div className="p-3 rounded-lg bg-amber-950/30 border border-amber-500/40 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                    <RiFlashlightFill className="text-amber-400" />
+                    Immediate Routing Velocity
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded text-[9.5px] font-mono font-bold bg-amber-500/20 text-amber-300">
+                    {node.turnaroundFormatted} ELAPSED
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-snug">
+                  Incoming remittance was relayed outbound within <strong className="text-amber-300">{node.turnaroundFormatted}</strong>. Indicates automated or coordinated mule account layering.
+                </p>
+                {node.velocityPair && (
+                  <p className="text-[10px] font-mono text-slate-400 pt-0.5 truncate">
+                    From: {node.velocityPair.from} ➔ To: {node.velocityPair.to}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Anomaly Flags */}
             {node.anomalyFlags && node.anomalyFlags.length > 0 && (
@@ -288,14 +357,30 @@ export default function NodeDetailsDossier({
             )}
 
             {/* Actionable Field Directive / Seizure Recommendation */}
-            {node.recommendedAction && (
-              <div className="p-3.5 rounded-lg bg-blue-950/40 border border-blue-500/40 space-y-1.5">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
-                  <RiShieldCheckLine className="text-blue-400 text-sm" />
-                  Actionable Police Field Recommendation
-                </span>
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  {node.recommendedAction}
+            {(node.statutoryDirective || node.recommendedAction) && (
+              <div className="p-3.5 rounded-lg bg-blue-950/40 border border-blue-500/40 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
+                    <RiShieldCheckLine className="text-blue-400 text-sm" />
+                    {node.statutorySection || "Actionable Police Field Recommendation"}
+                  </span>
+                  <button
+                    onClick={() => copyText(node.statutoryDirective || node.recommendedAction)}
+                    className="text-[10px] font-mono text-slate-400 hover:text-white flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    {copiedDirective ? (
+                      <span className="text-emerald-400 flex items-center gap-0.5">
+                        <RiCheckDoubleLine /> Copied
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-0.5">
+                        <RiFileCopyLine /> Copy
+                      </span>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                  {node.statutoryDirective || node.recommendedAction}
                 </p>
               </div>
             )}

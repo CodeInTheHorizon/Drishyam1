@@ -162,6 +162,13 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
                   <RiDownload2Line /> Export Normalized JSON
                 </button>
                 <button
+                  onClick={() => forensicEvidenceStore.seedSampleForensics()}
+                  className="px-3 py-2 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-sm font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                  title="Reload high-fidelity multi-artifact cyber syndicate evidence"
+                >
+                  <RiRefreshLine /> Reload Sample Package
+                </button>
+                <button
                   onClick={() => forensicEvidenceStore.clearAll()}
                   className="px-3 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-sm font-medium flex items-center gap-1.5 transition-all cursor-pointer"
                   title="Clear all currently loaded evidence"
@@ -169,6 +176,14 @@ export default function ForensicIngestionView({ onProceedToCorrelation }) {
                   <RiDeleteBinLine /> Clear All
                 </button>
               </>
+            )}
+            {artifacts.length === 0 && (
+              <button
+                onClick={() => forensicEvidenceStore.seedSampleForensics()}
+                className="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+              >
+                <RiRefreshLine /> Load Sample Cyber Evidence
+              </button>
             )}
           </div>
         </div>

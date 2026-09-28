@@ -28,13 +28,15 @@ import ForensicFiltersToolbar from "../../components/network/ForensicFiltersTool
 import CrossJurisdictionFinder from "../../components/network/CrossJurisdictionFinder";
 import NetworkGraphCanvas from "../../components/network/NetworkGraphCanvas";
 import NodeDetailsDossier from "../../components/network/NodeDetailsDossier";
+import ForensicTriageMatrix from "../../components/network/ForensicTriageMatrix";
 import CyberSeizureBriefModal from "../../components/forensics/CyberSeizureBriefModal";
 import { generateOnePageSeizureBrief } from "../../services/forensicBriefService";
-import { RiShieldFlashLine, RiArrowRightUpLine, RiFileTextLine } from "react-icons/ri";
+import { RiShieldFlashLine, RiArrowRightUpLine, RiFileTextLine, RiListCheck2 } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 export default function NetworkAnalysis() {
   const [analysisMode, setAnalysisMode] = useState("FORENSIC"); // "FORENSIC" or "CCTNS"
+  const [forensicViewMode, setForensicViewMode] = useState("GRAPH"); // "GRAPH" or "TRIAGE_MATRIX"
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("Bhopal");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
@@ -201,6 +203,12 @@ export default function NetworkAnalysis() {
     setZoomLevel(1.3);
   };
 
+  const handleFocusFromTriage = (nodeId) => {
+    setSelectedNodeId(nodeId);
+    setForensicViewMode("GRAPH");
+    setZoomLevel(1.3);
+  };
+
   return (
     <div 
       className="flex flex-col gap-6 animate-in fade-in duration-300 pb-12 font-sans"
@@ -214,17 +222,17 @@ export default function NetworkAnalysis() {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center gap-1">
               <RiSparklingFill className="text-amber-400" />
-              {analysisMode === "FORENSIC" ? "Feature 2: Automated Entity Correlator" : "CCTNS State Crime Registry"}
+              {analysisMode === "FORENSIC" ? "Features 2, 3 & 4: Unified Mule Graph & Triage Matrix" : "CCTNS State Crime Registry"}
             </span>
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-              <RiShieldCheckLine /> Directional Mule Visualizer
+              <RiShieldCheckLine /> AI Anomaly Scoring
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
             {analysisMode === "FORENSIC" ? (
               <>
                 <RiShieldFlashLine className="text-amber-400 text-2xl" />
-                <span>Entity Correlation & Directional Mule Graph Engine</span>
+                <span>Forensic Triage, Risk Scoring & Mule Network Matrix</span>
               </>
             ) : (
               <>
@@ -236,7 +244,7 @@ export default function NetworkAnalysis() {
 
           <p className="text-xs text-slate-300 mt-1 max-w-2xl font-sans">
             {analysisMode === "FORENSIC"
-              ? "Synthesizes directional fund flows (Victim ➔ L1 Mule ➔ L2 Mule ➔ Cashout ATM/Crypto), shared IMEIs across SIMs, and Trojan APK to C2 exfiltration trails from ingested artifacts."
+              ? "Assigns explainable risk scores (0–100) based on fund velocity (<3m turnaround), SIM multiplexing, email header forging, and trojan C2 exfiltration. Cross-correlates directional mule flows."
               : "Cross-jurisdictional link matrix and syndicate mapping across Madhya Pradesh police stations."}
           </p>
         </div>
@@ -417,8 +425,64 @@ export default function NetworkAnalysis() {
         </div>
       )}
 
-      {/* Forensic Filters & Physics Toolbar (in Forensic Mode) */}
+      {/* Forensic Sub-View Mode Switcher: Interactive Graph vs Priority Triage Queue */}
       {analysisMode === "FORENSIC" && allNodes.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 border border-slate-700/60 rounded-xl p-2.5 shadow-inner">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setForensicViewMode("GRAPH")}
+              className={`px-4 py-2 rounded-lg text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${
+                forensicViewMode === "GRAPH"
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25 border border-blue-500/50"
+                  : "bg-slate-950/60 text-slate-400 hover:text-white border border-slate-800"
+              }`}
+            >
+              <RiNodeTree className="text-sm" />
+              <span>Interactive Mule Flow Canvas</span>
+            </button>
+
+            <button
+              onClick={() => setForensicViewMode("TRIAGE_MATRIX")}
+              className={`px-4 py-2 rounded-lg text-xs font-bold font-mono flex items-center gap-2 transition-all cursor-pointer ${
+                forensicViewMode === "TRIAGE_MATRIX"
+                  ? "bg-red-600 text-white shadow-md shadow-red-600/30 border border-red-500/50"
+                  : "bg-slate-950/60 text-red-400 hover:text-red-300 border border-slate-800 hover:border-red-500/30"
+              }`}
+            >
+              <RiAlertFill className="text-sm text-red-400 animate-pulse" />
+              <span>Feature 4: Forensic Triage & Risk Matrix</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] bg-red-950/80 text-red-300 border border-red-800/80 font-bold">
+                {metrics.criticalCount || 0} CRITICAL
+              </span>
+            </button>
+          </div>
+
+          <div className="text-xs text-slate-400 font-mono hidden md:flex items-center gap-3 pr-2">
+            <span className="flex items-center gap-1.5 text-amber-400">
+              ⚡ Multi-Hop Fund Velocity Scoring
+            </span>
+            <span className="text-slate-600">|</span>
+            <span className="text-slate-400">
+              Sec 91 CrPC & 1930 Portal Directives
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Forensic Triage Queue View */}
+      {analysisMode === "FORENSIC" && forensicViewMode === "TRIAGE_MATRIX" && allNodes.length > 0 && (
+        <ForensicTriageMatrix
+          nodes={allNodes}
+          edges={allEdges}
+          selectedNodeId={selectedNodeId}
+          onSelectNode={setSelectedNodeId}
+          onFocusNodeInGraph={handleFocusFromTriage}
+          onOpenDossier={(node) => setSelectedNodeId(node.id)}
+        />
+      )}
+
+      {/* Forensic Filters & Physics Toolbar (in Graph Mode) */}
+      {analysisMode === "FORENSIC" && forensicViewMode === "GRAPH" && allNodes.length > 0 && (
         <ForensicFiltersToolbar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
@@ -463,8 +527,8 @@ export default function NetworkAnalysis() {
         />
       )}
 
-      {/* Main Interactive Force-Directed Network Graph */}
-      {(analysisMode === "CCTNS" || allNodes.length > 0) && (
+      {/* Main Interactive Force-Directed Network Graph (rendered in Graph mode or CCTNS) */}
+      {(analysisMode === "CCTNS" || (analysisMode === "FORENSIC" && forensicViewMode === "GRAPH" && allNodes.length > 0)) && (
         <div className="relative">
           <NetworkGraphCanvas
             nodes={filteredNodes}
@@ -486,6 +550,15 @@ export default function NetworkAnalysis() {
             onFocusNode={handleSelectSuspect}
           />
         </div>
+      )}
+
+      {/* Selected Entity Dossier Flyout Panel in Triage Matrix Mode */}
+      {analysisMode === "FORENSIC" && forensicViewMode === "TRIAGE_MATRIX" && selectedNode && (
+        <NodeDetailsDossier
+          node={selectedNode}
+          onClose={() => setSelectedNodeId(null)}
+          onFocusNode={handleFocusFromTriage}
+        />
       )}
 
       {/* Cyber Seizure Brief Modal */}

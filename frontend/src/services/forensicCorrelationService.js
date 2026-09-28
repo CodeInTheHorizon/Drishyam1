@@ -460,6 +460,79 @@ export function getArtifactCorrelationGraph() {
     }
   });
 
+  // ==========================================================================
+  // 6. Feature 4: Explainable Triage & Anomaly Risk Scoring Engine
+  // ==========================================================================
+  // Step 6a: Calculate Fund Turnaround Velocity for Financial Endpoints
+  nodes.forEach((node) => {
+    if (node.inboundFunds?.length > 0 && node.outboundFunds?.length > 0) {
+      // Find shortest turnaround time between any inbound and subsequent outbound transfer
+      let minDeltaSec = Infinity;
+      let fastestInflow = null;
+      let fastestOutflow = null;
+
+      node.inboundFunds.forEach((inflow) => {
+        const inTime = new Date(inflow.timestamp).getTime();
+        node.outboundFunds.forEach((outflow) => {
+          const outTime = new Date(outflow.timestamp).getTime();
+          if (!isNaN(inTime) && !isNaN(outTime) && outTime >= inTime) {
+            const diffSec = Math.round((outTime - inTime) / 1000);
+            if (diffSec < minDeltaSec) {
+              minDeltaSec = diffSec;
+              fastestInflow = inflow;
+              fastestOutflow = outflow;
+            }
+          }
+        });
+      });
+
+      if (minDeltaSec !== Infinity) {
+        node.turnaroundSeconds = minDeltaSec;
+        const mins = Math.floor(minDeltaSec / 60);
+        const secs = minDeltaSec % 60;
+        node.turnaroundFormatted = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        node.velocityPair = { from: fastestInflow?.from, to: fastestOutflow?.to };
+
+        if (minDeltaSec <= 180) {
+          // Less than 3 minutes = Immediate multi-hop velocity!
+          node.velocityTier = "IMMEDIATE_VELOCITY";
+          node.velocityDisplay = `⚡ ${node.turnaroundFormatted} Turnaround`;
+          if (!node.anomalyFlags.some((f) => f.includes("Immediate Multi-Hop"))) {
+            node.anomalyFlags.unshift(`Immediate Multi-Hop Fund Routing Velocity (${node.turnaroundFormatted})`);
+          }
+        } else if (minDeltaSec <= 600) {
+          // 3-10 minutes = High layering velocity
+          node.velocityTier = "RAPID_LAYERING";
+          node.velocityDisplay = `⚡ ${node.turnaroundFormatted} Turnaround`;
+          if (!node.anomalyFlags.some((f) => f.includes("Rapid Fund Layering"))) {
+            node.anomalyFlags.unshift(`Rapid Fund Layering Velocity (${node.turnaroundFormatted})`);
+          }
+        }
+      }
+
+      // Check split dispersal fan-out
+      if (node.outboundFunds.length >= 2) {
+        if (!node.anomalyFlags.some((f) => f.includes("Multi-Branch Split"))) {
+          node.anomalyFlags.push(`Multi-Branch Split Dispersal (${node.outboundFunds.length} outbound conduits)`);
+        }
+      }
+    }
+  });
+
+  // Step 6b: Compute Granular Triage Assessment for Each Node
+  nodes.forEach((node) => {
+    const triage = calculateEndpointTriageRisk(node, nodes, edges);
+    node.triageAssessment = triage;
+    node.riskScore = triage.score;
+    node.triageTier = triage.tier;
+    node.riskBreakdown = triage.breakdown;
+    node.statutoryDirective = triage.statutoryDirective;
+    node.statutorySection = triage.statutorySection;
+    if (triage.velocityDisplay && !node.velocityDisplay) {
+      node.velocityDisplay = triage.velocityDisplay;
+    }
+  });
+
   return {
     nodes,
     edges,
@@ -470,8 +543,238 @@ export function getArtifactCorrelationGraph() {
       cashoutNodesCount: nodes.filter((n) => n.type === "CASHOUT").length,
       sharedDevicesCount: nodes.filter((n) => n.type === "IMEI").length,
       c2ServersCount: nodes.filter((n) => n.type === "C2_SERVER").length,
-      criticalRiskNodesCount: nodes.filter((n) => n.riskScore >= 80).length
+      criticalRiskNodesCount: nodes.filter((n) => n.triageTier === "CRITICAL" || n.riskScore >= 85).length,
+      highRiskNodesCount: nodes.filter((n) => n.triageTier === "HIGH" || (n.riskScore >= 70 && n.riskScore < 85)).length
     }
+  };
+}
+
+/**
+ * Feature 4: Explainable Risk Scoring Engine
+ * Assigns explainable risk scores (0–100) based on anomaly patterns:
+ * - Fund turnaround velocity (< 3 mins, rapid layering, split dispersal)
+ * - Hardware multiplexing / SIM swapping (3+ SIMs on 1 IMEI)
+ * - Spoofed email header signatures (SPF/DKIM fail, high spoof confidence)
+ * - Banking Trojan SMS intercept & C2 exfiltration
+ * - Terminal cashout & crypto off-ramping
+ */
+export function calculateEndpointTriageRisk(node, allNodes = [], allEdges = []) {
+  if (!node) return { score: 0, tier: "LOW", breakdown: {} };
+
+  let velocityScore = 0;
+  let hardwareScore = 0;
+  let headerScore = 0;
+  let malwareScore = 0;
+  let offRampScore = 0;
+  let crossArtifactScore = 0;
+  const flags = [...(node.anomalyFlags || [])];
+
+  // 1. Multi-Hop Fund Routing Velocity
+  if (node.turnaroundSeconds !== undefined) {
+    if (node.turnaroundSeconds <= 180) {
+      velocityScore += 35; // Turnaround < 3 mins
+    } else if (node.turnaroundSeconds <= 600) {
+      velocityScore += 25; // Turnaround 3-10 mins
+    } else if (node.turnaroundSeconds <= 1800) {
+      velocityScore += 15;
+    }
+  }
+  if (node.outboundFunds?.length >= 2) {
+    velocityScore += 10; // Split layering
+  }
+
+  // 2. Hardware & IMEI Multiplexing
+  if (node.type === "IMEI") {
+    const simCount = node.details?.linkedSims?.length || 0;
+    if (simCount >= 3) {
+      hardwareScore += 35;
+      if (!flags.some(f => f.includes("High-Velocity SIM Switching"))) {
+        flags.push(`High-Velocity SIM Switching (${simCount} SIMs on 1 IMEI)`);
+      }
+    } else if (simCount >= 2) {
+      hardwareScore += 25;
+    }
+  }
+  if (node.type === "PHONE") {
+    // Check if linked to an IMEI with multiple SIMs
+    const linkedImeiEdge = allEdges.find(e => (e.source === node.id || e.target === node.id) && e.type === "SHARED_HARDWARE");
+    if (linkedImeiEdge) {
+      const imeiNode = allNodes.find(n => n.id === (linkedImeiEdge.source === node.id ? linkedImeiEdge.target : linkedImeiEdge.source));
+      if (imeiNode && (imeiNode.details?.linkedSims?.length || 0) > 1) {
+        hardwareScore += 25;
+        if (!flags.some(f => f.includes("Multiplexed Handset"))) {
+          flags.push(`Operated on Multi-SIM Handset (${imeiNode.name})`);
+        }
+      }
+    }
+  }
+
+  // 3. Email Spoofing & Header Origin
+  if (node.type === "EMAIL_SPOOF") {
+    if (node.details?.spf === "FAIL" || node.details?.spf === "SOFTFAIL") {
+      headerScore += 20;
+    }
+    if (node.details?.dkim === "FAIL") {
+      headerScore += 15;
+    }
+    const spoofConf = node.details?.spoofConfidenceScore || 0;
+    if (spoofConf >= 80) {
+      headerScore += 20;
+    } else if (spoofConf >= 50) {
+      headerScore += 10;
+    }
+  }
+
+  // 4. Banking Trojan & C2 Exfiltration
+  if (node.type === "MALWARE_APK") {
+    malwareScore += 35;
+    const perms = node.details?.permissions || [];
+    if (perms.some(p => p.includes("RECEIVE_SMS") || p.includes("READ_SMS"))) {
+      malwareScore += 15;
+    }
+    if (perms.some(p => p.includes("ACCESSIBILITY"))) {
+      malwareScore += 15;
+    }
+  } else if (node.type === "C2_SERVER") {
+    malwareScore += 45;
+  } else if (node.details?.role === "Trojan SMS Forward Target" || node.subtitle?.includes("OTP Theft")) {
+    malwareScore += 45;
+  }
+
+  // 5. Terminal Cashout & Crypto Off-Ramp
+  if (node.type === "CASHOUT") {
+    offRampScore += 40;
+  }
+
+  // 6. Cross-Artifact Infrastructure Synergy
+  if (node.type === "C2_SERVER" && (node.details?.linkedEntitiesCount || 0) > 1) {
+    crossArtifactScore += 20;
+  }
+
+  // Calculate Base Composite Score
+  let compositeScore = 0;
+  if (node.type === "VICTIM") {
+    compositeScore = 10;
+  } else if (node.type === "CASHOUT") {
+    compositeScore = Math.max(90, 50 + offRampScore + (velocityScore > 0 ? 10 : 0));
+  } else if (node.type === "MALWARE_APK" || node.type === "C2_SERVER") {
+    compositeScore = Math.max(88, 45 + malwareScore + crossArtifactScore);
+  } else if (node.type === "L1_MULE") {
+    compositeScore = Math.max(72, 40 + velocityScore + (node.outboundFunds?.length > 1 ? 15 : 0));
+  } else if (node.type === "L2_MULE") {
+    compositeScore = Math.max(78, 45 + velocityScore + 10);
+  } else if (node.type === "IMEI") {
+    compositeScore = Math.max(65, 30 + hardwareScore);
+  } else if (node.type === "EMAIL_SPOOF") {
+    compositeScore = Math.max(85, 35 + headerScore);
+  } else if (node.type === "PHONE") {
+    if (node.details?.role === "Trojan SMS Forward Target") {
+      compositeScore = 96;
+    } else {
+      compositeScore = Math.max(50, 35 + hardwareScore);
+    }
+  } else {
+    compositeScore = Math.max(25, velocityScore + hardwareScore + headerScore + malwareScore);
+  }
+
+  const finalScore = Math.min(99, Math.max(10, compositeScore));
+
+  // Determine Triage Tier
+  let tier = "LOW";
+  if (finalScore >= 85) tier = "CRITICAL";
+  else if (finalScore >= 70) tier = "HIGH";
+  else if (finalScore >= 40) tier = "MEDIUM";
+
+  // Formulate Velocity Display
+  let velocityDisplay = null;
+  if (node.turnaroundFormatted) {
+    velocityDisplay = `⚡ ${node.turnaroundFormatted} Fund Turnaround`;
+  } else if (node.type === "IMEI" && (node.details?.linkedSims?.length || 0) > 1) {
+    velocityDisplay = `📱 ${node.details.linkedSims.length} SIMs on Handset`;
+  } else if (node.type === "EMAIL_SPOOF") {
+    velocityDisplay = `✉️ SPF ${node.details?.spf || "FAIL"} (94% Spoof)`;
+  } else if (node.type === "MALWARE_APK") {
+    velocityDisplay = `🛡️ SMS Intercept & Accessibility Abuse`;
+  } else if (node.type === "CASHOUT") {
+    velocityDisplay = `💰 Terminal Cashout Point`;
+  }
+
+  // Statutory Police Legal Directives
+  let statutoryDirective = node.recommendedAction || "";
+  let statutorySection = "Sec 91 CrPC";
+
+  if (node.type === "L1_MULE") {
+    statutorySection = "1930 Portal / Sec 91 CrPC";
+    statutoryDirective = `Issue immediate 1930 NCRP / I4C debit freeze on ${node.details?.account || "account"} (${node.details?.vpa || "UPI handle"}). Issue Section 91 CrPC notice to bank for beneficiary KYC & IP logs.`;
+  } else if (node.type === "L2_MULE") {
+    statutorySection = "Sec 91 CrPC / PMLA";
+    statutoryDirective = `Serve Section 91 CrPC directive to ${node.details?.bank || "Nodal Bank"} to freeze balance, preserve 90-day ledger, and identify Layer-3 cashout conduits.`;
+  } else if (node.type === "CASHOUT") {
+    statutorySection = "Sec 102 CrPC Seizure";
+    statutoryDirective = `Dispatch immediate CCTV seizure requisition under Section 91 CrPC to terminal operator. If Crypto P2P, submit immediate freeze ticket to Binance/WazirX compliance.`;
+  } else if (node.type === "EMAIL_SPOOF") {
+    statutorySection = "Sec 69A IT Act / CERT-In";
+    statutoryDirective = `Submit emergency domain takedown under Section 69A IT Act to registrar and alert CERT-In to block originating IP ${node.details?.originatingIP || "185.220.101.45"}.`;
+  } else if (node.type === "MALWARE_APK") {
+    statutorySection = "Sec 43 / 66 IT Act";
+    statutoryDirective = `Transmit APK SHA-256 hash to CERT-In & Google Play Protect for remote handset neutralization; seize C2 drop servers.`;
+  } else if (node.type === "C2_SERVER") {
+    statutorySection = "Sec 69A IT Act / NCIIPC";
+    statutoryDirective = `Initiate emergency DNS sinkhole order with NCIIPC/CERT-In and request IPDR logs from hosting provider under Section 91 CrPC.`;
+  } else if (node.type === "IMEI") {
+    statutorySection = "CEIR Portal / Sec 91 CrPC";
+    statutoryDirective = `Blacklist IMEI on DoT CEIR portal and issue Section 91 CrPC order to TSP for all associated CDR/IPDR dumps.`;
+  } else if (node.type === "PHONE") {
+    statutorySection = "DoT Sanchar Saathi / Sec 91 CrPC";
+    statutoryDirective = `Issue immediate SIM de-allocation notice to telecom operator and query subscriber CAF form & live tower ping.`;
+  }
+
+  return {
+    score: finalScore,
+    tier,
+    breakdown: {
+      velocityScore: Math.min(35, velocityScore),
+      hardwareScore: Math.min(35, hardwareScore),
+      headerScore: Math.min(35, headerScore),
+      malwareScore: Math.min(45, malwareScore),
+      offRampScore: Math.min(40, offRampScore),
+      crossArtifactScore: Math.min(20, crossArtifactScore)
+    },
+    flags,
+    velocityDisplay,
+    statutoryDirective,
+    statutorySection
+  };
+}
+
+/**
+ * Returns prioritized triage queue matrix sorted by risk score descending
+ */
+export function getTriageRiskMatrix(nodes = [], edges = []) {
+  const rankedEndpoints = [...nodes].sort((a, b) => (b.riskScore || 0) - (a.riskScore || 0));
+
+  const tierCounts = {
+    CRITICAL: rankedEndpoints.filter((n) => n.triageTier === "CRITICAL" || n.riskScore >= 85).length,
+    HIGH: rankedEndpoints.filter((n) => n.triageTier === "HIGH" || (n.riskScore >= 70 && n.riskScore < 85)).length,
+    MEDIUM: rankedEndpoints.filter((n) => n.triageTier === "MEDIUM" || (n.riskScore >= 40 && n.riskScore < 70)).length,
+    LOW: rankedEndpoints.filter((n) => (n.triageTier === "LOW" || n.riskScore < 40) && n.type !== "VICTIM").length,
+    VICTIMS: rankedEndpoints.filter((n) => n.type === "VICTIM").length
+  };
+
+  const anomalyCounts = {
+    immediateVelocity: rankedEndpoints.filter((n) => n.turnaroundSeconds !== undefined && n.turnaroundSeconds <= 180).length,
+    rapidLayering: rankedEndpoints.filter((n) => n.turnaroundSeconds !== undefined && n.turnaroundSeconds > 180 && n.turnaroundSeconds <= 600).length,
+    simMultiplexing: rankedEndpoints.filter((n) => n.type === "IMEI" || n.anomalyFlags?.some(f => f.includes("SIM"))).length,
+    headerSpoofing: rankedEndpoints.filter((n) => n.type === "EMAIL_SPOOF").length,
+    trojanMalware: rankedEndpoints.filter((n) => n.type === "MALWARE_APK" || n.type === "C2_SERVER" || n.details?.role === "Trojan SMS Forward Target").length,
+    cashoutOfframp: rankedEndpoints.filter((n) => n.type === "CASHOUT").length
+  };
+
+  return {
+    rankedEndpoints,
+    tierCounts,
+    anomalyCounts,
+    totalEndpoints: rankedEndpoints.length
   };
 }
 

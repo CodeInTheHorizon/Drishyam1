@@ -596,6 +596,261 @@ class ForensicEvidenceStore {
         window.localStorage.removeItem("cctns_forensic_artifacts_v1");
       }
     } catch {}
+
+    // Auto-seed high-fidelity sample cyber investigation artifacts
+    this.seedSampleForensics();
+  }
+
+  seedSampleForensics() {
+    this.artifacts = [
+      {
+        id: "EVD-FIN-2026-001",
+        fileName: "axis_hdfc_upi_layering_log.csv",
+        fileSize: 4280,
+        sha256: "7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+        ingestedAt: "2026-09-28T14:15:00.000Z",
+        officerBadge: "MPP-2026-IO",
+        integrityStatus: "INTEGRITY_VERIFIED_SEC65B",
+        sourceType: "FINANCIAL_UPI_BANK",
+        recordCount: 5,
+        records: [
+          {
+            recordId: "FIN-1",
+            txnId: "UPI/2026/894012",
+            remitter: "Rajesh Sharma (Victim)",
+            remitterAccount: "SBIN0001234-998811",
+            remitterVPA: "rajesh.s@oksbi",
+            beneficiary: "Pawan Kumar (L1 Mule)",
+            beneficiaryAccount: "UTIB0005678-223344",
+            beneficiaryVPA: "pawan.pay@okaxis",
+            beneficiaryBank: "Axis Bank",
+            amount: 450000,
+            mode: "UPI",
+            timestamp: "2026-09-28T14:02:10Z",
+            ip: "185.220.101.45"
+          },
+          {
+            recordId: "FIN-2",
+            txnId: "IMPS/2026/771021",
+            remitter: "Pawan Kumar (L1 Mule)",
+            remitterAccount: "UTIB0005678-223344",
+            remitterVPA: "pawan.pay@okaxis",
+            beneficiary: "Sunil Verma (L2 Mule)",
+            beneficiaryAccount: "HDFC0001099-556677",
+            beneficiaryVPA: "sunil.v@okhdfc",
+            beneficiaryBank: "HDFC Bank",
+            amount: 250000,
+            mode: "IMPS",
+            timestamp: "2026-09-28T14:04:25Z",
+            ip: "185.220.101.45"
+          },
+          {
+            recordId: "FIN-3",
+            txnId: "IMPS/2026/771022",
+            remitter: "Pawan Kumar (L1 Mule)",
+            remitterAccount: "UTIB0005678-223344",
+            remitterVPA: "pawan.pay@okaxis",
+            beneficiary: "Vikas Patel (L2 Mule)",
+            beneficiaryAccount: "ICIC0004455-889900",
+            beneficiaryVPA: "vikas.crypto@okicici",
+            beneficiaryBank: "ICICI Bank",
+            amount: 190000,
+            mode: "IMPS",
+            timestamp: "2026-09-28T14:05:10Z",
+            ip: "185.220.101.45"
+          },
+          {
+            recordId: "FIN-4",
+            txnId: "ATM/2026/44019",
+            remitter: "Sunil Verma (L2 Mule)",
+            remitterAccount: "HDFC0001099-556677",
+            remitterVPA: "sunil.v@okhdfc",
+            beneficiary: "ATM Cash Out MP Nagar Bhopal",
+            beneficiaryAccount: "ATM-MPN-04",
+            beneficiaryVPA: null,
+            beneficiaryBank: "HDFC ATM Terminal",
+            amount: 240000,
+            mode: "ATM_WITHDRAWAL",
+            timestamp: "2026-09-28T14:11:30Z",
+            ip: "103.21.244.10"
+          },
+          {
+            recordId: "FIN-5",
+            txnId: "P2P/2026/99310",
+            remitter: "Vikas Patel (L2 Mule)",
+            remitterAccount: "ICIC0004455-889900",
+            remitterVPA: "vikas.crypto@okicici",
+            beneficiary: "Binance P2P Escrow Wallet",
+            beneficiaryAccount: "BNB-ESCROW-0x99",
+            beneficiaryVPA: null,
+            beneficiaryBank: "Crypto P2P Gateway",
+            amount: 185000,
+            mode: "CRYPTO_P2P",
+            timestamp: "2026-09-28T14:09:45Z",
+            ip: "185.220.101.45"
+          }
+        ],
+        entities: [
+          { type: "VPA", value: "rajesh.s@oksbi", occurrences: 1 },
+          { type: "VPA", value: "pawan.pay@okaxis", occurrences: 3 },
+          { type: "VPA", value: "sunil.v@okhdfc", occurrences: 2 },
+          { type: "VPA", value: "vikas.crypto@okicici", occurrences: 2 },
+          { type: "IP_ADDRESS", value: "185.220.101.45", occurrences: 4 }
+        ],
+        summary: {
+          totalTransactions: 5,
+          totalVolumeTransferred: 1315000,
+          uniqueRemitters: 3,
+          uniqueBeneficiaries: 4
+        }
+      },
+      {
+        id: "EVD-TEL-2026-002",
+        fileName: "telecom_cdr_tower_dump.csv",
+        fileSize: 3120,
+        sha256: "3b9a76d8b241416e91cfbc5c5c0529d38c4c79f9024f0c8e2354f6b3cf781192",
+        ingestedAt: "2026-09-28T14:16:00.000Z",
+        officerBadge: "MPP-2026-IO",
+        integrityStatus: "INTEGRITY_VERIFIED_SEC65B",
+        sourceType: "TELECOM_RECORDS",
+        recordCount: 3,
+        records: [
+          {
+            recordId: "TEL-1",
+            callingNumber: "9826011223",
+            calledNumber: "9826099887",
+            timestamp: "2026-09-28T13:45:00Z",
+            duration: 180,
+            callType: "VOICE_CALL",
+            imei: "864920041234567",
+            imsi: "404450123456789",
+            tower: "CGI-404-45-7712",
+            location: "MP Nagar Zone-1, Bhopal",
+            lat: 23.2332,
+            lng: 77.4343,
+            ip: "185.220.101.45"
+          },
+          {
+            recordId: "TEL-2",
+            callingNumber: "9826033445",
+            calledNumber: "9826011223",
+            timestamp: "2026-09-28T13:50:00Z",
+            duration: 45,
+            callType: "VOICE_CALL",
+            imei: "864920041234567",
+            imsi: "404450987654321",
+            tower: "CGI-404-45-8831",
+            location: "Vijay Nagar, Indore",
+            lat: 22.7533,
+            lng: 75.8937,
+            ip: "185.220.101.45"
+          },
+          {
+            recordId: "TEL-3",
+            callingNumber: "9826077112",
+            calledNumber: "9826011223",
+            timestamp: "2026-09-28T13:55:00Z",
+            duration: 95,
+            callType: "VOICE_CALL",
+            imei: "864920041234567",
+            imsi: "404450554433221",
+            tower: "CGI-404-45-7712",
+            location: "MP Nagar Zone-1, Bhopal",
+            lat: 23.2332,
+            lng: 77.4343,
+            ip: "185.220.101.45"
+          }
+        ],
+        entities: [
+          { type: "PHONE", value: "9826011223", occurrences: 3 },
+          { type: "PHONE", value: "9826099887", occurrences: 1 },
+          { type: "PHONE", value: "9826033445", occurrences: 1 },
+          { type: "PHONE", value: "9826077112", occurrences: 1 },
+          { type: "IMEI", value: "864920041234567", occurrences: 3 },
+          { type: "IP_ADDRESS", value: "185.220.101.45", occurrences: 3 }
+        ],
+        summary: {
+          totalCallsLogged: 3,
+          uniqueMsisdns: 4,
+          sharedImeis: 1
+        }
+      },
+      {
+        id: "EVD-EML-2026-003",
+        fileName: "sbi_netbanking_spoofed_phish.eml",
+        fileSize: 2840,
+        sha256: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        ingestedAt: "2026-09-28T14:17:00.000Z",
+        officerBadge: "MPP-2026-IO",
+        integrityStatus: "INTEGRITY_VERIFIED_SEC65B",
+        sourceType: "EMAIL_HEADER",
+        recordCount: 1,
+        records: [
+          {
+            messageId: "<202609281358.SBI.ALERT@sbi-kyc-update.com>",
+            fromEmail: "support@sbi-kyc-update.com",
+            returnPath: "bounce@darkrelay-drop.ru",
+            subject: "URGENT: Mandatory KYC Verification Failure - Account Restricted",
+            originatingIP: "185.220.101.45",
+            spfStatus: "FAIL",
+            dkimStatus: "FAIL",
+            dmarcStatus: "FAIL",
+            clientMailer: "Python/3.10 aiohttp (Automated Phishing Suite)",
+            spoofConfidenceScore: 94
+          }
+        ],
+        entities: [
+          { type: "EMAIL", value: "support@sbi-kyc-update.com", occurrences: 1 },
+          { type: "IP_ADDRESS", value: "185.220.101.45", occurrences: 1 }
+        ],
+        summary: {
+          spoofedEmailHeadersFound: 1,
+          authenticationFailureCount: 1
+        }
+      },
+      {
+        id: "EVD-APK-2026-004",
+        fileName: "axis_support_v2_trojan_dump.json",
+        fileSize: 3410,
+        sha256: "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+        ingestedAt: "2026-09-28T14:18:00.000Z",
+        officerBadge: "MPP-2026-IO",
+        integrityStatus: "INTEGRITY_VERIFIED_SEC65B",
+        sourceType: "ANDROID_APK_DUMP",
+        recordCount: 1,
+        records: [
+          {
+            packageName: "com.axis.netbanking.update",
+            versionName: "2.4.1",
+            appLabel: "Axis NetBanking QuickSupport",
+            dangerousPermissions: [
+              "android.permission.RECEIVE_SMS",
+              "android.permission.READ_SMS",
+              "android.permission.BIND_ACCESSIBILITY_SERVICE",
+              "android.permission.INTERNET"
+            ],
+            c2Endpoints: [
+              "185.220.101.45",
+              "drop.darktunnel-c2.net"
+            ],
+            smsInterceptForwardTarget: "9826011223",
+            trojanSignatureDetected: true
+          }
+        ],
+        entities: [
+          { type: "PACKAGE_NAME", value: "com.axis.netbanking.update", occurrences: 1 },
+          { type: "IP_ADDRESS", value: "185.220.101.45", occurrences: 1 },
+          { type: "PHONE", value: "9826011223", occurrences: 1 }
+        ],
+        summary: {
+          totalPackagesAudited: 1,
+          trojansIdentified: 1,
+          highRiskPermissionsLogged: 4,
+          c2EndpointsExtracted: 2
+        }
+      }
+    ];
+    this.notify();
   }
 
   getArtifacts() {
