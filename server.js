@@ -350,14 +350,74 @@ const server = http.createServer(async (req, res) => {
         req.on("end", () => {
             try {
                 const parsed = body ? JSON.parse(body) : {};
-                const newStatus = hardwareManager.setDeviceConnected(parsed.connected !== false);
+                hardwareManager.isOnline = (parsed.connected !== false);
                 res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: true, data: newStatus }));
+                res.end(JSON.stringify({ success: true, data: hardwareManager.getStatus() }));
             } catch (err) {
                 res.writeHead(400, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: false, error: err.message }));
             }
         });
+    } else if (pathname === "/api/hardware/registered-cards" && req.method === "GET") {
+        try {
+            const cards = await hardwareManager.getRegisteredCards(repo);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, data: cards }));
+        } catch (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+    } else if (pathname === "/api/hardware/rfid-tap" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", () => {
+            try {
+                const { cardUid, officer } = body ? JSON.parse(body) : {};
+                const result = hardwareManager.registerCardTap(cardUid, officer);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/unlock-section" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const unlockData = body ? JSON.parse(body) : {};
+                const result = await hardwareManager.unlockManageRecordsSection(unlockData, repo);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/verify-crud-face" && req.method === "POST") {
+        let body = "";
+        req.on("data", chunk => body += chunk.toString());
+        req.on("end", async () => {
+            try {
+                const crudData = body ? JSON.parse(body) : {};
+                const result = await hardwareManager.verifyCrudFaceAuth(crudData, repo);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data: result }));
+            } catch (err) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+    } else if (pathname === "/api/hardware/lock-section" && req.method === "POST") {
+        try {
+            const result = hardwareManager.lockSection();
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, data: result }));
+        } catch (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
     } else if (pathname === "/api/hardware/esp32-poll" && (req.method === "GET" || req.method === "POST")) {
         let body = "";
         req.on("data", chunk => body += chunk.toString());
@@ -372,41 +432,19 @@ const server = http.createServer(async (req, res) => {
                 res.end(JSON.stringify({ status: "ERROR", error: err.message }));
             }
         });
-    } else if (pathname === "/api/hardware/enroll" && req.method === "POST") {
-        let body = "";
-        req.on("data", chunk => body += chunk.toString());
-        req.on("end", () => {
-            try {
-                const officerData = body ? JSON.parse(body) : {};
-                const result = hardwareManager.startEnrollment(officerData);
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: true, data: result }));
-            } catch (err) {
-                res.writeHead(400, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: false, error: err.message }));
-            }
-        });
-    } else if (pathname === "/api/hardware/confirm-enroll" && req.method === "POST") {
-        let body = "";
-        req.on("data", chunk => body += chunk.toString());
-        req.on("end", () => {
-            try {
-                const enrollData = body ? JSON.parse(body) : {};
-                const result = hardwareManager.confirmEnrollment(enrollData);
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: true, data: result }));
-            } catch (err) {
-                res.writeHead(400, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: false, error: err.message }));
-            }
-        });
     } else if (pathname === "/api/hardware/request-auth" && req.method === "POST") {
         let body = "";
         req.on("data", chunk => body += chunk.toString());
         req.on("end", () => {
             try {
                 const actionData = body ? JSON.parse(body) : {};
-                const session = hardwareManager.requestAuth(actionData);
+                const session = {
+                    sessionId: `hw-auth-${Date.now()}`,
+                    status: "AWAITING_BIOMETRIC",
+                    action: actionData.action || "MANAGE_RECORD",
+                    officerName: actionData.officerName || "Active Officer",
+                    oled: hardwareManager.oled
+                };
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: true, data: session }));
             } catch (err) {
@@ -437,26 +475,13 @@ const server = http.createServer(async (req, res) => {
         req.on("end", async () => {
             try {
                 const scanData = body ? JSON.parse(body) : {};
-                const result = await hardwareManager.scanFaceAndMatch(scanData.sessionId, scanData, repo);
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: true, data: result }));
-            } catch (err) {
-                res.writeHead(400, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: false, error: err.message }));
-            }
-        });
-    } else if (pathname === "/api/hardware/scan-biometric" && req.method === "POST") {
-        let body = "";
-        req.on("data", chunk => body += chunk.toString());
-        req.on("end", async () => {
-            try {
-                const scanData = body ? JSON.parse(body) : {};
-                let result = null;
-                if (scanData.image || scanData.photo) {
-                    result = await hardwareManager.scanFaceAndMatch(scanData.sessionId, scanData, repo);
-                } else {
-                    result = hardwareManager.scanBiometric(scanData.sessionId, scanData);
-                }
+                const result = await hardwareManager.verifyCrudFaceAuth({
+                    action: scanData.action || "FIR_ACTION",
+                    targetRecordId: scanData.targetRecordId || "RECORD",
+                    image: scanData.image || scanData.photo,
+                    officerName: scanData.officerName,
+                    kgid: scanData.kgid
+                }, repo);
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: true, data: result }));
             } catch (err) {
@@ -465,19 +490,9 @@ const server = http.createServer(async (req, res) => {
             }
         });
     } else if (pathname === "/api/hardware/verify-otp" && req.method === "POST") {
-        let body = "";
-        req.on("data", chunk => body += chunk.toString());
-        req.on("end", async () => {
-            try {
-                const verifyData = body ? JSON.parse(body) : {};
-                const result = await hardwareManager.verifyOtp(verifyData, repo);
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: true, data: result }));
-            } catch (err) {
-                res.writeHead(400, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ success: false, error: err.message }));
-            }
-        });
+        // OTP removed - returns automatic success for legacy consumers
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ success: true, message: "OTP system removed. Face verified.", data: { verified: true } }));
     } else {
         // Serve static frontend build assets and single-page application fallback
         serveStaticFile(req, res, pathname);

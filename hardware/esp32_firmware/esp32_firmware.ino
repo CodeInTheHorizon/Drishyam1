@@ -1,14 +1,19 @@
 /**
  * ==============================================================================
  * MP POLICE - ABHEDYA CRIME INTELLIGENCE PLATFORM
- * ESP32 + 0.96" I2C OLED (SSD1306) + Biometric Fingerprint Scanner (R307/AS608)
+ * ESP32 + 0.96" I2C OLED (SSD1306) + MFRC522 RFID Reader + CV Biometric Face Model
  * ==============================================================================
- * Firmware Version: 2.4.0 (Hardware 2-Factor Biometric + Dynamic OLED OTP)
+ * Firmware Version: 3.0.0 (Air-Gapped Section Lock + RFID Smart Card + Face 2FA)
  * 
- * Target Board: ESP32 Dev Module / NodeMCU-32S
- * Communication: HTTP REST Polling & Event Postings
+ * Hardware Architecture:
+ *  1. Section Lockdown: CCTNS "Manage Records" section is locked by default.
+ *  2. Dual-Factor Unlock:
+ *     - Step 1: Physical RFID Smart Card Tap on MFRC522 -> Reads Card UID
+ *     - Step 2: Computer Vision Face Scan on terminal webcam -> Parameter match
+ *  3. FIR CRUD Re-Authentication: Every Create/Edit/Delete action requires Face Scan.
+ *  4. OTP-Free: Pure hardware token + biometric computer vision.
  * 
- * Hardware Pin Connections:
+ * Pin Connections:
  * -------------------------------------------------------------
  * 1. 0.96" SSD1306 OLED Display (I2C):
  *    - VCC  -> 3.3V / 5V
@@ -16,11 +21,14 @@
  *    - SCL  -> GPIO 22 (ESP32 I2C SCL)
  *    - SDA  -> GPIO 21 (ESP32 I2C SDA)
  * 
- * 2. R307 / AS608 Optical Fingerprint Scanner (UART Serial2):
- *    - VCC  -> 5V (Red)
- *    - GND  -> GND (Black)
- *    - TX   -> GPIO 16 (ESP32 RX2 - Green/Yellow)
- *    - RX   -> GPIO 17 (ESP32 TX2 via voltage divider if needed - White)
+ * 2. MFRC522 RFID Card Reader (SPI):
+ *    - 3.3V -> 3.3V (Do NOT connect to 5V!)
+ *    - GND  -> GND
+ *    - RST  -> GPIO 27
+ *    - SDA/SS -> GPIO 5
+ *    - SCK  -> GPIO 18
+ *    - MOSI -> GPIO 23
+ *    - MISO -> GPIO 19
  * 
  * 3. Status Buzzer / LED (Optional):
  *    - BUZZER -> GPIO 4
@@ -31,9 +39,10 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
+#include <SPI.h>
+#include <MFRC522.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Adafruit_Fingerprint.h>
 #include <ArduinoJson.h>
 
 // ---------------- Wi-Fi & Gateway Configuration ----------------
@@ -41,11 +50,11 @@ const char* WIFI_SSID     = "MPP_POLICE_SECURE_WIFI";
 const char* WIFI_PASSWORD = "PoliceCommand@2026";
 
 // Server Gateway URL running Abhedya Platform
-// Replace with your server IP (e.g. http://192.168.1.100:3000)
+// Replace with your laptop's local IP (e.g. http://192.168.1.100:3000)
 const char* SERVER_BASE_URL = "http://192.168.1.100:3000";
 
 // Device Identification
-const char* DEVICE_ID = "ESP32-OLED-BIO-01";
+const char* DEVICE_ID = "ESP32-RC522-CV-01";
 
 // ---------------- OLED Configuration ----------------
 #define SCREEN_WIDTH 128
@@ -53,10 +62,10 @@ const char* DEVICE_ID = "ESP32-OLED-BIO-01";
 #define OLED_RESET -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// ---------------- Fingerprint Sensor Configuration ----------------
-// Hardware Serial 2 on ESP32 (RX=16, TX=17)
-HardwareSerial mySerial(2);
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
+// ---------------- MFRC522 RFID Configuration ----------------
+#define SS_PIN  5
+#define RST_PIN 27
+MFRC522 rfid(SS_PIN, RST_PIN);
 
 // Output Indicator Pins
 #define BUZZER_PIN 4
@@ -64,9 +73,9 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
 // State Tracking
 unsigned long lastPollTime = 0;
-const unsigned long POLL_INTERVAL = 1500; // Poll server every 1.5s for display state
-String currentMode = "STANDBY";
-int lastFingerprintId = -1;
+const unsigned long POLL_INTERVAL = 1500; // Poll server every 1.5s
+String lastCardUid = "";
+unsigned long lastCardTime = 0;
 
 void beep(int ms = 80) {
   digitalWrite(BUZZER_PIN, HIGH);
@@ -76,7 +85,7 @@ void beep(int ms = 80) {
   digitalWrite(LED_PIN, LOW);
 }
 
-void renderOLED(const char* header, const char* line1, const char* line2, const char* line3, bool isOtp = false) {
+void renderOLED(const char* header, const char* line1, const char* line2, const char* line3, const char* statusTag = "AIR-GAP") {
   display.clearDisplay();
   
   // Header bar
@@ -86,26 +95,24 @@ void renderOLED(const char* header, const char* line1, const char* line2, const 
   display.setCursor(2, 2);
   display.print(header);
 
+  // Status tag on top right
+  display.setCursor(85, 2);
+  display.print(statusTag);
+
   // Body text
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(2, 16);
   display.print(line1);
 
-  display.setCursor(2, 28);
-  if (isOtp) {
-    display.setTextSize(2);
-    display.print(line2);
-    display.setTextSize(1);
-  } else {
-    display.print(line2);
-  }
+  display.setCursor(2, 30);
+  display.setTextSize(1);
+  display.print(line2);
 
-  display.setCursor(2, 48);
+  display.setCursor(2, 46);
   display.print(line3);
 
   // Bottom line accent
   display.drawFastHLine(0, 62, 128, SSD1306_WHITE);
-
   display.display();
 }
 
@@ -116,63 +123,81 @@ void setup() {
   digitalWrite(BUZZER_PIN, LOW);
   digitalWrite(LED_PIN, LOW);
 
-  // Initialize OLED Display (I2C address 0x3C typically)
+  // 1. Initialize OLED (I2C on GPIO 21 SDA, GPIO 22 SCL)
   Wire.begin(21, 22);
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 allocation failed"));
   } else {
-    renderOLED("MP POLICE ABHEDYA", "BOOTING SYSTEM...", "CONNECTING WIFI", "ESP32 INITIALIZING");
+    renderOLED("MP POLICE ABHEDYA", "BOOTING SYSTEM...", "AIR-GAP INITIALIZING", "ESP32 HARDWARE READY", "INIT");
   }
 
-  // Initialize Wi-Fi
+  // 2. Initialize SPI & MFRC522 RFID Reader
+  SPI.begin(18, 19, 23, 5); // SCK, MISO, MOSI, SS
+  rfid.PCD_Init();
+  Serial.println("MFRC522 RFID Reader Initialized!");
+  rfid.PCD_DumpVersionToSerial();
+
+  // 3. Connect Wi-Fi
   Serial.print("Connecting to Wi-Fi: ");
   Serial.println(WIFI_SSID);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   int wifiRetries = 0;
-  while (WiFi.status() != WL_CONNECTED && wifiRetries < 20) {
-    delay(500);
+  while (WiFi.status() != WL_CONNECTED && wifiRetries < 15) {
+    delay(400);
     Serial.print(".");
     wifiRetries++;
   }
 
   if (WiFi.status() == WL_CONNECTED) {
     Serial.println("\nWiFi Connected! IP: " + WiFi.localIP().toString());
-    renderOLED("MP POLICE ONLINE", "WIFI CONNECTED", WiFi.localIP().toString().c_str(), "SCANNING SENSOR...");
+    renderOLED("CCTNS HARDWARE", "WIFI CONNECTED", WiFi.localIP().toString().c_str(), "TAP RFID BADGE >>", "ONLINE");
+    beep(120);
   } else {
-    Serial.println("\nWiFi connection failed! Continuing in offline/mock sensor mode.");
-    renderOLED("WIFI OFFLINE", "LOCAL LINK ACTIVE", "CHECK ROUTER IP", "STANDBY READY");
+    Serial.println("\nWiFi offline. Running local hardware loop.");
+    renderOLED("CCTNS OFFLINE", "LOCAL LINK ACTIVE", "CARD SCANNER READY", "TAP RFID BADGE >>", "READY");
   }
-
-  // Initialize Fingerprint Sensor
-  finger.begin(57600);
-  if (finger.verifyPassword()) {
-    Serial.println("Found optical fingerprint sensor!");
-    beep(100);
-  } else {
-    Serial.println("Fingerprint sensor not responding. Check baud rate / wiring.");
-  }
-
-  renderOLED("MP POLICE • ABHEDYA", "SYSTEM ACTIVE", "ESP32 + OLED + BIO", "READY FOR 2FA AUTH");
 }
 
-int getFingerprintID() {
-  uint8_t p = finger.getImage();
-  if (p != FINGERPRINT_OK) return -1;
-
-  p = finger.image2Tz();
-  if (p != FINGERPRINT_OK) return -1;
-
-  p = finger.fingerSearch();
-  if (p == FINGERPRINT_OK) {
-    Serial.print("Found ID #"); Serial.print(finger.fingerID);
-    Serial.print(" with confidence of "); Serial.println(finger.confidence);
-    beep(150);
-    return finger.fingerID;
+// Post RFID Card Tap to Backend Server
+void sendCardTapToServer(String uid) {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[Offline] Card Tapped: " + uid);
+    renderOLED("CARD DETECTED", uid.c_str(), "OFFLINE DEMO MODE", "SCAN FACE ON SCREEN", "2FA");
+    beep(80);
+    return;
   }
-  return -1;
+
+  HTTPClient http;
+  String url = String(SERVER_BASE_URL) + "/api/hardware/rfid-tap";
+  http.begin(url);
+  http.addHeader("Content-Type", "application/json");
+
+  StaticJsonDocument<200> doc;
+  doc["cardUid"] = uid;
+  doc["deviceId"] = DEVICE_ID;
+  String requestBody;
+  serializeJson(doc, requestBody);
+
+  int httpCode = http.POST(requestBody);
+  if (httpCode == 200) {
+    String response = http.getString();
+    StaticJsonDocument<512> respDoc;
+    deserializeJson(respDoc, response);
+
+    const char* officerName = respDoc["data"]["officer"]["officerName"] | "Officer";
+    const char* badgeNumber = respDoc["data"]["officer"]["badgeNumber"] | "MPP-CARD";
+
+    beep(90);
+    renderOLED("CARD DETECTED", officerName, badgeNumber, ">> LOOK AT CAMERA <<", "FACE");
+    Serial.println("RFID Tap sent to server successfully! Officer: " + String(officerName));
+  } else {
+    Serial.println("Error sending card tap: " + String(httpCode));
+  }
+  http.end();
 }
 
-void pollServerState() {
+// Poll server for live OLED screen buffer and section status
+void pollServerStatus() {
   if (WiFi.status() != WL_CONNECTED) return;
 
   HTTPClient http;
@@ -180,66 +205,57 @@ void pollServerState() {
   http.begin(url);
   http.addHeader("Content-Type", "application/json");
 
-  StaticJsonDocument<256> doc;
-  doc["deviceId"] = DEVICE_ID;
-  doc["ip"] = WiFi.localIP().toString();
-  String reqBody;
-  serializeJson(doc, reqBody);
+  StaticJsonDocument<128> reqDoc;
+  reqDoc["deviceId"] = DEVICE_ID;
+  String reqJson;
+  serializeJson(reqDoc, reqJson);
 
-  int httpCode = http.POST(reqBody);
+  int httpCode = http.POST(reqJson);
   if (httpCode == 200) {
     String payload = http.getString();
-    StaticJsonDocument<512> resp;
-    deserializeJson(resp, payload);
+    StaticJsonDocument<512> doc;
+    deserializeJson(doc, payload);
 
-    const char* header = resp["display"]["header"] | "MP POLICE";
-    const char* line1  = resp["display"]["line1"] | "ONLINE";
-    const char* line2  = resp["display"]["line2"] | "";
-    const char* line3  = resp["display"]["line3"] | "";
-    const char* mode   = resp["display"]["mode"] | "STANDBY";
-
-    currentMode = String(mode);
-    bool isOtpMode = (currentMode == "DISPLAYING_OTP");
-    renderOLED(header, line1, line2, line3, isOtpMode);
+    if (doc.containsKey("oled")) {
+      const char* h  = doc["oled"]["header"] | "MP POLICE";
+      const char* l1 = doc["oled"]["line1"]  | "MANAGE RECORDS";
+      const char* l2 = doc["oled"]["line2"]  | "[ LOCKED ]";
+      const char* l3 = doc["oled"]["line3"]  | "TAP RFID TO UNLOCK";
+      const char* st = doc["oled"]["status"] | "STANDBY";
+      renderOLED(h, l1, l2, l3, st);
+    }
   }
-  http.end();
-}
-
-void notifyFingerprintScanned(int slotId) {
-  if (WiFi.status() != WL_CONNECTED) return;
-
-  HTTPClient http;
-  String url = String(SERVER_BASE_URL) + "/api/hardware/scan-biometric";
-  http.begin(url);
-  http.addHeader("Content-Type", "application/json");
-
-  StaticJsonDocument<256> doc;
-  doc["deviceId"] = DEVICE_ID;
-  doc["fingerprintSlot"] = slotId;
-  doc["timestamp"] = millis();
-  String reqBody;
-  serializeJson(doc, reqBody);
-
-  int httpCode = http.POST(reqBody);
-  Serial.print("Biometric scan reported. Server HTTP: ");
-  Serial.println(httpCode);
   http.end();
 }
 
 void loop() {
-  // Check for fingerprint sensor touches
-  int fingerId = getFingerprintID();
-  if (fingerId != -1) {
-    Serial.println("Valid fingerprint touched on sensor!");
-    notifyFingerprintScanned(fingerId);
-    delay(1000); // Prevent duplicate triggers
+  // 1. Check for physical RFID Card presence on MFRC522 reader
+  if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
+    String cardUid = "";
+    for (byte i = 0; i < rfid.uid.size; i++) {
+      if (i > 0) cardUid += ":";
+      if (rfid.uid.uidByte[i] < 0x10) cardUid += "0";
+      cardUid += String(rfid.uid.uidByte[i], HEX);
+    }
+    cardUid.toUpperCase();
+
+    // Debounce: prevent rapid repeated reads of same card within 2 seconds
+    if (cardUid != lastCardUid || (millis() - lastCardTime > 2000)) {
+      lastCardUid = cardUid;
+      lastCardTime = millis();
+      Serial.println("New RFID Card Read: " + cardUid);
+      sendCardTapToServer(cardUid);
+    }
+
+    rfid.PICC_HaltA();
+    rfid.PCD_StopCrypto1();
   }
 
-  // Poll server for OLED screen updates
-  if (millis() - lastPollTime > POLL_INTERVAL) {
+  // 2. Periodic poll to server for live OLED display updates
+  if (millis() - lastPollTime >= POLL_INTERVAL) {
     lastPollTime = millis();
-    pollServerState();
+    pollServerStatus();
   }
 
-  delay(20);
+  delay(50);
 }

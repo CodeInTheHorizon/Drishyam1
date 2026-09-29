@@ -4,8 +4,10 @@ import PageHeader from "../../components/dashboard/PageHeader";
 import FIRFormModal from "../../components/records/FIRFormModal";
 import FIRDetailModal from "../../components/records/FIRDetailModal";
 import HardwareBiometricAuthModal from "../../components/hardware/HardwareBiometricAuthModal";
+import ManageRecordsLockScreen from "../../components/records/ManageRecordsLockScreen";
 import { recordService } from "../../services/recordService";
 import { crimeService } from "../../services/crimeService";
+import { hardwareService } from "../../services/hardwareService";
 import {
   FaFolderPlus,
   FaSearch,
@@ -18,7 +20,9 @@ import {
   FaShieldAlt,
   FaUserCheck,
   FaExclamationTriangle,
-  FaProjectDiagram
+  FaProjectDiagram,
+  FaLock,
+  FaUnlock
 } from "react-icons/fa";
 
 const ManageRecords = () => {
@@ -37,7 +41,40 @@ const ManageRecords = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // Hardware 2FA Authorization States (ESP32 + OLED + Biometrics)
+  // Section 2FA Air-Gap Lock State (Locked by default for all users)
+  const [isSectionUnlocked, setIsSectionUnlocked] = useState(() => {
+    return sessionStorage.getItem("cctns_manage_records_unlocked") === "true";
+  });
+  const [unlockedOfficer, setUnlockedOfficer] = useState(() => {
+    const saved = sessionStorage.getItem("cctns_unlocked_officer");
+    try {
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const handleUnlockSuccess = (officer) => {
+    setIsSectionUnlocked(true);
+    setUnlockedOfficer(officer);
+    sessionStorage.setItem("cctns_manage_records_unlocked", "true");
+    sessionStorage.setItem("cctns_unlocked_officer", JSON.stringify(officer));
+    reloadRecords();
+  };
+
+  const handleLockSection = async () => {
+    try {
+      await hardwareService.lockSection();
+    } catch (e) {
+      // Non-fatal
+    }
+    setIsSectionUnlocked(false);
+    setUnlockedOfficer(null);
+    sessionStorage.removeItem("cctns_manage_records_unlocked");
+    sessionStorage.removeItem("cctns_unlocked_officer");
+  };
+
+  // Hardware Re-Auth Face States for FIR CRUD
   const [isHwAuthModalOpen, setIsHwAuthModalOpen] = useState(false);
   const [hwAuthCallback, setHwAuthCallback] = useState(null);
   const [hwAuthTitle, setHwAuthTitle] = useState("");
@@ -187,8 +224,52 @@ const ManageRecords = () => {
     return { total: all.length, active, closed, critical };
   }, [records]);
 
+  if (!isSectionUnlocked) {
+    return (
+      <div className="flex flex-col font-inter">
+        <div className="mb-6">
+          <PageHeader
+            title="CCTNS Manage Records & FIR Console"
+            subtitle="Restricted state police archive protected by dual-factor RFID & Computer Vision security"
+          />
+        </div>
+        <ManageRecordsLockScreen onUnlock={handleUnlockSuccess} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col font-inter">
+      {/* Unlocked Security Status Strip */}
+      <div className="mb-6 p-3 rounded-xl bg-gradient-to-r from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/40 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-sm flex-shrink-0">
+            <FaShieldAlt className="text-base" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-white text-xs font-mono tracking-wide">
+                CCTNS SECTION UNLOCKED
+              </span>
+              <span className="px-2 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">
+                2FA VERIFIED (RFID + FACE)
+              </span>
+            </div>
+            <div className="text-[11px] text-slate-300 font-sans">
+              Active Authorized Officer: <span className="text-cyan-400 font-bold">{unlockedOfficer?.officerName || unlockedOfficer?.name || "Kartik Singhal"}</span> ({unlockedOfficer?.badgeNumber || "MPP-2026-5882"}) • Card UID: <span className="font-mono text-cyan-300">{unlockedOfficer?.cardUid || "04:A2:8F:1A"}</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleLockSection}
+          className="px-3.5 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600/40 border border-red-500/50 text-red-300 hover:text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+        >
+          <FaLock className="text-[10px]" /> Lock Section
+        </button>
+      </div>
+
       {/* Title Header */}
       <div className="mb-8" style={{ marginBottom: "32px" }}>
         <PageHeader
@@ -552,7 +633,7 @@ const ManageRecords = () => {
         </div>
       )}
 
-      {/* Hardware 2-Factor Biometric + OLED OTP Authorization Modal */}
+      {/* Hardware Face Re-Authentication for FIR CRUD Actions (NO OTP!) */}
       <HardwareBiometricAuthModal
         isOpen={isHwAuthModalOpen}
         onClose={() => setIsHwAuthModalOpen(false)}
@@ -561,6 +642,7 @@ const ManageRecords = () => {
         actionType={hwAuthType}
         targetRecordId={hwAuthTargetId}
         changesSummary={hwAuthSummary}
+        activeOfficer={unlockedOfficer}
       />
 
       {/* Form Modal (Create / Edit) */}

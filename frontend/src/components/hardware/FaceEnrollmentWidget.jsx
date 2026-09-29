@@ -3,7 +3,6 @@ import {
   FaCamera,
   FaCheckCircle,
   FaRedo,
-  FaCloudUploadAlt,
   FaShieldAlt,
   FaExclamationTriangle,
   FaUserCheck,
@@ -24,13 +23,11 @@ const FaceEnrollmentWidget = forwardRef(({ officerData, onEnrollmentComplete, is
 
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   // Expose imperative methods to parent (e.g. AddOfficerModal)
   useImperativeHandle(ref, () => ({
     capture: () => handleCapturePhoto(),
     retake: () => handleRetake(),
-    openFilePicker: () => fileInputRef.current?.click(),
     isReady: () => cameraActive,
     isUploading: () => uploading,
     isEnrolled: () => uploadSuccess && Boolean(cloudinaryUrl)
@@ -59,11 +56,11 @@ const FaceEnrollmentWidget = forwardRef(({ officerData, onEnrollmentComplete, is
           videoRef.current.play().catch(() => {});
         }
       } else {
-        setCameraError("Webcam API not supported in this browser. Please upload a photo file instead.");
+        setCameraError("Webcam API not supported in this browser. Live camera access is mandatory.");
       }
     } catch (err) {
       console.warn("[FaceEnrollmentWidget] Camera access error:", err);
-      setCameraError("Camera access denied or unavailable. You can click 'Upload File' to select a photo.");
+      setCameraError("Camera access denied or unavailable. Live optical camera capture is mandatory to register an officer.");
       setCameraActive(false);
     }
   };
@@ -99,9 +96,7 @@ const FaceEnrollmentWidget = forwardRef(({ officerData, onEnrollmentComplete, is
   // Capture frame from webcam
   const handleCapturePhoto = async () => {
     if (!videoRef.current || !cameraActive) {
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
+      setCameraError("Live camera feed is not ready. Live camera capture is mandatory.");
       return;
     }
 
@@ -184,23 +179,6 @@ const FaceEnrollmentWidget = forwardRef(({ officerData, onEnrollmentComplete, is
     setUploadSuccess(false);
     setCameraError("");
     startCamera();
-  };
-
-  // File upload fallback
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async (evt) => {
-        const base64 = evt.target?.result;
-        if (base64) {
-          setCapturedPhoto(base64);
-          stopCamera();
-          await uploadToCloudinary(base64);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   return (
@@ -352,22 +330,10 @@ const FaceEnrollmentWidget = forwardRef(({ officerData, onEnrollmentComplete, is
             </button>
           )}
 
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*"
-            className="hidden"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-medium text-xs flex items-center gap-2 border border-slate-800 transition-all cursor-pointer"
-            title="Upload photo from disk if camera is not available"
-          >
-            <FaCloudUploadAlt />
-            <span>Upload File</span>
-          </button>
+          <div className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-cyan-400 flex items-center gap-1.5">
+            <FaShieldAlt className="text-cyan-400" />
+            <span>Live Camera Mandatory</span>
+          </div>
         </div>
 
         {cloudinaryUrl && (

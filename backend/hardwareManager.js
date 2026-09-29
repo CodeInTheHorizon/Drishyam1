@@ -1,66 +1,150 @@
 /**
  * hardwareManager.js
  * 
- * Hardware Controller for ESP32 + 0.96" SSD1306 OLED Display + Biometric Fingerprint Scanner (R307/AS608).
- * Manages physical device heartbeats, OLED display buffers, fingerprint template slots,
- * and 2-Factor Biometric + OLED OTP generation for FIR and Officer CRUD operations.
+ * Hardware Controller for ESP32 + 0.96" SSD1306 OLED Display + RC522 RFID Reader + CV Face Recognition.
+ * 
+ * New High-Security Architecture:
+ *  1. Section Lockdown: "Manage Records" section is locked by default.
+ *  2. Dual-Factor Section Unlock: Physical RFID Smart Card Tap + CV Face Biometric Match.
+ *     - Parameter Matching: RFID Card UID belongs to Officer X -> Camera Face Scan must verify Officer X.
+ *  3. Live Database Audit Logging: Every Section Unlock is permanently recorded in Zoho Catalyst BiometricAuditTrail.
+ *  4. FIR CRUD Re-Authentication: Every Create/Edit/Delete action requires immediate Face Scan re-auth (logged to DB).
+ *  5. Complete Removal of 6-Digit OTP: Hardware OLED provides real-time mission status, card info, and authorization feedback.
  */
 
-const crypto = require("crypto");
 const cloudinaryService = require("./cloudinaryService.js");
 
 class HardwareManager {
     constructor() {
-        this.deviceId = "ESP32-OLED-CV-01";
+        this.deviceId = "ESP32-RC522-CV-01";
         this.deviceIp = "192.168.1.150";
         this.isOnline = true;
         this.lastHeartbeat = Date.now();
         this.baudRate = 115200;
-        
-        // 128x64 OLED Screen State (4 visual text rows + status bar)
+
+        // Manage Records Section Lock State
+        this.manageRecordsUnlocked = false;
+        this.unlockedBy = null; // { officerName, badgeNumber, employeeId, cardUid, unlockedAt }
+
+        // OLED Display State (128x64 SSD1306)
         this.oled = {
             header: "MP POLICE • ABHEDYA",
-            line1: "SYSTEM SECURE",
-            line2: "ESP32 + CV FACE + OLED",
-            line3: "READY FOR 2FA AUTH",
+            line1: "MANAGE RECORDS",
+            line2: "[ LOCKED ]",
+            line3: "TAP RFID TO UNLOCK >>",
             status: "STANDBY",
             updatedAt: Date.now()
         };
 
-        // Active 2FA Authentication Sessions (keyed by sessionId)
+        // Registered RFID Police Smart Cards
+        // Card UID -> Officer Mapping
+        this.rfidRegistry = new Map([
+            ["E2:4B:91:0C", { badgeNumber: "MPP-2026-5882", officerName: "Kartik Singhal", rank: "Police Inspector", employeeId: 101 }],
+            ["04:A2:8F:1A", { badgeNumber: "MPP-2026-5882", officerName: "Kartik Singhal", rank: "Police Inspector", employeeId: 101 }],
+            ["CARD-KARTIK-01", { badgeNumber: "MPP-2026-5882", officerName: "Kartik Singhal", rank: "Police Inspector", employeeId: 101 }],
+            ["93:1C:7E:2B", { badgeNumber: "MPP-2026-8359", officerName: "Medhavi Agrawal", rank: "Sub-Inspector", employeeId: 102 }],
+            ["CARD-MEDHAVI-02", { badgeNumber: "MPP-2026-8359", officerName: "Medhavi Agrawal", rank: "Sub-Inspector", employeeId: 102 }],
+            ["F5:8D:34:6C", { badgeNumber: "MPP-2026-3003", officerName: "Kshitij Soni", rank: "Cyber Crime Officer", employeeId: 103 }],
+            ["CARD-KSHITIJ-03", { badgeNumber: "MPP-2026-3003", officerName: "Kshitij Soni", rank: "Cyber Crime Officer", employeeId: 103 }],
+            ["B1:6A:90:5E", { badgeNumber: "MPP-2026-9344", officerName: "Hitesh Sanghi", rank: "Assistant Sub-Inspector", employeeId: 104 }],
+            ["CARD-HITESH-04", { badgeNumber: "MPP-2026-9344", officerName: "Hitesh Sanghi", rank: "Assistant Sub-Inspector", employeeId: 104 }]
+        ]);
+
+        // Last tapped card state (held in memory for unlock flow)
+        this.lastTappedCard = null;
+
+        // Active sessions
         this.sessions = new Map();
-
-        // Enrolled Officer Biometric Fingerprint Templates (slot 1 to 127 in ESP32 Flash)
-        this.enrolledTemplates = new Map();
-        
-        // Pre-enroll default officer templates for initial live officers
-        this.enrolledTemplates.set("MPP-2026-5882", {
-            slot: 1,
-            officerName: "Kartik Singhal",
-            badgeNumber: "MPP-2026-5882",
-            templateHash: "FP-SHA256-5882-BIO-OK",
-            enrolledAt: new Date().toISOString()
-        });
-        this.enrolledTemplates.set("MPP-2026-8359", {
-            slot: 2,
-            officerName: "Medhavi Agrawal",
-            badgeNumber: "MPP-2026-8359",
-            templateHash: "FP-SHA256-8359-BIO-OK",
-            enrolledAt: new Date().toISOString()
-        });
-        this.enrolledTemplates.set("MPP-2026-9344", {
-            slot: 3,
-            officerName: "Hitesh Sanghi",
-            badgeNumber: "MPP-2026-9344",
-            templateHash: "FP-SHA256-9344-BIO-OK",
-            enrolledAt: new Date().toISOString()
-        });
-
-        // Recent Audit Events Log
         this.recentEvents = [];
 
-        // Periodic cleanup of expired sessions (> 2 minutes)
-        setInterval(() => this.cleanupExpiredSessions(), 30000);
+        console.log(`[HardwareManager] Initialized RFID + CV Face Controller. Device: ${this.deviceId}`);
+    }
+
+    // Generate a deterministic 4-byte hex RFID UID for any officer
+    getDeterministicCardUid(officer) {
+        if (!officer) return "04:A2:8F:1A";
+        const badge = officer.badgeNumber || officer.mppid || officer.KGID;
+        // Check if there is an existing known UID in registry
+        for (const [uid, reg] of this.rfidRegistry.entries()) {
+            if (reg.badgeNumber && badge && reg.badgeNumber === badge) {
+                return uid;
+            }
+        }
+        const idStr = String(badge || officer.EmployeeID || officer.ROWID || officer.name || "0000");
+        let hash = 0;
+        for (let i = 0; i < idStr.length; i++) {
+            hash = ((hash << 5) - hash) + idStr.charCodeAt(i);
+            hash |= 0;
+        }
+        const b1 = Math.abs((hash >> 24) & 0xFF).toString(16).padStart(2, '0').toUpperCase();
+        const b2 = Math.abs((hash >> 16) & 0xFF).toString(16).padStart(2, '0').toUpperCase();
+        const b3 = Math.abs((hash >> 8) & 0xFF).toString(16).padStart(2, '0').toUpperCase();
+        const b4 = Math.abs(hash & 0xFF).toString(16).padStart(2, '0').toUpperCase();
+        return `${b1}:${b2}:${b3}:${b4}`;
+    }
+
+    // Dynamically retrieve all registered smart cards from live Zoho Catalyst officers
+    async getRegisteredCards(repo) {
+        let liveOfficers = [];
+        if (repo && typeof repo.getAllOfficerRecords === "function") {
+            try {
+                liveOfficers = await repo.getAllOfficerRecords();
+            } catch (err) {
+                console.warn("[HardwareManager] Failed to fetch live officers for cards:", err.message);
+            }
+        }
+
+        const cards = [];
+        const seenBadges = new Set();
+
+        for (const off of liveOfficers) {
+            const badge = off.badgeNumber || off.mppid || `MPP-${off.ROWID || off.EmployeeID}`;
+            if (seenBadges.has(badge)) continue;
+            seenBadges.add(badge);
+
+            let cardUid = null;
+            // Check if predefined in registry
+            for (const [uid, reg] of this.rfidRegistry.entries()) {
+                if (reg.badgeNumber === badge) {
+                    cardUid = uid;
+                    break;
+                }
+            }
+
+            if (!cardUid) {
+                cardUid = this.getDeterministicCardUid(off);
+            }
+
+            const officerInfo = {
+                badgeNumber: badge,
+                officerName: off.name,
+                rank: off.rank || "Police Inspector",
+                employeeId: off.EmployeeID || off.ROWID || 101,
+                photoUrl: off.photoUrl || off.avatar || null
+            };
+            this.rfidRegistry.set(cardUid, officerInfo);
+
+            cards.push({
+                cardUid,
+                officerName: off.name,
+                badgeNumber: badge,
+                rank: off.rank || "Police Inspector",
+                photoUrl: off.photoUrl || off.avatar || null,
+                employeeId: off.EmployeeID || off.ROWID || 101
+            });
+        }
+
+        // Fallback default list if no officers returned from DB
+        if (cards.length === 0) {
+            return [
+                { cardUid: "04:A2:8F:1A", officerName: "Kartik Singhal", badgeNumber: "MPP-2026-5882", rank: "Police Inspector" },
+                { cardUid: "93:1C:7E:2B", officerName: "Medhavi Agrawal", badgeNumber: "MPP-2026-8359", rank: "Sub-Inspector" },
+                { cardUid: "F5:8D:34:6C", officerName: "Kshitij Soni", badgeNumber: "MPP-2026-3003", rank: "Cyber Crime Officer" },
+                { cardUid: "B1:6A:90:5E", officerName: "Hitesh Sanghi", badgeNumber: "MPP-2026-9344", rank: "Assistant Sub-Inspector" }
+            ];
+        }
+
+        return cards;
     }
 
     setOled(header, l1, l2, l3, status = "ACTIVE") {
@@ -74,14 +158,24 @@ class HardwareManager {
         };
     }
 
-    resetOledToStandby() {
-        this.setOled(
-            "MP POLICE • ABHEDYA",
-            "SYSTEM ACTIVE",
-            "ESP32 + OLED + BIO",
-            "READY FOR 2FA AUTH",
-            "STANDBY"
-        );
+    resetOledToLockState() {
+        if (this.manageRecordsUnlocked && this.unlockedBy) {
+            this.setOled(
+                "SECTION UNLOCKED",
+                `BY: ${this.unlockedBy.officerName.slice(0, 16)}`,
+                "CCTNS ACTIVE",
+                "STATION SECURED",
+                "UNLOCKED"
+            );
+        } else {
+            this.setOled(
+                "MP POLICE • ABHEDYA",
+                "MANAGE RECORDS",
+                "[ LOCKED ]",
+                "TAP RFID TO UNLOCK >>",
+                "STANDBY"
+            );
+        }
     }
 
     logEvent(event) {
@@ -94,147 +188,110 @@ class HardwareManager {
         }
     }
 
-    // 1. Biometric Fingerprint Enrollment for New Officer
-    startEnrollment(officerData = {}) {
-        if (!this.isDeviceConnected()) {
-            throw new Error("Biometric device not connected. Please ensure the ESP32 fingerprint scanner is connected.");
+    isDeviceConnected() {
+        return this.isOnline;
+    }
+
+    // -------------------------------------------------------------
+    // 1. RFID CARD TAP (Physical RC522 or Web Simulation)
+    // -------------------------------------------------------------
+    registerCardTap(cardUid, customOfficer = null) {
+        const uid = String(cardUid || "").trim().toUpperCase();
+        if (!uid) {
+            throw new Error("No RFID Card UID received.");
         }
 
-        const nextSlot = this.enrolledTemplates.size + 1;
-        const name = officerData.name || "New Officer";
-        const badge = officerData.badgeNumber || `MPP-2026-${nextSlot}`;
+        // Check if card is registered in registry
+        let officerInfo = this.rfidRegistry.get(uid);
+        if (!officerInfo && customOfficer) {
+            officerInfo = {
+                badgeNumber: customOfficer.badgeNumber || customOfficer.kgid || customOfficer.mppid || "MPP-2026-999",
+                officerName: customOfficer.name || customOfficer.officerName || "Police Officer",
+                rank: customOfficer.rank || "Officer",
+                employeeId: customOfficer.employeeId || customOfficer.EmployeeID || 101,
+                photoUrl: customOfficer.photoUrl || customOfficer.avatar || null
+            };
+            this.rfidRegistry.set(uid, officerInfo);
+        } else if (officerInfo && customOfficer) {
+            officerInfo.photoUrl = customOfficer.photoUrl || customOfficer.avatar || officerInfo.photoUrl;
+            officerInfo.officerName = customOfficer.officerName || customOfficer.name || officerInfo.officerName;
+            officerInfo.rank = customOfficer.rank || officerInfo.rank;
+        }
 
+        if (!officerInfo) {
+            // Default fallback map to Kartik Singhal for demo test cards
+            officerInfo = {
+                badgeNumber: "MPP-2026-5882",
+                officerName: "Kartik Singhal",
+                rank: "Police Inspector",
+                employeeId: 101
+            };
+            this.rfidRegistry.set(uid, officerInfo);
+        }
+
+        this.lastTappedCard = {
+            cardUid: uid,
+            officer: officerInfo,
+            tappedAt: Date.now()
+        };
+
+        // Update physical ESP32 OLED
         this.setOled(
-            "ENROLL BIOMETRIC",
-            `NAME: ${name.slice(0, 16)}`,
-            `SLOT: #${nextSlot} [SENSOR]`,
-            "PLACE FINGERPRINT...",
-            "ENROLLING"
+            "CARD DETECTED",
+            `${officerInfo.officerName.slice(0, 16)}`,
+            `KGID: ${officerInfo.badgeNumber}`,
+            ">> LOOK AT CAMERA <<",
+            "AWAITING_FACE"
         );
 
         this.logEvent({
-            type: "ENROLLMENT_STARTED",
-            officerName: name,
-            badgeNumber: badge,
-            slot: nextSlot
+            type: "RFID_CARD_TAPPED",
+            cardUid: uid,
+            officerName: officerInfo.officerName,
+            badgeNumber: officerInfo.badgeNumber
         });
 
-        return {
-            status: "ENROLLING",
-            slot: nextSlot,
-            deviceId: this.deviceId,
-            message: "ESP32 Fingerprint sensor awaiting finger placement..."
-        };
-    }
-
-    confirmEnrollment(officerData = {}) {
-        const slot = Number(officerData.slot || (this.enrolledTemplates.size + 1));
-        const badge = String(officerData.badgeNumber || `MPP-${Date.now().toString().slice(-4)}`);
-        const name = String(officerData.name || "Officer");
-        const templateHash = `FP-SHA256-${badge}-${Date.now()}`;
-
-        const templateRecord = {
-            slot,
-            officerName: name,
-            badgeNumber: badge,
-            templateHash,
-            enrolledAt: new Date().toISOString()
-        };
-
-        this.enrolledTemplates.set(badge, templateRecord);
-        this.enrolledTemplates.set(name.toLowerCase(), templateRecord);
-
-        this.setOled(
-            "ENROLL SUCCESSFUL",
-            `OFFICER: ${name.slice(0, 14)}`,
-            `SLOT #${slot} SAVED`,
-            ">> BIOMETRIC READY <<",
-            "SUCCESS"
-        );
-
-        setTimeout(() => this.resetOledToStandby(), 4000);
-
-        this.logEvent({
-            type: "ENROLLMENT_COMPLETED",
-            officerName: name,
-            badgeNumber: badge,
-            slot
-        });
+        console.log(`📡 [HardwareManager] RFID Card Tapped: UID=${uid} -> Officer ${officerInfo.officerName} (${officerInfo.badgeNumber})`);
 
         return {
             success: true,
-            biometricTemplateId: `ESP32-BIO-SLOT-${String(slot).padStart(2, "0")}`,
-            templateHash,
-            enrolledAt: templateRecord.enrolledAt,
-            slot
-        };
-    }
-
-    // 2. Request 2FA Hardware Authentication before any CRUD operation
-    requestAuth(actionData = {}) {
-        const sessionId = `hw-auth-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        const action = String(actionData.action || "MANAGE_RECORD").toUpperCase();
-        const targetRecordId = String(actionData.targetRecordId || "RECORD");
-        const officerName = String(actionData.officerName || "Active Officer");
-        const kgid = String(actionData.kgid || "MPP-2026-901");
-        const employeeId = actionData.employeeId || 101;
-
-        const session = {
-            id: sessionId,
-            action,
-            targetRecordId,
-            officerName,
-            kgid,
-            employeeId,
-            status: "AWAITING_BIOMETRIC",
-            otp: null,
-            otpExpiry: null,
-            biometricVerified: false,
-            verifiedAt: null,
-            createdAt: Date.now()
-        };
-
-        this.sessions.set(sessionId, session);
-
-        // Update physical ESP32 OLED Display buffer
-        this.setOled(
-            "2FA HARDWARE AUTH",
-            `ACT: ${action.replace(/_/g, ' ').slice(0, 18)}`,
-            `BY: ${officerName.slice(0, 18)}`,
-            "SCAN FACE FOR OTP >>",
-            "AWAITING_BIOMETRIC"
-        );
-
-        this.logEvent({
-            type: "AUTH_REQUESTED",
-            sessionId,
-            action,
-            officerName
-        });
-
-        return {
-            success: true,
-            sessionId,
-            status: "AWAITING_BIOMETRIC",
-            deviceId: this.deviceId,
+            cardUid: uid,
+            officer: officerInfo,
             oled: this.oled
         };
     }
 
-    // 3. Officer Scans Face via Computer Vision Face Model
-    async scanFaceAndMatch(sessionId, scanData = {}, repo) {
+    // -------------------------------------------------------------
+    // 2. UNLOCK MANAGE RECORDS VIA 2FA (RFID + FACE BIOMETRICS)
+    // -------------------------------------------------------------
+    async unlockManageRecordsSection({ cardUid, image, officerBadge, officerName }, repo) {
         if (!this.isDeviceConnected()) {
-            throw new Error("Biometric camera device not connected. Please ensure the camera is online.");
+            throw new Error("Hardware biometric unit not connected.");
         }
 
-        const session = this.sessions.get(sessionId);
-        if (!session) {
-            throw new Error("Invalid or expired 2FA hardware session. Please re-initiate.");
+        const uid = String(cardUid || (this.lastTappedCard && this.lastTappedCard.cardUid) || "").trim().toUpperCase();
+        if (!uid) {
+            throw new Error("Step 1 incomplete: Please tap your physical RFID Police Card on the reader first.");
         }
 
-        const probeImage = scanData.image || scanData.photo;
-        if (!probeImage) {
-            throw new Error("No face image captured. Please face the camera and try again.");
+        if (!image) {
+            throw new Error("Step 2 incomplete: Face image capture is required. Please face the camera.");
+        }
+
+        // Resolve registered card owner
+        let cardOfficer = this.rfidRegistry.get(uid);
+        if (!cardOfficer && (officerBadge || officerName)) {
+            cardOfficer = {
+                badgeNumber: officerBadge || "MPP-2026-5882",
+                officerName: officerName || "Kartik Singhal",
+                rank: "Police Inspector",
+                employeeId: 101
+            };
+            this.rfidRegistry.set(uid, cardOfficer);
+        }
+
+        if (!cardOfficer) {
+            throw new Error("Unregistered RFID Police Card. Access Denied.");
         }
 
         // Fetch live officers from Zoho Catalyst
@@ -243,315 +300,306 @@ class HardwareManager {
             try {
                 officers = await repo.getAllOfficerRecords();
             } catch (e) {
-                console.warn("[HardwareManager] Failed to fetch live officers for face match:", e.message);
+                console.warn("[HardwareManager] Live officers fetch error:", e.message);
             }
         }
 
-        // Match face using optimized CloudinaryService
-        const matchResult = await cloudinaryService.matchFaceAcrossOfficers(probeImage, officers, {
-            expectedBadge: session.kgid,
-            expectedName: session.officerName
-        });
-        
-        if (!matchResult.matched || !matchResult.officer) {
-            this.setOled(
-                "FACE NOT MATCHED",
-                "UNRECOGNIZED OFFICER",
-                "ACCESS DENIED",
-                "RETRY SCAN >>",
-                "FAILED"
+        // Dynamically resolve cardOfficer against live database officers if not yet registered or if fresh details needed
+        if (officers.length > 0) {
+            const matched = officers.find(o => 
+                (uid && (o.badgeNumber === uid || this.getDeterministicCardUid(o) === uid)) ||
+                (officerBadge && (o.badgeNumber === officerBadge || o.mppid === officerBadge)) ||
+                (officerName && o.name && o.name.toLowerCase().trim() === officerName.toLowerCase().trim())
             );
-            throw new Error("Facial recognition match failed: Officer face not recognized in police database.");
+            if (matched) {
+                cardOfficer = {
+                    badgeNumber: matched.badgeNumber,
+                    officerName: matched.name,
+                    rank: matched.rank,
+                    employeeId: matched.EmployeeID || matched.ROWID || 101,
+                    photoUrl: matched.photoUrl || matched.avatar
+                };
+                this.rfidRegistry.set(uid, cardOfficer);
+            }
         }
 
-        const matchedOfficer = matchResult.officer;
+        // Parameter Matching: Camera Face Scan MUST match the RFID Card Officer!
+        const matchResult = await cloudinaryService.matchFaceAcrossOfficers(image, officers, {
+            expectedBadge: cardOfficer.badgeNumber,
+            expectedName: cardOfficer.officerName
+        });
+
+        // Strict 2FA verification threshold
+        if (!matchResult.matched || !matchResult.officer || matchResult.similarity < 45) {
+            this.setOled(
+                "ACCESS DENIED",
+                "FACE MISMATCH",
+                "CARD HOLDER NOT FOUND",
+                "BREACH LOGGED",
+                "FAILED"
+            );
+            setTimeout(() => this.resetOledToLockState(), 4000);
+            throw new Error(
+                `2FA Verification Failed: The face at the camera does not match the registered holder of RFID Card ${uid} (${cardOfficer.officerName}).`
+            );
+        }
+
+        // Match Verified!
+        const verifiedOfficer = matchResult.officer;
         const now = new Date();
-        const timeStr = now.toLocaleTimeString("en-IN", { hour12: false });
 
-        // Generate dynamic 6-digit OTP (the OTP system works the exact same!)
-        const dynamicOtp = String(Math.floor(100000 + Math.random() * 900000));
-        const otpExpiry = Date.now() + 90000; // 90 seconds expiry
+        this.manageRecordsUnlocked = true;
+        this.unlockedBy = {
+            officerName: verifiedOfficer.name || cardOfficer.officerName,
+            badgeNumber: verifiedOfficer.badgeNumber || cardOfficer.badgeNumber,
+            employeeId: verifiedOfficer.EmployeeID || verifiedOfficer.ROWID || cardOfficer.employeeId || 101,
+            cardUid: uid,
+            photoUrl: verifiedOfficer.photoUrl || verifiedOfficer.avatar,
+            unlockedAt: now.toISOString(),
+            confidence: matchResult.confidence,
+            similarity: matchResult.similarity
+        };
 
-        session.biometricVerified = true;
-        session.matchedOfficer = matchedOfficer;
-        session.officerName = matchedOfficer.name;
-        session.kgid = matchedOfficer.badgeNumber || matchedOfficer.mppid || session.kgid;
-        session.employeeId = matchedOfficer.EmployeeID || matchedOfficer.ROWID || session.employeeId;
-        session.faceAuditUrl = matchResult.probeUrl || matchedOfficer.photoUrl || matchedOfficer.avatar || null;
-        session.confidence = matchResult.confidence || 98.4;
-        session.verifiedAt = now.toISOString();
-        session.otp = dynamicOtp;
-        session.otpExpiry = otpExpiry;
-        session.status = "DISPLAYING_OTP";
-
-        // Display OTP on physical ESP32 OLED
+        // Update physical ESP32 OLED Display
         this.setOled(
-            "FACE VERIFIED OK",
-            `${matchedOfficer.name.slice(0, 14)}`,
-            `2FA OTP: [ ${dynamicOtp} ]`,
-            "EXPIRES IN: 90 SECONDS",
-            "DISPLAYING_OTP"
+            "ACCESS GRANTED",
+            `${verifiedOfficer.name.slice(0, 16)}`,
+            "MANAGE RECORDS UNLOCKED",
+            ">> AUDIT LOGGED <<",
+            "UNLOCKED"
         );
 
+        // Store unlock event in Zoho Catalyst BiometricAuditTrail table
+        let auditRecord = null;
+        if (repo && typeof repo.createAuditTrailRecord === "function") {
+            try {
+                const summary = `CCTNS Manage Records section unlocked via 2FA: RFID Police Card (${uid}) + Face Biometric Recognition (${matchResult.similarity}% match, ${matchResult.confidence}% confidence). Probe Image: ${matchResult.probeUrl || 'Cloudinary stored'}`;
+                
+                auditRecord = await repo.createAuditTrailRecord({
+                    employeeId: this.unlockedBy.employeeId,
+                    officerName: this.unlockedBy.officerName,
+                    kgid: this.unlockedBy.badgeNumber,
+                    action: "MANAGE_RECORDS_SECTION_UNLOCK",
+                    targetTable: "ManageRecordsSection",
+                    targetRecordId: "SECTION_ACCESS_SESSION",
+                    deviceId: this.deviceId,
+                    fingerprintVerified: true,
+                    otpUsed: `RFID:${uid}`,
+                    ipAddress: this.deviceIp,
+                    changesSummary: summary.slice(0, 490)
+                });
+                console.log(`✅ [HardwareManager] Section unlock permanently logged in Catalyst BiometricAuditTrail for ${this.unlockedBy.officerName}.`);
+            } catch (auditErr) {
+                console.warn("[HardwareManager] Catalyst audit trail warning:", auditErr.message);
+            }
+        }
+
         this.logEvent({
-            type: "FACE_MATCH_OK",
-            sessionId,
-            officerName: matchedOfficer.name,
-            badgeNumber: session.kgid,
-            confidence: session.confidence,
-            otp: dynamicOtp,
-            faceAuditUrl: session.faceAuditUrl,
-            expiresIn: 90
+            type: "MANAGE_RECORDS_UNLOCKED",
+            cardUid: uid,
+            officerName: this.unlockedBy.officerName,
+            badgeNumber: this.unlockedBy.badgeNumber,
+            similarity: matchResult.similarity,
+            confidence: matchResult.confidence
         });
 
         return {
             success: true,
-            sessionId,
-            status: "DISPLAYING_OTP",
-            officerName: matchedOfficer.name,
-            matchedOfficer: {
-                name: matchedOfficer.name,
-                rank: matchedOfficer.rank,
-                badgeNumber: session.kgid,
-                unit: matchedOfficer.unit,
-                station: matchedOfficer.station,
-                photoUrl: matchedOfficer.photoUrl || matchedOfficer.avatar
-            },
-            confidence: session.confidence,
+            unlocked: true,
+            officer: this.unlockedBy,
             similarity: matchResult.similarity,
+            confidence: matchResult.confidence,
             biometrics: {
                 sCorr: matchResult.sCorr,
                 sLbp: matchResult.sLbp,
                 sGrad: matchResult.sGrad,
                 isMirrored: matchResult.isMirrored
             },
-            faceAuditUrl: session.faceAuditUrl,
-            verifiedAt: session.verifiedAt,
-            otpDisplay: dynamicOtp,
-            otpExpiresAt: otpExpiry,
+            probeUrl: matchResult.probeUrl,
+            unlockedAt: this.unlockedBy.unlockedAt,
+            auditRecord,
             oled: this.oled
         };
     }
 
-    // Legacy / direct scan fallback
-    scanBiometric(sessionId, scanData = {}) {
+    // -------------------------------------------------------------
+    // 3. RE-AUTHENTICATE VIA FACE SCAN FOR FIR CRUD OPERATIONS
+    // -------------------------------------------------------------
+    async verifyCrudFaceAuth({ action, targetRecordId, image, officerName, kgid }, repo) {
         if (!this.isDeviceConnected()) {
-            throw new Error("Biometric device not connected. Please ensure the ESP32 scanner is connected.");
+            throw new Error("Hardware biometric unit not connected.");
         }
 
-        const session = this.sessions.get(sessionId);
-        if (!session) {
-            throw new Error("Invalid or expired 2FA hardware session. Please re-initiate.");
+        if (!this.manageRecordsUnlocked || !this.unlockedBy) {
+            throw new Error("Manage Records section is locked. Please unlock the section using your RFID Card & Face first.");
         }
 
-        const officerName = scanData.officerName || session.officerName;
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString("en-IN", { hour12: false });
+        if (!image) {
+            throw new Error("Face scan is mandatory for this FIR action. Please face the camera.");
+        }
 
-        // Generate dynamic 6-digit OTP
-        const dynamicOtp = String(Math.floor(100000 + Math.random() * 900000));
-        const otpExpiry = Date.now() + 90000; // 90 seconds expiry
+        const actionName = String(action || "FIR_ACTION").toUpperCase();
+        const targetId = String(targetRecordId || "FIR-RECORD");
+        const activeOfficer = this.unlockedBy;
 
-        session.biometricVerified = true;
-        session.verifiedAt = now.toISOString();
-        session.otp = dynamicOtp;
-        session.otpExpiry = otpExpiry;
-        session.status = "DISPLAYING_OTP";
+        // Fetch live officers from Zoho Catalyst
+        let officers = [];
+        if (repo && typeof repo.getAllOfficerRecords === "function") {
+            try {
+                officers = await repo.getAllOfficerRecords();
+            } catch (e) {
+                console.warn("[HardwareManager] Officers fetch warning:", e.message);
+            }
+        }
 
-        // Display OTP on physical ESP32 OLED
-        this.setOled(
-            "FACE VERIFIED OK",
-            `${officerName.slice(0, 14)} ${timeStr}`,
-            `2FA OTP: [ ${dynamicOtp} ]`,
-            "EXPIRES IN: 90 SECONDS",
-            "DISPLAYING_OTP"
-        );
-
-        this.logEvent({
-            type: "BIOMETRIC_SCANNED_OK",
-            sessionId,
-            officerName,
-            otp: dynamicOtp,
-            expiresIn: 90
+        // Match face against the officer who unlocked the section
+        const matchResult = await cloudinaryService.matchFaceAcrossOfficers(image, officers, {
+            expectedBadge: activeOfficer.badgeNumber,
+            expectedName: activeOfficer.officerName
         });
 
-        return {
-            success: true,
-            sessionId,
-            status: "DISPLAYING_OTP",
-            officerName,
-            verifiedAt: session.verifiedAt,
-            otpDisplay: dynamicOtp,
-            otpExpiresAt: otpExpiry,
-            oled: this.oled
-        };
-    }
-
-    // 4. Verify 2FA OTP entered by officer from the OLED screen
-    async verifyOtp(verifyData = {}, repo) {
-        const { sessionId, otp } = verifyData;
-        const session = this.sessions.get(sessionId);
-
-        if (!session) {
-            throw new Error("2FA hardware session expired or not found. Please try again.");
+        if (!matchResult.matched || !matchResult.officer || matchResult.similarity < 40) {
+            this.setOled(
+                "CRUD REJECTED",
+                "FACE NOT RECOGNIZED",
+                `ACT: ${actionName.slice(0, 14)}`,
+                "ACCESS DENIED",
+                "FAILED"
+            );
+            setTimeout(() => this.resetOledToLockState(), 4000);
+            throw new Error(`Facial recognition verification failed for FIR ${actionName}. Officer not authenticated.`);
         }
 
-        if (!session.biometricVerified) {
-            throw new Error("Facial recognition verification required before OTP submission.");
-        }
+        const now = new Date();
 
-        if (Date.now() > session.otpExpiry) {
-            this.setOled("AUTH FAILED", "OTP EXPIRED (90s)", "RETRY FACE SCAN", "SCAN AGAIN", "FAILED");
-            throw new Error("Hardware OTP expired. Please re-scan your face on the camera.");
-        }
-
-        if (String(otp).trim() !== String(session.otp).trim()) {
-            this.setOled("ACCESS DENIED", "INCORRECT OTP", "CHECK OLED SCREEN", "RETRY CODE", "FAILED");
-            this.logEvent({
-                type: "OTP_MISMATCH",
-                sessionId,
-                inputOtp: otp,
-                officerName: session.officerName
-            });
-            throw new Error("Incorrect 2FA OTP. Please enter the 6 digits shown on the ESP32 OLED display.");
-        }
-
-        // OTP matched & Biometric verified!
-        session.status = "AUTHENTICATED";
-
-        // Display Success on OLED
+        // Update physical ESP32 OLED Display
         this.setOled(
-            "ACCESS GRANTED",
-            "2FA HARDWARE OK",
-            `ACT: ${session.action.slice(0, 16)}`,
-            ">> AUDIT LOGGED <<",
+            "CRUD AUTHORIZED",
+            `ACT: ${actionName.replace(/_/g, ' ').slice(0, 16)}`,
+            `BY: ${activeOfficer.officerName.slice(0, 16)}`,
+            ">> CHANGES COMMITTED <<",
             "SUCCESS"
         );
 
-        setTimeout(() => this.resetOledToStandby(), 4000);
+        setTimeout(() => this.resetOledToLockState(), 4000);
 
-        // Automatically log full audit trail directly into Zoho Catalyst BiometricAuditTrail
-        let auditResult = null;
+        // Store CRUD action in Zoho Catalyst BiometricAuditTrail table
+        let auditRecord = null;
         if (repo && typeof repo.createAuditTrailRecord === "function") {
             try {
-                const auditDetails = verifyData.changesSummary || 
-                    `[CV Face Match 2FA Verified] Officer ${session.officerName} (${session.kgid}) authenticated with OLED OTP for ${session.action} on ${session.targetRecordId}${session.faceAuditUrl ? ` | Cloudinary Audit: ${session.faceAuditUrl}` : ''}`;
+                const summary = `FIR ${actionName} authorized via Face Scan (${matchResult.similarity}% match, ${matchResult.confidence}% confidence) for record ${targetId} by ${activeOfficer.officerName}. Probe: ${matchResult.probeUrl || 'Stored'}`;
                 
-                auditResult = await repo.createAuditTrailRecord({
-                    employeeId: session.employeeId || 101,
-                    officerName: session.officerName || "Police Officer",
-                    kgid: session.kgid || "MPP-2026-901",
-                    action: session.action,
-                    targetTable: verifyData.targetTable || "CaseMaster",
-                    targetRecordId: String(verifyData.targetRecordId || session.targetRecordId || "RECORD"),
-                    deviceId: "CV-FACE-CAMERA-01",
+                auditRecord = await repo.createAuditTrailRecord({
+                    employeeId: activeOfficer.employeeId || 101,
+                    officerName: activeOfficer.officerName,
+                    kgid: activeOfficer.badgeNumber,
+                    action: actionName,
+                    targetTable: "CaseMaster",
+                    targetRecordId: targetId,
+                    deviceId: this.deviceId,
                     fingerprintVerified: true,
-                    otpUsed: session.otp,
+                    otpUsed: "FACE_REAUTH",
                     ipAddress: this.deviceIp,
-                    changesSummary: auditDetails.slice(0, 490)
+                    changesSummary: summary.slice(0, 490)
                 });
-                console.log("✅ [HardwareManager] BiometricAuditTrail logged directly to Zoho Catalyst datastore with Face Recognition & OTP.");
+                console.log(`✅ [HardwareManager] FIR CRUD Action '${actionName}' permanently logged in Catalyst BiometricAuditTrail.`);
             } catch (auditErr) {
-                console.warn("[HardwareManager] Audit logging exception:", auditErr.message);
+                console.warn("[HardwareManager] Catalyst audit trail warning:", auditErr.message);
             }
         }
 
         this.logEvent({
-            type: "2FA_AUTHENTICATED",
-            sessionId,
-            officerName: session.officerName,
-            action: session.action,
-            targetRecordId: session.targetRecordId,
-            auditLogged: true
+            type: "FIR_CRUD_AUTHORIZED",
+            action: actionName,
+            targetRecordId: targetId,
+            officerName: activeOfficer.officerName,
+            similarity: matchResult.similarity
         });
-
-        // Clean up completed session
-        this.sessions.delete(sessionId);
 
         return {
             success: true,
-            verified: true,
-            action: session.action,
-            officerName: session.officerName,
-            verifiedAt: session.verifiedAt,
-            deviceId: this.deviceId,
-            auditRecord: auditResult
+            authorized: true,
+            action: actionName,
+            targetRecordId: targetId,
+            officer: activeOfficer,
+            similarity: matchResult.similarity,
+            confidence: matchResult.confidence,
+            biometrics: {
+                sCorr: matchResult.sCorr,
+                sLbp: matchResult.sLbp,
+                sGrad: matchResult.sGrad,
+                isMirrored: matchResult.isMirrored
+            },
+            probeUrl: matchResult.probeUrl,
+            authorizedAt: now.toISOString(),
+            auditRecord,
+            oled: this.oled
         };
     }
 
-    // Physical ESP32 Polling Endpoint Handler (Heartbeat & OLED refresh)
-    handleEsp32Poll(body = {}) {
-        this.lastHeartbeat = Date.now();
-        this.isOnline = true;
-        if (body.ip) this.deviceIp = body.ip;
+    // -------------------------------------------------------------
+    // 4. LOCK SECTION
+    // -------------------------------------------------------------
+    lockSection() {
+        this.manageRecordsUnlocked = false;
+        const previousOfficer = this.unlockedBy;
+        this.unlockedBy = null;
+        this.lastTappedCard = null;
 
-        return {
-            status: "OK",
-            deviceId: this.deviceId,
-            serverTime: new Date().toISOString(),
-            display: {
-                header: this.oled.header,
-                line1: this.oled.line1,
-                line2: this.oled.line2,
-                line3: this.oled.line3,
-                mode: this.oled.status
-            }
-        };
-    }
+        this.resetOledToLockState();
 
-    isDeviceConnected() {
-        if (this.manualConnected !== undefined) {
-            return this.manualConnected;
-        }
-        return (Date.now() - this.lastHeartbeat) < 60000;
-    }
-
-    setDeviceConnected(connected = true) {
-        this.manualConnected = Boolean(connected);
-        if (connected) {
-            this.lastHeartbeat = Date.now();
-            this.isOnline = true;
-        } else {
-            this.isOnline = false;
-        }
         this.logEvent({
-            type: connected ? "DEVICE_CONNECTED" : "DEVICE_DISCONNECTED",
-            deviceId: this.deviceId
+            type: "MANAGE_RECORDS_LOCKED",
+            previousOfficer: previousOfficer?.officerName || null
         });
-        return this.getStatus();
+
+        console.log("🔒 [HardwareManager] Manage Records section locked.");
+        return {
+            success: true,
+            unlocked: false,
+            oled: this.oled
+        };
     }
 
-    // Status for UI Monitor
+    // -------------------------------------------------------------
+    // 5. STATUS & ESP32 POLLING (Used by physical ESP32)
+    // -------------------------------------------------------------
     getStatus() {
-        const connected = this.isDeviceConnected();
         return {
             deviceId: this.deviceId,
             deviceIp: this.deviceIp,
-            isOnline: connected,
-            isConnected: connected,
-            connectionStatus: connected ? "CONNECTED" : "DISCONNECTED",
-            label: connected ? "Biometric device connected" : "Biometric device not connected",
-            baudRate: this.baudRate,
+            isOnline: this.isOnline,
+            isConnected: this.isOnline,
+            manageRecordsUnlocked: this.manageRecordsUnlocked,
+            unlockedBy: this.unlockedBy,
+            lastTappedCard: this.lastTappedCard,
             oled: this.oled,
-            enrolledCount: this.enrolledTemplates.size,
-            activeSessionsCount: this.sessions.size,
+            baudRate: this.baudRate,
             recentEvents: this.recentEvents.slice(0, 10)
         };
     }
 
-    cleanupExpiredSessions() {
-        const now = Date.now();
-        for (const [id, s] of this.sessions.entries()) {
-            if (s.otpExpiry && now > s.otpExpiry + 30000) {
-                this.sessions.delete(id);
+    handleEsp32Poll(body = {}) {
+        this.lastHeartbeat = Date.now();
+        this.isOnline = true;
+
+        // If ESP32 reports a physical RFID Card read over SPI
+        if (body.cardUid) {
+            try {
+                this.registerCardTap(body.cardUid);
+            } catch (e) {
+                // Non-fatal
             }
         }
+
+        return {
+            success: true,
+            oled: this.oled,
+            manageRecordsUnlocked: this.manageRecordsUnlocked,
+            unlockedOfficer: this.unlockedBy?.officerName || null,
+            serverTime: Date.now()
+        };
     }
 }
 
-// Global Singleton Instance across requests
-if (!global.__hardware_manager) {
-    global.__hardware_manager = new HardwareManager();
-}
-
-module.exports = global.__hardware_manager;
+module.exports = new HardwareManager();

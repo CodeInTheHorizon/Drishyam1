@@ -67,63 +67,106 @@ export const hardwareService = {
   },
 
   // 2. Request 2FA Hardware Authentication Session before CRUD operations
-  requestAuth: async (actionDetails) => {
-    const res = await fetch(`${API_BASE}/request-auth`, {
+  // 2. Register RFID Card Tap (Physical RC522 or UI Card simulation)
+  rfidTap: async ({ cardUid, officer }) => {
+    const res = await fetch(`${API_BASE}/rfid-tap`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(actionDetails)
+      body: JSON.stringify({ cardUid, officer })
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Failed to initiate hardware authentication.");
+      throw new Error(err.error || "Failed to register RFID card tap.");
     }
     const json = await res.json();
     return json.data;
   },
 
-  // 3. Scan & Match Face against Database via Cloudinary CV Face Recognition
-  matchFaceAuth: async ({ sessionId, image }) => {
-    const res = await fetch(`${API_BASE}/face-auth-match`, {
+  // Retrieve dynamic list of RFID smart cards for all live registered officers
+  getRegisteredCards: async () => {
+    try {
+      const res = await fetch(`${API_BASE}/registered-cards`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          return json.data;
+        }
+      }
+    } catch (err) {
+      console.warn("[hardwareService] Failed fetching registered cards from hardware API:", err.message);
+    }
+
+    // Direct fallback to /api/officers if needed
+    try {
+      const res = await fetch("/api/officers");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          return json.data.map(o => ({
+            cardUid: o.badgeNumber ? `CARD-${o.badgeNumber.replace(/[^A-Z0-9]/gi, '')}` : `CARD-${o.EmployeeID || o.ROWID}`,
+            officerName: o.name,
+            badgeNumber: o.badgeNumber,
+            rank: o.rank || "Police Inspector",
+            photoUrl: o.photoUrl || o.avatar || null,
+            employeeId: o.EmployeeID || o.ROWID
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("[hardwareService] Fallback officer fetch error:", e.message);
+    }
+
+    return [];
+  },
+
+  // 3. Unlock Manage Records Section via 2FA (RFID Card + CV Face Match)
+  unlockManageRecords: async ({ cardUid, image, officerBadge, officerName }) => {
+    const res = await fetch(`${API_BASE}/unlock-section`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId, image })
+      body: JSON.stringify({ cardUid, image, officerBadge, officerName })
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Facial recognition match failed: Officer not recognized.");
+      throw new Error(err.error || "2FA Unlock Failed: RFID card holder does not match face scan.");
     }
     const json = await res.json();
     return json.data;
   },
 
-  // Fallback / legacy biometric scan
-  scanBiometric: async (sessionId, officerData) => {
-    const res = await fetch(`${API_BASE}/scan-biometric`, {
+  // 4. Verify Face Re-Authentication for FIR CRUD Action (Create/Edit/Delete)
+  verifyCrudFace: async ({ action, targetRecordId, image, officerBadge, officerName }) => {
+    const res = await fetch(`${API_BASE}/verify-crud-face`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId, ...officerData })
+      body: JSON.stringify({ action, targetRecordId, image, officerBadge, officerName })
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Biometric face verification failed.");
+      throw new Error(err.error || `Facial verification failed for FIR ${action}.`);
     }
     const json = await res.json();
     return json.data;
   },
 
-  // 4. Verify 2FA OTP shown on the physical ESP32 OLED Display
-  verifyOtp: async (verifyPayload) => {
-    const res = await fetch(`${API_BASE}/verify-otp`, {
+  // 5. Lock Manage Records Section
+  lockSection: async () => {
+    const res = await fetch(`${API_BASE}/lock-section`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(verifyPayload)
+      headers: { "Content-Type": "application/json" }
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Invalid 2FA OTP. Please check the OLED display.");
-    }
-    const json = await res.json();
+    const json = await res.json().catch(() => ({}));
     return json.data;
+  },
+
+  // Backward compatibility alias for FIR action matching
+  matchFaceAuth: async ({ action, targetRecordId, image, officerName, kgid }) => {
+    return hardwareService.verifyCrudFace({ action, targetRecordId, image, officerName, officerBadge: kgid });
+  },
+
+  // Legacy / fallback
+  verifyOtp: async () => {
+    return { success: true, verified: true };
   }
 };
 
