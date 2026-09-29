@@ -247,8 +247,11 @@ class HardwareManager {
             }
         }
 
-        // Match face using CloudinaryService
-        const matchResult = await cloudinaryService.matchFaceAcrossOfficers(probeImage, officers);
+        // Match face using optimized CloudinaryService
+        const matchResult = await cloudinaryService.matchFaceAcrossOfficers(probeImage, officers, {
+            expectedBadge: session.kgid,
+            expectedName: session.officerName
+        });
         
         if (!matchResult.matched || !matchResult.officer) {
             this.setOled(
@@ -315,6 +318,13 @@ class HardwareManager {
                 photoUrl: matchedOfficer.photoUrl || matchedOfficer.avatar
             },
             confidence: session.confidence,
+            similarity: matchResult.similarity,
+            biometrics: {
+                sCorr: matchResult.sCorr,
+                sLbp: matchResult.sLbp,
+                sGrad: matchResult.sGrad,
+                isMirrored: matchResult.isMirrored
+            },
             faceAuditUrl: session.faceAuditUrl,
             verifiedAt: session.verifiedAt,
             otpDisplay: dynamicOtp,

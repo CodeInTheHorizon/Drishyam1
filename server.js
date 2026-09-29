@@ -193,6 +193,8 @@ const server = http.createServer(async (req, res) => {
             const officers = await repo.getAllOfficerRecords();
             res.writeHead(200, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: true, data: officers }));
+            // Prewarm face descriptor cache in background for sub-millisecond recognition
+            cloudinaryService.prewarmOfficerCache(officers).catch(() => {});
         } catch (err) {
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: false, error: err.message }));
@@ -206,6 +208,16 @@ const server = http.createServer(async (req, res) => {
                 const newOfficer = await repo.createOfficerRecord(officerData);
                 res.writeHead(201, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: true, data: newOfficer }));
+                // Prewarm newly created officer face descriptor immediately
+                if (newOfficer && newOfficer.photoUrl) {
+                    cloudinaryService.extractFaceDescriptor(newOfficer.photoUrl).then(desc => {
+                        if (desc) {
+                            const key = newOfficer.badgeNumber || newOfficer.KGID || newOfficer.photoUrl;
+                            cloudinaryService.officerDescriptorCache.set(key, desc);
+                            console.log(`⚡ [CloudinaryService] Cached newly enrolled officer face: ${newOfficer.name}`);
+                        }
+                    }).catch(() => {});
+                }
             } catch (err) {
                 res.writeHead(400, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ success: false, error: err.message }));
@@ -474,4 +486,15 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
     console.log(`Local Catalyst Gateway running at http://localhost:${PORT}`);
+    // Prewarm live officer biometric descriptors into RAM cache
+    try {
+        const initRepo = new CrimeRepository();
+        initRepo.getAllOfficerRecords().then(officers => {
+            return cloudinaryService.prewarmOfficerCache(officers);
+        }).catch(err => {
+            console.warn("[Server] Initial officer cache prewarm notice:", err.message);
+        });
+    } catch (e) {
+        console.warn("[Server] Prewarm init error:", e.message);
+    }
 });

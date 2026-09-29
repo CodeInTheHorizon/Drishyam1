@@ -110,20 +110,27 @@ const FaceEnrollmentWidget = forwardRef(({ officerData, onEnrollmentComplete, is
 
     try {
       const video = videoRef.current;
-      const width = video.videoWidth || 640;
-      const height = video.videoHeight || 480;
+      const vWidth = video.videoWidth || 640;
+      const vHeight = video.videoHeight || 480;
 
+      // Center crop square to isolate head and face portrait (eliminates room background)
+      const minDim = Math.min(vWidth, vHeight);
+      const cropSize = Math.floor(minDim * 0.85);
+      const startX = Math.floor((vWidth - cropSize) / 2);
+      const startY = Math.floor((vHeight - cropSize) / 2);
+
+      const targetSize = 480;
       const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = targetSize;
+      canvas.height = targetSize;
       const ctx = canvas.getContext("2d");
 
       // Mirror the frame horizontally to match user perspective
-      ctx.translate(canvas.width, 0);
+      ctx.translate(targetSize, 0);
       ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, startX, startY, cropSize, cropSize, 0, 0, targetSize, targetSize);
 
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
 
       setCapturedPhoto(dataUrl);
       stopCamera();

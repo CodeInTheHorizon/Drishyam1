@@ -50,6 +50,7 @@ const HardwareBiometricAuthModal = ({
   // Matched Officer details from Cloudinary / Catalyst live query
   const [matchedOfficer, setMatchedOfficer] = useState(null);
   const [matchConfidence, setMatchConfidence] = useState(null);
+  const [biometricMetrics, setBiometricMetrics] = useState(null);
   const [capturedSnapshot, setCapturedSnapshot] = useState(null);
 
   // OTP inputs (6 digits)
@@ -204,23 +205,30 @@ const HardwareBiometricAuthModal = ({
 
   if (!isOpen || !mounted) return null;
 
-  // Capture image from live video
+  // Capture image from live video with centered face crop
   const captureFrameFromVideo = () => {
     const video = videoRef.current;
     if (!video) return null;
 
-    const width = video.videoWidth > 0 ? video.videoWidth : 640;
-    const height = video.videoHeight > 0 ? video.videoHeight : 480;
+    const vWidth = video.videoWidth > 0 ? video.videoWidth : 640;
+    const vHeight = video.videoHeight > 0 ? video.videoHeight : 480;
 
+    // Center crop square to isolate head and face portrait (eliminates room background)
+    const minDim = Math.min(vWidth, vHeight);
+    const cropSize = Math.floor(minDim * 0.85);
+    const startX = Math.floor((vWidth - cropSize) / 2);
+    const startY = Math.floor((vHeight - cropSize) / 2);
+
+    const targetSize = 480;
     const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = targetSize;
+    canvas.height = targetSize;
     const ctx = canvas.getContext("2d");
 
     // Mirror the frame horizontally to match user perspective
-    ctx.translate(canvas.width, 0);
+    ctx.translate(targetSize, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, startX, startY, cropSize, cropSize, 0, 0, targetSize, targetSize);
 
     return canvas.toDataURL("image/jpeg", 0.92);
   };
@@ -263,6 +271,12 @@ const HardwareBiometricAuthModal = ({
           badgeNumber: currentUser?.kgid || "MPP-2026-901"
         });
         setMatchConfidence(matchResult.confidence || 98.4);
+        if (matchResult.biometrics) {
+          setBiometricMetrics({
+            similarity: matchResult.similarity,
+            ...matchResult.biometrics
+          });
+        }
         if (matchResult.oled) setLiveOled(matchResult.oled);
         setStep("STEP_2_OTP");
         setSecondsRemaining(90);
@@ -699,6 +713,13 @@ const HardwareBiometricAuthModal = ({
                         <span>KGID: {matchedOfficer.badgeNumber || currentUser?.kgid || "MPP-2026-901"}</span>
                         {matchedOfficer.rank && <span>• {matchedOfficer.rank}</span>}
                       </div>
+                      {biometricMetrics && (
+                        <div className="flex items-center gap-1.5 mt-1 text-[9px] font-mono text-cyan-300/90">
+                          <span className="px-1 py-0.2 rounded bg-cyan-950 border border-cyan-800/80">Geometry: {biometricMetrics.sCorr}%</span>
+                          <span className="px-1 py-0.2 rounded bg-cyan-950 border border-cyan-800/80">LBP Texture: {biometricMetrics.sLbp}%</span>
+                          <span className="px-1 py-0.2 rounded bg-cyan-950 border border-cyan-800/80">Edges: {biometricMetrics.sGrad}%</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
