@@ -79,6 +79,118 @@ export function normalizeIP(raw) {
   return match ? match[0] : String(raw).trim();
 }
 
+/**
+ * Universal CSV / TSV line parser that cleanly handles quoted fields containing commas
+ */
+export function parseCSVLine(line) {
+  if (!line) return [];
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"' || char === "'") {
+      inQuotes = !inQuotes;
+    } else if ((char === ',' || char === '\t' || char === ';') && !inQuotes) {
+      result.push(current.trim().replace(/^["']|["']$/g, ""));
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim().replace(/^["']|["']$/g, ""));
+  return result;
+}
+
+/**
+ * Maps IFSC 4-character prefix to official Indian Public & Private Banks
+ */
+export function getBankNameFromIFSC(ifsc) {
+  if (!ifsc) return "";
+  const prefix = String(ifsc).trim().toUpperCase().slice(0, 4);
+  const bankMap = {
+    SBIN: "State Bank of India",
+    HDFC: "HDFC Bank",
+    ICIC: "ICICI Bank",
+    UTIB: "Axis Bank",
+    KKBK: "Kotak Mahindra Bank",
+    PUNB: "Punjab National Bank",
+    BARB: "Bank of Baroda",
+    CNRB: "Canara Bank",
+    UBIN: "Union Bank of India",
+    YESB: "Yes Bank",
+    IDIB: "Indian Bank",
+    INDB: "IndusInd Bank",
+    CBIN: "Central Bank of India",
+    IOBA: "Indian Overseas Bank",
+    MAHB: "Bank of Maharashtra",
+    PSIB: "Punjab & Sind Bank",
+    UCOB: "UCO Bank"
+  };
+  return bankMap[prefix] || (prefix ? `${prefix} Bank` : "Nodal Bank");
+}
+
+/**
+ * Detects scam markers and off-ramp keywords in bank transfer narration remarks
+ */
+export function detectScamMarker(narration) {
+  if (!narration) return null;
+  const lower = String(narration).toLowerCase();
+
+  // 1. Remote Access Trojan / Screen Share
+  if (lower.includes("anydesk") || lower.includes("teamviewer") || lower.includes("rustdesk") || lower.includes("apk") || (lower.includes("remote") && lower.includes("support"))) {
+    return { type: "RAT_SCAM", label: "Remote Access Trojan Vector", severity: "CRITICAL" };
+  }
+  // 2. Task / Work-from-Home Scam Markers
+  if (lower.includes("task") || lower.includes("telegram") || lower.includes("rating") || lower.includes("review") || lower.includes("part time") || lower.includes("youtube") || lower.includes("vip")) {
+    return { type: "TASK_SCAM", label: "Work-From-Home Task Scam", severity: "HIGH" };
+  }
+  // 3. Lottery / KBC Lures
+  if (lower.includes("lottery") || lower.includes("kbc") || lower.includes("prize") || lower.includes("reward") || lower.includes("gift") || lower.includes("bonus")) {
+    return { type: "LOTTERY_SCAM", label: "Social Engineering Lure", severity: "HIGH" };
+  }
+  // 4. Predatory Loan Apps
+  if (lower.includes("loan") || lower.includes("disburs") || lower.includes("processing fee") || lower.includes("advance")) {
+    return { type: "LOAN_SCAM", label: "Predatory Loan App Siphoning", severity: "HIGH" };
+  }
+  // 5. Crypto P2P Cashout Off-Ramps
+  if (lower.includes("crypto") || lower.includes("usdt") || lower.includes("binance") || lower.includes("wazirx") || lower.includes("p2p") || lower.includes("escrow") || lower.includes("btc")) {
+    return { type: "CRYPTO_CASHOUT", label: "Crypto P2P Off-Ramp", severity: "CRITICAL" };
+  }
+  // 6. ATM / Cash Withdrawal (Word boundary to prevent matching 'deposit' as 'pos')
+  if (/\b(?:atm|cash|wdl|withdrawal|self|pos)\b/i.test(lower)) {
+    return { type: "ATM_CASHOUT", label: "Physical ATM / Cashout", severity: "CRITICAL" };
+  }
+  return null;
+}
+
+/**
+ * Evaluates Client Device Profile (Android, iOS, Windows_Browser, Web_Emulator, Linux_Script)
+ */
+export function analyzeDeviceProfile(deviceType) {
+  if (!deviceType) return { isAnomaly: false, label: "Unknown Device", severity: "NORMAL" };
+  const d = String(deviceType).trim();
+  if (d === "Web_Emulator" || d.toLowerCase().includes("emulator") || d.toLowerCase().includes("bluestacks") || d.toLowerCase().includes("nox")) {
+    return { isAnomaly: true, label: "Web_Emulator (Automated Android Sandbox)", severity: "CRITICAL", flag: "Synthetic Web/Android Emulator Profile" };
+  }
+  if (d === "Linux_Script" || d.toLowerCase().includes("script") || d.toLowerCase().includes("bot") || d.toLowerCase().includes("python") || d.toLowerCase().includes("curl")) {
+    return { isAnomaly: true, label: "Linux_Script (Headless API Botnet)", severity: "CRITICAL", flag: "Automated Headless Script / Botnet Ingestion" };
+  }
+  return { isAnomaly: false, label: d, severity: "NORMAL" };
+}
+
+/**
+ * Detects Foreign / Bulletproof Proxy & Tor exit node IP anomalies
+ */
+export function analyzeIPAnomaly(ip) {
+  if (!ip) return { isProxy: false, label: "Unknown IP", severity: "NORMAL" };
+  const clean = normalizeIP(ip);
+  if (clean.startsWith("185.220.") || clean.startsWith("103.21.") || clean.startsWith("45.") || clean.startsWith("194.") || clean.startsWith("195.") || clean.startsWith("178.") || clean.startsWith("91.")) {
+    return { isProxy: true, label: "Foreign Proxy / Bulletproof Host", severity: "CRITICAL", flag: `Foreign Proxy / Tor Anomaly (${clean})` };
+  }
+  return { isProxy: false, label: "Domestic Client IP", severity: "NORMAL" };
+}
+
 // ----------------------------------------------------------------------------
 // 1. Telecom Parser (CDR & IPDR)
 // ----------------------------------------------------------------------------
@@ -86,7 +198,7 @@ export function parseTelecomRecords(csvText, fileName = "telecom_records.csv") {
   const lines = csvText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   if (lines.length < 2) throw new Error("Empty or invalid Telecom log file");
 
-  const headers = lines[0].split(/[,;\t]/).map((h) => h.trim().toLowerCase().replace(/[^a-z0-9_]/g, ""));
+  const headers = parseCSVLine(lines[0]).map((h) => h.toLowerCase().replace(/[^a-z0-9_]/g, ""));
   const records = [];
   const entities = new Map();
 
@@ -100,35 +212,38 @@ export function parseTelecomRecords(csvText, fileName = "telecom_records.csv") {
   }
 
   // Detect column indices with flexible schema mapping
-  const colA = headers.findIndex((h) => h.includes("calling") || h.includes("a_party") || h.includes("caller") || h.includes("from_msisdn") || h.includes("source"));
-  const colB = headers.findIndex((h) => h.includes("called") || h.includes("b_party") || h.includes("receiver") || h.includes("to_msisdn") || h.includes("dest"));
+  let colA = headers.findIndex((h) => h.includes("calling") || h.includes("a_party") || h.includes("caller") || h.includes("from_msisdn") || h.includes("calling_party"));
+  let colB = headers.findIndex((h) => h.includes("called") || h.includes("b_party") || h.includes("callee") || h.includes("to_msisdn") || h.includes("called_party") || h.includes("dialed"));
   const colTime = headers.findIndex((h) => h.includes("time") || h.includes("date") || h.includes("call_start") || h.includes("timestamp"));
-  const colDur = headers.findIndex((h) => h.includes("duration") || h.includes("dur_sec") || h.includes("call_dur"));
-  const colType = headers.findIndex((h) => h.includes("type") || h.includes("call_type") || h.includes("service"));
-  const colIMEI = headers.findIndex((h) => h.includes("imei") || h.includes("device_id"));
+  const colDur = headers.findIndex((h) => h.includes("duration") || h.includes("dur_sec") || h.includes("call_dur") || h.includes("sec"));
+  const colType = headers.findIndex((h) => h.includes("call_type") || h.includes("service") || (h.includes("type") && !h.includes("device")));
+  const colIMEI = headers.findIndex((h) => h.includes("imei") || h.includes("device_id") || h.includes("hardware"));
   const colIMSI = headers.findIndex((h) => h.includes("imsi") || h.includes("sim_id"));
   const colTower = headers.findIndex((h) => h.includes("tower") || h.includes("cell_id") || h.includes("first_cell") || h.includes("cgi") || h.includes("bts"));
-  const colLocation = headers.findIndex((h) => h.includes("location") || h.includes("address") || h.includes("circle") || h.includes("site"));
+  const colLocation = headers.findIndex((h) => h.includes("location") || h.includes("address") || h.includes("circle") || h.includes("site") || h.includes("city"));
   const colLat = headers.findIndex((h) => h.includes("lat"));
   const colLng = headers.findIndex((h) => h.includes("long") || h.includes("lng"));
   const colIP = headers.findIndex((h) => h.includes("ip") || h.includes("destination_ip") || h.includes("src_ip"));
 
+  if (colA === -1 && headers.length >= 2) colA = 0;
+  if (colB === -1 && headers.length >= 2) colB = 1;
+
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(/[,;\t]/).map((c) => c.trim().replace(/^["']|["']$/g, ""));
+    const cols = parseCSVLine(lines[i]);
     if (cols.length < 2) continue;
 
     const callingNumber = normalizePhone(colA !== -1 ? cols[colA] : cols[0]);
     const calledNumber = normalizePhone(colB !== -1 ? cols[colB] : cols[1]);
-    const timestamp = colTime !== -1 ? cols[colTime] : new Date().toISOString();
+    const timestamp = colTime !== -1 && cols[colTime] ? cols[colTime] : new Date().toISOString();
     const duration = colDur !== -1 ? parseInt(cols[colDur], 10) || 0 : 0;
-    const callType = colType !== -1 ? cols[colType].toUpperCase() : (duration > 0 ? "VOICE_CALL" : "SMS");
+    const callType = colType !== -1 && cols[colType] ? cols[colType].toUpperCase() : (duration > 0 ? "VOICE_CALL" : "SMS");
     const imei = normalizeIMEI(colIMEI !== -1 ? cols[colIMEI] : "");
-    const imsi = colIMSI !== -1 ? cols[colIMSI].replace(/[^0-9]/g, "") : "";
-    const tower = colTower !== -1 ? cols[colTower] : "";
-    const location = colLocation !== -1 ? cols[colLocation] : "";
+    const imsi = colIMSI !== -1 && cols[colIMSI] ? cols[colIMSI].replace(/[^0-9]/g, "") : "";
+    const tower = colTower !== -1 && cols[colTower] ? cols[colTower] : "";
+    const location = colLocation !== -1 && cols[colLocation] ? cols[colLocation] : "";
     const lat = colLat !== -1 ? parseFloat(cols[colLat]) || null : null;
     const lng = colLng !== -1 ? parseFloat(cols[colLng]) || null : null;
-    const ip = colIP !== -1 ? normalizeIP(cols[colIP]) : "";
+    const ip = colIP !== -1 && cols[colIP] ? normalizeIP(cols[colIP]) : "";
 
     const record = {
       recordId: `TEL-${i}`,
@@ -179,7 +294,7 @@ export function parseFinancialRecords(csvText, fileName = "bank_upi_settlement.c
   const lines = csvText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   if (lines.length < 2) throw new Error("Empty or invalid Bank/UPI settlement file");
 
-  const headers = lines[0].split(/[,;\t]/).map((h) => h.trim().toLowerCase().replace(/[^a-z0-9_]/g, ""));
+  const headers = parseCSVLine(lines[0]).map((h) => h.toLowerCase().replace(/[^a-z0-9_]/g, ""));
   const records = [];
   const entities = new Map();
 
@@ -192,61 +307,144 @@ export function parseFinancialRecords(csvText, fileName = "bank_upi_settlement.c
     entities.get(key).occurrences++;
   }
 
-  const colTxnId = headers.findIndex((h) => h.includes("txn") || h.includes("utr") || h.includes("ref") || h.includes("transaction_id"));
-  const colTime = headers.findIndex((h) => h.includes("time") || h.includes("date") || h.includes("timestamp"));
-  const colRemitter = headers.findIndex((h) => h.includes("remitter") || h.includes("sender") || h.includes("from_acc") || h.includes("source"));
-  const colRemVPA = headers.findIndex((h) => h.includes("remitter_vpa") || h.includes("sender_upi") || h.includes("from_vpa"));
-  const colBeneficiary = headers.findIndex((h) => h.includes("beneficiary") || h.includes("receiver") || h.includes("to_acc") || h.includes("dest"));
-  const colBenVPA = headers.findIndex((h) => h.includes("beneficiary_vpa") || h.includes("receiver_upi") || h.includes("to_vpa") || h.includes("upi_id"));
-  const colBenBank = headers.findIndex((h) => h.includes("bank") || h.includes("ifsc") || h.includes("ben_bank"));
-  const colAmount = headers.findIndex((h) => h.includes("amount") || h.includes("amt") || h.includes("inr") || h.includes("value"));
-  const colType = headers.findIndex((h) => h.includes("channel") || h.includes("mode") || h.includes("type") || h.includes("payment_mode"));
-  const colStatus = headers.findIndex((h) => h.includes("status") || h.includes("response"));
-  const colIP = headers.findIndex((h) => h.includes("ip") || h.includes("client_ip"));
-  const colDevice = headers.findIndex((h) => h.includes("device") || h.includes("mac") || h.includes("fingerprint"));
+  const colTxnId = headers.findIndex((h) => 
+    h === "transaction_id" || h.includes("txn") || h.includes("utr") || h.includes("ref") || 
+    h.includes("journal") || h.includes("rrn") || h.includes("transaction")
+  );
+  const colSenderAcc = headers.findIndex((h) => 
+    h === "sender_account" || h === "sender_acc" || (h.includes("sender") && h.includes("acc")) || 
+    h === "from_account" || (h.includes("from") && h.includes("acc")) || h.includes("remitter") || 
+    h.includes("sender") || h.includes("from") || h.includes("payer") || h.includes("dr_acc")
+  );
+  const colReceiverAcc = headers.findIndex((h) => 
+    h === "receiver_account" || h === "receiver_acc" || (h.includes("receiver") && h.includes("acc")) || 
+    h === "to_account" || (h.includes("to") && h.includes("acc")) || h.includes("beneficiary") || 
+    h.includes("receiver") || h.includes("to") || h.includes("payee") || h.includes("cr_acc")
+  );
+  const colSenderIFSC = headers.findIndex((h) => 
+    h === "sender_ifsc" || (h.includes("sender") && h.includes("ifsc")) || 
+    (h.includes("remitter") && h.includes("ifsc")) || (h.includes("from") && h.includes("ifsc"))
+  );
+  const colReceiverIFSC = headers.findIndex((h) => 
+    h === "receiver_ifsc" || (h.includes("receiver") && h.includes("ifsc")) || 
+    (h.includes("beneficiary") && h.includes("ifsc")) || (h.includes("to") && h.includes("ifsc")) || 
+    (h.includes("ifsc") && !h.includes("sender") && !h.includes("from"))
+  );
+  const colAmount = headers.findIndex((h) => 
+    h === "amount" || h.includes("amount") || h.includes("amt") || h.includes("inr") || 
+    h.includes("value") || h.includes("volume") || h.includes("rs") || h.includes("sum") || h.includes("total")
+  );
+  const colTime = headers.findIndex((h) => 
+    h === "timestamp" || h.includes("time") || h.includes("date") || h.includes("val_date")
+  );
+  const colMode = headers.findIndex((h) => 
+    h === "payment_mode" || h.includes("payment_mode") || (h.includes("mode") && !h.includes("node")) || 
+    h.includes("channel")
+  );
+  const colNarration = headers.findIndex((h) => 
+    h === "narration" || h.includes("narration") || h.includes("remark") || h.includes("desc") || h.includes("purpose")
+  );
+  const colIP = headers.findIndex((h) => 
+    h === "ip_address" || h === "ip" || h.includes("ip_address") || h.includes("client_ip") || h.includes("ip")
+  );
+  const colDevice = headers.findIndex((h) => 
+    h === "device_type" || h === "device" || h.includes("device_type") || h.includes("device") || 
+    h.includes("profile") || h.includes("client_type")
+  );
+
+  // Exact 11-column positional fallback if 11 columns exist or fallback if some are missing
+  const is11Col = headers.length === 11;
+  const idxTxnId = colTxnId !== -1 ? colTxnId : (is11Col ? 0 : 0);
+  const idxSenderAcc = colSenderAcc !== -1 ? colSenderAcc : (is11Col ? 1 : 0);
+  const idxReceiverAcc = colReceiverAcc !== -1 ? colReceiverAcc : (is11Col ? 2 : 1);
+  const idxSenderIFSC = colSenderIFSC !== -1 ? colSenderIFSC : (is11Col ? 3 : -1);
+  const idxReceiverIFSC = colReceiverIFSC !== -1 ? colReceiverIFSC : (is11Col ? 4 : -1);
+  const idxAmount = colAmount !== -1 ? colAmount : (is11Col ? 5 : 2);
+  const idxTime = colTime !== -1 ? colTime : (is11Col ? 6 : -1);
+  const idxMode = colMode !== -1 ? colMode : (is11Col ? 7 : -1);
+  const idxNarration = colNarration !== -1 ? colNarration : (is11Col ? 8 : -1);
+  const idxIP = colIP !== -1 ? colIP : (is11Col ? 9 : -1);
+  const idxDevice = colDevice !== -1 ? colDevice : (is11Col ? 10 : -1);
 
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(/[,;\t]/).map((c) => c.trim().replace(/^["']|["']$/g, ""));
-    if (cols.length < 2) continue;
+    const rawCols = parseCSVLine(lines[i]);
+    if (rawCols.length < 2) continue;
 
-    const txnId = colTxnId !== -1 ? cols[colTxnId] : `TXN-${1000 + i}`;
-    const timestamp = colTime !== -1 ? cols[colTime] : new Date().toISOString();
-    const remitter = colRemitter !== -1 ? cols[colRemitter] : "Victim Account";
-    const remitterVPA = normalizeUPI(colRemVPA !== -1 ? cols[colRemVPA] : "");
-    const beneficiary = colBeneficiary !== -1 ? cols[colBeneficiary] : "Beneficiary Node";
-    const beneficiaryVPA = normalizeUPI(colBenVPA !== -1 ? cols[colBenVPA] : "");
-    const beneficiaryBank = colBenBank !== -1 ? cols[colBenBank] : "";
-    const rawAmt = colAmount !== -1 ? cols[colAmount] : "0";
-    const amount = parseFloat(rawAmt.replace(/[^0-9.]/g, "")) || 0;
-    const mode = colType !== -1 ? cols[colType].toUpperCase() : "UPI";
-    const status = colStatus !== -1 ? cols[colStatus].toUpperCase() : "SUCCESS";
-    const ip = colIP !== -1 ? normalizeIP(cols[colIP]) : "";
-    const device = colDevice !== -1 ? cols[colDevice] : "";
+    // Auto-heal unquoted numbers containing commas (e.g. 5,00,000 without quotes)
+    let cols = rawCols;
+    if (rawCols.length > headers.length && idxAmount !== -1) {
+      const extraCount = rawCols.length - headers.length;
+      const candidateRejoined = rawCols.slice(idxAmount, idxAmount + extraCount + 1).join("");
+      const cleanCandidate = candidateRejoined.replace(/[^0-9.]/g, "");
+      if (cleanCandidate && !isNaN(parseFloat(cleanCandidate))) {
+        cols = [
+          ...rawCols.slice(0, idxAmount),
+          candidateRejoined,
+          ...rawCols.slice(idxAmount + extraCount + 1)
+        ];
+      }
+    }
+
+    const txnId = idxTxnId !== -1 && cols[idxTxnId] ? cols[idxTxnId].trim() : `TXN-${1000 + i}`;
+    const senderAccount = idxSenderAcc !== -1 && cols[idxSenderAcc] ? cols[idxSenderAcc].trim() : `Sender-${i}`;
+    const receiverAccount = idxReceiverAcc !== -1 && cols[idxReceiverAcc] ? cols[idxReceiverAcc].trim() : `Receiver-${i}`;
+    const senderIFSC = idxSenderIFSC !== -1 && cols[idxSenderIFSC] ? cols[idxSenderIFSC].toUpperCase().trim() : "";
+    const receiverIFSC = idxReceiverIFSC !== -1 && cols[idxReceiverIFSC] ? cols[idxReceiverIFSC].toUpperCase().trim() : "";
+    const senderBank = getBankNameFromIFSC(senderIFSC);
+    const receiverBank = getBankNameFromIFSC(receiverIFSC);
+    
+    const rawAmt = idxAmount !== -1 && cols[idxAmount] ? cols[idxAmount] : "0";
+    const amount = parseFloat(String(rawAmt).replace(/[^0-9.]/g, "")) || 0;
+    const timestamp = idxTime !== -1 && cols[idxTime] ? cols[idxTime].trim() : new Date().toISOString();
+    const paymentMode = idxMode !== -1 && cols[idxMode] ? cols[idxMode].toUpperCase().trim() : "UPI";
+    const narration = idxNarration !== -1 && cols[idxNarration] ? cols[idxNarration].trim() : "";
+    const ip = idxIP !== -1 && cols[idxIP] ? normalizeIP(cols[idxIP]) : "";
+    const deviceType = idxDevice !== -1 && cols[idxDevice] ? cols[idxDevice].trim() : "Android";
+
+    const scamMarker = detectScamMarker(narration);
+    const deviceAnalysis = analyzeDeviceProfile(deviceType);
+    const ipAnalysis = analyzeIPAnomaly(ip);
 
     const record = {
       recordId: `FIN-${i}`,
       txnId,
-      timestamp,
-      remitter,
-      remitterVPA,
-      beneficiary,
-      beneficiaryVPA,
-      beneficiaryBank,
+      senderAccount,
+      receiverAccount,
+      senderIFSC,
+      receiverIFSC,
+      senderBank,
+      receiverBank,
       amount,
-      mode,
-      status,
+      timestamp,
+      mode: paymentMode,
+      paymentMode,
+      narration,
       ip,
-      device
+      deviceType,
+      device: deviceType,
+      scamMarker,
+      deviceAnalysis,
+      ipAnalysis,
+      // Backward compatibility aliases for all views and graph correlators:
+      remitter: `A/C ${senderAccount}`,
+      remitterAccount: senderAccount,
+      remitterVPA: `${senderAccount}@${senderIFSC ? senderIFSC.slice(0, 4).toLowerCase() : "bank"}`,
+      remitterBank: senderBank,
+      beneficiary: `A/C ${receiverAccount}`,
+      beneficiaryAccount: receiverAccount,
+      beneficiaryVPA: `${receiverAccount}@${receiverIFSC ? receiverIFSC.slice(0, 4).toLowerCase() : "bank"}`,
+      beneficiaryBank: receiverBank,
+      status: "SUCCESS"
     };
 
     records.push(record);
 
-    if (remitter) addEntity("BANK_ACCOUNT", remitter, { role: "REMITTER" });
-    if (remitterVPA) addEntity("UPI_VPA", remitterVPA, { role: "REMITTER_VPA" });
-    if (beneficiary) addEntity("BANK_ACCOUNT", beneficiary, { role: "BENEFICIARY", bank: beneficiaryBank });
-    if (beneficiaryVPA) addEntity("UPI_VPA", beneficiaryVPA, { role: "BENEFICIARY_VPA" });
-    if (ip) addEntity("IP_ADDRESS", ip);
-    if (device) addEntity("DEVICE_FINGERPRINT", device);
+    if (senderAccount) addEntity("BANK_ACCOUNT", senderAccount, { role: "REMITTER", ifsc: senderIFSC, bank: senderBank });
+    if (receiverAccount) addEntity("BANK_ACCOUNT", receiverAccount, { role: "BENEFICIARY", ifsc: receiverIFSC, bank: receiverBank });
+    if (senderIFSC) addEntity("IFSC_CODE", senderIFSC, { bank: senderBank });
+    if (receiverIFSC) addEntity("IFSC_CODE", receiverIFSC, { bank: receiverBank });
+    if (ip) addEntity("IP_ADDRESS", ip, { isProxy: ipAnalysis.isProxy });
+    if (deviceType) addEntity("DEVICE_FINGERPRINT", deviceType, { isAnomaly: deviceAnalysis.isAnomaly });
   }
 
   const totalAmount = records.reduce((acc, r) => acc + r.amount, 0);
@@ -260,9 +458,12 @@ export function parseFinancialRecords(csvText, fileName = "bank_upi_settlement.c
     summary: {
       totalTransactions: records.length,
       totalVolumeINR: totalAmount,
-      uniqueRemitters: new Set(records.map((r) => r.remitter).filter(Boolean)).size,
-      uniqueBeneficiaries: new Set(records.map((r) => r.beneficiary).filter(Boolean)).size,
-      uniqueVPAs: new Set([...records.map((r) => r.remitterVPA), ...records.map((r) => r.beneficiaryVPA)].filter(Boolean)).size
+      uniqueRemitters: new Set(records.map((r) => r.senderAccount).filter(Boolean)).size,
+      uniqueBeneficiaries: new Set(records.map((r) => r.receiverAccount).filter(Boolean)).size,
+      uniqueBanks: new Set([...records.map(r => r.senderBank), ...records.map(r => r.receiverBank)].filter(Boolean)).size,
+      scamMarkersDetected: records.filter((r) => r.scamMarker !== null).length,
+      emulatorOrScriptAlerts: records.filter((r) => r.deviceAnalysis.isAnomaly).length,
+      proxyIPAlerts: records.filter((r) => r.ipAnalysis.isProxy).length
     }
   };
 }
@@ -542,20 +743,42 @@ export async function ingestAndNormalizeArtifact(fileOrText, fileName = "artifac
 
   // 2. Auto-Detect Artifact Type
   const lowerName = fileName.toLowerCase();
+  const lowerContent = content.slice(0, 4000).toLowerCase();
+  const firstLine = (content.split(/\r?\n/)[0] || "").toLowerCase();
   let normalized = null;
 
-  if (lowerName.endsWith(".eml") || content.includes("Received:") && content.includes("Message-ID:")) {
+  if (lowerName.endsWith(".eml") || (content.includes("Received:") && content.includes("Message-ID:"))) {
     normalized = parseEmailHeader(content, fileName);
-  } else if (lowerName.includes("bank") || lowerName.includes("upi") || lowerName.includes("settlement") || content.includes("beneficiary") || content.includes("remitter") || content.includes("utr")) {
-    normalized = parseFinancialRecords(content, fileName);
   } else if (lowerName.includes("apk") || lowerName.includes("android") || content.includes("android.permission") || content.includes("dumpsys package")) {
     normalized = parseAndroidAppDump(content, fileName);
   } else {
-    // Default to Telecom CDR / IPDR parser
-    try {
-      normalized = parseTelecomRecords(content, fileName);
-    } catch {
-      normalized = parseFinancialRecords(content, fileName);
+    // Discriminate between Telecom CDR vs Bank/UPI Financial settlement
+    const telecomStrong = [
+      "calling", "caller", "called", "callee", "call_type", "dur_sec", 
+      "duration", "imei", "imsi", "tower", "cell_id", "bts", "cgi", "msisdn", "dialed"
+    ];
+    const financialStrong = [
+      "transaction_id", "sender_account", "receiver_account", "sender_ifsc", "receiver_ifsc",
+      "remitter", "beneficiary", "amount", "amt", "inr", "upi", "vpa", 
+      "utr", "bank", "payer", "payee", "debit", "credit", "txn", "dr_acc", "cr_acc", 
+      "from", "to", "value", "settlement", "payment_mode", "narration", "device_type"
+    ];
+
+    const telecomScore = telecomStrong.filter((kw) => firstLine.includes(kw) || lowerName.includes(kw)).length;
+    const financialScore = financialStrong.filter((kw) => firstLine.includes(kw) || lowerName.includes(kw)).length;
+
+    if (telecomScore > financialScore && !firstLine.includes("amount") && !firstLine.includes("amt") && !lowerContent.includes("₹")) {
+      try {
+        normalized = parseTelecomRecords(content, fileName);
+      } catch {
+        normalized = parseFinancialRecords(content, fileName);
+      }
+    } else {
+      try {
+        normalized = parseFinancialRecords(content, fileName);
+      } catch {
+        normalized = parseTelecomRecords(content, fileName);
+      }
     }
   }
 
@@ -597,8 +820,8 @@ class ForensicEvidenceStore {
       }
     } catch {}
 
-    // Auto-seed high-fidelity sample cyber investigation artifacts
-    this.seedSampleForensics();
+    // Start with clean volatile session store (no auto-seeded sample data)
+    this.artifacts = [];
   }
 
   seedSampleForensics() {
@@ -616,92 +839,175 @@ class ForensicEvidenceStore {
         records: [
           {
             recordId: "FIN-1",
-            txnId: "UPI/2026/894012",
-            remitter: "Rajesh Sharma (Victim)",
-            remitterAccount: "SBIN0001234-998811",
-            remitterVPA: "rajesh.s@oksbi",
-            beneficiary: "Pawan Kumar (L1 Mule)",
-            beneficiaryAccount: "UTIB0005678-223344",
-            beneficiaryVPA: "pawan.pay@okaxis",
-            beneficiaryBank: "Axis Bank",
+            txnId: "TXN1000109281",
+            senderAccount: "501004123456",
+            receiverAccount: "912010045678",
+            senderIFSC: "SBIN0001234",
+            receiverIFSC: "UTIB0005678",
+            senderBank: "State Bank of India",
+            receiverBank: "Axis Bank",
             amount: 450000,
+            timestamp: "2026-09-28 14:02:10",
+            paymentMode: "UPI",
             mode: "UPI",
-            timestamp: "2026-09-28T14:02:10Z",
-            ip: "185.220.101.45"
+            narration: "Task deposit refund guarantee",
+            ip: "185.220.101.45",
+            deviceType: "Windows_Browser",
+            device: "Windows_Browser",
+            scamMarker: { type: "TASK_SCAM", label: "Work-From-Home Task Scam", severity: "HIGH" },
+            deviceAnalysis: { isAnomaly: false, label: "Windows_Browser", severity: "NORMAL" },
+            ipAnalysis: { isProxy: true, label: "Foreign Proxy / Bulletproof Host", severity: "CRITICAL" },
+            remitter: "A/C 501004123456 (Victim)",
+            remitterAccount: "501004123456",
+            remitterVPA: "501004123456@sbin",
+            remitterBank: "State Bank of India",
+            beneficiary: "A/C 912010045678",
+            beneficiaryAccount: "912010045678",
+            beneficiaryVPA: "912010045678@utib",
+            beneficiaryBank: "Axis Bank",
+            status: "SUCCESS"
           },
           {
             recordId: "FIN-2",
-            txnId: "IMPS/2026/771021",
-            remitter: "Pawan Kumar (L1 Mule)",
-            remitterAccount: "UTIB0005678-223344",
-            remitterVPA: "pawan.pay@okaxis",
-            beneficiary: "Sunil Verma (L2 Mule)",
-            beneficiaryAccount: "HDFC0001099-556677",
-            beneficiaryVPA: "sunil.v@okhdfc",
-            beneficiaryBank: "HDFC Bank",
+            txnId: "TXN1000109282",
+            senderAccount: "912010045678",
+            receiverAccount: "109923847561",
+            senderIFSC: "UTIB0005678",
+            receiverIFSC: "HDFC0001099",
+            senderBank: "Axis Bank",
+            receiverBank: "HDFC Bank",
             amount: 250000,
+            timestamp: "2026-09-28 14:04:25",
+            paymentMode: "IMPS",
             mode: "IMPS",
-            timestamp: "2026-09-28T14:04:25Z",
-            ip: "185.220.101.45"
+            narration: "Urgent vendor transfer TRF-992",
+            ip: "185.220.101.45",
+            deviceType: "Web_Emulator",
+            device: "Web_Emulator",
+            scamMarker: null,
+            deviceAnalysis: { isAnomaly: true, label: "Web_Emulator (Automated Android Sandbox)", severity: "CRITICAL" },
+            ipAnalysis: { isProxy: true, label: "Foreign Proxy / Bulletproof Host", severity: "CRITICAL" },
+            remitter: "A/C 912010045678",
+            remitterAccount: "912010045678",
+            remitterVPA: "912010045678@utib",
+            remitterBank: "Axis Bank",
+            beneficiary: "A/C 109923847561",
+            beneficiaryAccount: "109923847561",
+            beneficiaryVPA: "109923847561@hdfc",
+            beneficiaryBank: "HDFC Bank",
+            status: "SUCCESS"
           },
           {
             recordId: "FIN-3",
-            txnId: "IMPS/2026/771022",
-            remitter: "Pawan Kumar (L1 Mule)",
-            remitterAccount: "UTIB0005678-223344",
-            remitterVPA: "pawan.pay@okaxis",
-            beneficiary: "Vikas Patel (L2 Mule)",
-            beneficiaryAccount: "ICIC0004455-889900",
-            beneficiaryVPA: "vikas.crypto@okicici",
-            beneficiaryBank: "ICICI Bank",
+            txnId: "TXN1000109283",
+            senderAccount: "912010045678",
+            receiverAccount: "445588990012",
+            senderIFSC: "UTIB0005678",
+            receiverIFSC: "ICIC0004455",
+            senderBank: "Axis Bank",
+            receiverBank: "ICICI Bank",
             amount: 190000,
+            timestamp: "2026-09-28 14:05:10",
+            paymentMode: "IMPS",
             mode: "IMPS",
-            timestamp: "2026-09-28T14:05:10Z",
-            ip: "185.220.101.45"
+            narration: "Split settlement batch 04",
+            ip: "185.220.101.45",
+            deviceType: "Linux_Script",
+            device: "Linux_Script",
+            scamMarker: null,
+            deviceAnalysis: { isAnomaly: true, label: "Linux_Script (Headless API Botnet)", severity: "CRITICAL" },
+            ipAnalysis: { isProxy: true, label: "Foreign Proxy / Bulletproof Host", severity: "CRITICAL" },
+            remitter: "A/C 912010045678",
+            remitterAccount: "912010045678",
+            remitterVPA: "912010045678@utib",
+            remitterBank: "Axis Bank",
+            beneficiary: "A/C 445588990012",
+            beneficiaryAccount: "445588990012",
+            beneficiaryVPA: "445588990012@icic",
+            beneficiaryBank: "ICICI Bank",
+            status: "SUCCESS"
           },
           {
             recordId: "FIN-4",
-            txnId: "ATM/2026/44019",
-            remitter: "Sunil Verma (L2 Mule)",
-            remitterAccount: "HDFC0001099-556677",
-            remitterVPA: "sunil.v@okhdfc",
-            beneficiary: "ATM Cash Out MP Nagar Bhopal",
-            beneficiaryAccount: "ATM-MPN-04",
-            beneficiaryVPA: null,
-            beneficiaryBank: "HDFC ATM Terminal",
+            txnId: "TXN1000109284",
+            senderAccount: "109923847561",
+            receiverAccount: "889911223344",
+            senderIFSC: "HDFC0001099",
+            receiverIFSC: "HDFC0001099",
+            senderBank: "HDFC Bank",
+            receiverBank: "HDFC Bank",
             amount: 240000,
-            mode: "ATM_WITHDRAWAL",
-            timestamp: "2026-09-28T14:11:30Z",
-            ip: "103.21.244.10"
+            timestamp: "2026-09-28 14:11:30",
+            paymentMode: "IMPS",
+            mode: "IMPS",
+            narration: "ATM WDL MP Nagar cashout",
+            ip: "103.21.244.10",
+            deviceType: "Android",
+            device: "Android",
+            scamMarker: { type: "ATM_CASHOUT", label: "Physical ATM / Cashout", severity: "CRITICAL" },
+            deviceAnalysis: { isAnomaly: false, label: "Android", severity: "NORMAL" },
+            ipAnalysis: { isProxy: true, label: "Foreign Proxy / Bulletproof Host", severity: "CRITICAL" },
+            remitter: "A/C 109923847561",
+            remitterAccount: "109923847561",
+            remitterVPA: "109923847561@hdfc",
+            remitterBank: "HDFC Bank",
+            beneficiary: "A/C 889911223344 (ATM Cashout)",
+            beneficiaryAccount: "889911223344",
+            beneficiaryVPA: "889911223344@hdfc",
+            beneficiaryBank: "HDFC Bank",
+            status: "SUCCESS"
           },
           {
             recordId: "FIN-5",
-            txnId: "P2P/2026/99310",
-            remitter: "Vikas Patel (L2 Mule)",
-            remitterAccount: "ICIC0004455-889900",
-            remitterVPA: "vikas.crypto@okicici",
-            beneficiary: "Binance P2P Escrow Wallet",
-            beneficiaryAccount: "BNB-ESCROW-0x99",
-            beneficiaryVPA: null,
-            beneficiaryBank: "Crypto P2P Gateway",
+            txnId: "TXN1000109285",
+            senderAccount: "445588990012",
+            receiverAccount: "332211445566",
+            senderIFSC: "ICIC0004455",
+            receiverIFSC: "KKBK0002233",
+            senderBank: "ICICI Bank",
+            receiverBank: "Kotak Mahindra Bank",
             amount: 185000,
-            mode: "CRYPTO_P2P",
-            timestamp: "2026-09-28T14:09:45Z",
-            ip: "185.220.101.45"
+            timestamp: "2026-09-28 14:09:45",
+            paymentMode: "NEFT",
+            mode: "NEFT",
+            narration: "Binance USDT P2P buy order #9921",
+            ip: "185.220.101.45",
+            deviceType: "Linux_Script",
+            device: "Linux_Script",
+            scamMarker: { type: "CRYPTO_CASHOUT", label: "Crypto P2P Off-Ramp", severity: "CRITICAL" },
+            deviceAnalysis: { isAnomaly: true, label: "Linux_Script (Headless API Botnet)", severity: "CRITICAL" },
+            ipAnalysis: { isProxy: true, label: "Foreign Proxy / Bulletproof Host", severity: "CRITICAL" },
+            remitter: "A/C 445588990012",
+            remitterAccount: "445588990012",
+            remitterVPA: "445588990012@icic",
+            remitterBank: "ICICI Bank",
+            beneficiary: "A/C 332211445566 (Crypto P2P)",
+            beneficiaryAccount: "332211445566",
+            beneficiaryVPA: "332211445566@kkbk",
+            beneficiaryBank: "Kotak Mahindra Bank",
+            status: "SUCCESS"
           }
         ],
         entities: [
-          { type: "VPA", value: "rajesh.s@oksbi", occurrences: 1 },
-          { type: "VPA", value: "pawan.pay@okaxis", occurrences: 3 },
-          { type: "VPA", value: "sunil.v@okhdfc", occurrences: 2 },
-          { type: "VPA", value: "vikas.crypto@okicici", occurrences: 2 },
-          { type: "IP_ADDRESS", value: "185.220.101.45", occurrences: 4 }
+          { type: "BANK_ACCOUNT", value: "501004123456", occurrences: 1 },
+          { type: "BANK_ACCOUNT", value: "912010045678", occurrences: 3 },
+          { type: "BANK_ACCOUNT", value: "109923847561", occurrences: 2 },
+          { type: "BANK_ACCOUNT", value: "445588990012", occurrences: 2 },
+          { type: "BANK_ACCOUNT", value: "889911223344", occurrences: 1 },
+          { type: "BANK_ACCOUNT", value: "332211445566", occurrences: 1 },
+          { type: "IP_ADDRESS", value: "185.220.101.45", occurrences: 4 },
+          { type: "DEVICE_FINGERPRINT", value: "Web_Emulator", occurrences: 1 },
+          { type: "DEVICE_FINGERPRINT", value: "Linux_Script", occurrences: 2 }
         ],
         summary: {
           totalTransactions: 5,
-          totalVolumeTransferred: 1315000,
+          totalVolumeINR: 1315000,
           uniqueRemitters: 3,
-          uniqueBeneficiaries: 4
+          uniqueBeneficiaries: 5,
+          uniqueBanks: 5,
+          scamMarkersDetected: 3,
+          emulatorOrScriptAlerts: 3,
+          proxyIPAlerts: 5
         }
       },
       {
@@ -882,6 +1188,22 @@ class ForensicEvidenceStore {
       }
     } catch {}
     this.notify();
+  }
+
+  async ingest2MBenchmark() {
+    try {
+      const response = await fetch("/api/forensics/benchmark-2m");
+      if (!response.ok) throw new Error(`Server returned ${response.status}`);
+      const json = await response.json();
+      if (json.success && json.data) {
+        this.addArtifact(json.data);
+        return json.data;
+      }
+      throw new Error(json.error || "Failed to process 2M benchmark");
+    } catch (err) {
+      console.error("2M Benchmark Ingestion Error:", err);
+      throw err;
+    }
   }
 
   // Aggregate all extracted entities across all loaded evidence files

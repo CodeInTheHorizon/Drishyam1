@@ -42,8 +42,9 @@ export function generateOnePageSeizureBrief(customCaseRef = "FIR/MP/2026/08879",
   const phishingEmails = nodes.filter((n) => n.type === "EMAIL_SPOOF");
 
   // Calculate Total Siphoned Volume
+  const largeArtifact = artifacts.find(a => a.isLargeDataset && a.summary?.totalVolumeINR);
   const fundsFlowEdges = edges.filter((e) => e.type === "FUNDS_FLOW");
-  const totalVolumeINR = fundsFlowEdges.reduce((acc, e) => acc + (e.amount || 0), 0);
+  const totalVolumeINR = largeArtifact ? largeArtifact.summary.totalVolumeINR : fundsFlowEdges.reduce((acc, e) => acc + (e.amount || 0), 0);
 
   // 2. Build Chronological Golden-Hour Event Timeline
   const rawTimeline = [];
@@ -109,72 +110,126 @@ export function generateOnePageSeizureBrief(customCaseRef = "FIR/MP/2026/08879",
   rawTimeline.sort((a, b) => (a.time > b.time ? 1 : -1));
 
   // 3. Assemble Primary Mule Targets
-  const primeSuspectMules = [...l1Mules, ...l2Mules].map((m) => {
-    const inflow = m.inboundFunds?.reduce((acc, f) => acc + (f.amount || 0), 0) || 0;
-    const outflow = m.outboundFunds?.reduce((acc, f) => acc + (f.amount || 0), 0) || 0;
-    return {
-      name: m.name,
-      layer: m.type === "L1_MULE" ? "Layer-1 Primary Mule" : "Layer-2 Mule Relayer",
-      account: m.details?.account || "N/A",
-      vpa: m.details?.vpa || "N/A",
-      bank: m.details?.bank || "Nodal Bank",
-      riskScore: m.riskScore || 85,
-      inflowINR: inflow,
-      outflowINR: outflow,
-      anomaly: m.anomalyFlags?.[0] || "Rapid Layer Dispersal",
-      action: m.recommendedAction || "Issue Section 91 CrPC notice to freeze account balance."
-    };
-  });
+  let primeSuspectMules = [];
+  if (largeArtifact && largeArtifact.topMuleTargets?.length > 0) {
+    primeSuspectMules = largeArtifact.topMuleTargets.slice(0, 20);
+  } else {
+    primeSuspectMules = [...l1Mules, ...l2Mules].map((m) => {
+      const inflow = m.inboundFunds?.reduce((acc, f) => acc + (f.amount || 0), 0) || 0;
+      const outflow = m.outboundFunds?.reduce((acc, f) => acc + (f.amount || 0), 0) || 0;
+      const roleText = m.type === "L1_MULE" ? "Layer-1 Primary Mule" : "Layer-2 Mule Relayer";
+      return {
+        name: m.name,
+        role: roleText,
+        layer: roleText,
+        account: m.details?.account || "N/A",
+        vpa: m.details?.vpa || "N/A",
+        bank: m.details?.bank || "Nodal Bank",
+        riskScore: m.riskScore || 85,
+        inflowINR: inflow,
+        outflowINR: outflow,
+        anomaly: m.anomalyFlags?.[0] || "Rapid Layer Dispersal",
+        action: m.recommendedAction || "Issue Section 91 CrPC notice to freeze account balance."
+      };
+    });
+  }
 
   // 4. Assemble Actionable Seizure Directives (Section 91 CrPC)
-  const seizureDirectives = [
-    {
+  const identifiedBanks = Array.from(new Set([...l1Mules, ...l2Mules, ...cashouts].map(m => m.details?.bank).filter(Boolean)));
+  const bankNoticeTargets = identifiedBanks.length > 0 ? identifiedBanks.join(", ") : "Nodal Officers of involved beneficiary banks";
+
+  const targetVPAs = [...l1Mules, ...l2Mules].map(m => m.details?.vpa || m.details?.account).filter(Boolean);
+  const vpaNoticeTargets = targetVPAs.length > 0 ? targetVPAs.slice(0, 5).join(", ") : "Identified Mule Endpoints";
+
+  const seizureDirectives = [];
+
+  // Directive 1: Banking Lien (always relevant for financial fraud)
+  if (l1Mules.length > 0 || l2Mules.length > 0 || cashouts.length > 0) {
+    seizureDirectives.push({
       targetType: "BANKING / NPCI LIEN",
       priority: "IMMEDIATE (GOLDEN HOUR)",
       statutoryProvision: "Section 91 CrPC / Section 94 BNSS & Sec 102 CrPC (Freezing of Property)",
       instructions: [
-        `Serve immediate debit-freeze notice to Nodal Officer of HDFC Bank, ICICI Bank, Kotak Bank, and Bank of Baroda for listed mule accounts.`,
-        `Submit emergency API lien request to NPCI 1930 Portal for UPI VPAs: ${[...l1Mules, ...l2Mules].map(m => m.details?.vpa).filter(Boolean).slice(0, 4).join(", ")}.`,
+        `Serve immediate debit-freeze notice to Nodal Officer of ${bankNoticeTargets} for identified recipient accounts.`,
+        `Submit emergency API lien request to NPCI 1930 Portal for accounts / VPAs: ${vpaNoticeTargets}.`,
         `Direct nodal banks to preserve KYC documents, IP login audit logs, and account opening Aadhaar/PAN records under Section 91 CrPC.`
       ]
-    },
-    {
+    });
+  }
+
+  // Directive 2: ATM / Physical Cashout Surveillance (if ATM cashout endpoints exist)
+  const atmEndpoints = cashouts.filter(c => 
+    c.name.toLowerCase().includes("atm") || 
+    (c.details?.bank && c.details.bank.toLowerCase().includes("atm")) ||
+    c.anomalyFlags?.some(f => f.toLowerCase().includes("atm") || f.toLowerCase().includes("cashout")) ||
+    c.details?.narrations?.some(n => n.toLowerCase().includes("atm") || n.toLowerCase().includes("wdl"))
+  );
+  if (atmEndpoints.length > 0) {
+    seizureDirectives.push({
       targetType: "ATM SURVEILLANCE & CCTV RETRIEVAL",
       priority: "CRITICAL (WITHIN 24 HOURS)",
       statutoryProvision: "Section 91 CrPC & Police Regulation para 432 (Physical Evidence Preservation)",
       instructions: [
-        `Dispatch nearest PCR patrol unit to ICICI Bank ATM (Vijay Nagar, Indore - Coord 22.7533, 75.8937) and Axis Bank ATM (New Market, Bhopal - Coord 23.2289, 77.4045).`,
-        `Requisition CCTV video footage from 14:00 to 16:30 IST on 25-Sept-2026 to capture physical withdrawal operative / courier identity.`
+        `Dispatch nearest PCR patrol unit to ATMs / branches associated with: ${atmEndpoints.map(a => a.name).join(", ")}.`,
+        `Requisition CCTV video footage covering the transaction timestamps to capture physical withdrawal operative identity.`
       ]
-    },
-    {
+    });
+  }
+
+  // Directive 3: Crypto P2P / Escrow Subpoena (if crypto cashout exists)
+  const cryptoEndpoints = cashouts.filter(c => 
+    c.name.toLowerCase().includes("crypto") || 
+    c.name.toLowerCase().includes("binance") || 
+    c.name.toLowerCase().includes("p2p") || 
+    c.name.toLowerCase().includes("escrow") ||
+    c.anomalyFlags?.some(f => f.toLowerCase().includes("crypto") || f.toLowerCase().includes("binance") || f.toLowerCase().includes("usdt")) ||
+    c.details?.narrations?.some(n => n.toLowerCase().includes("crypto") || n.toLowerCase().includes("binance") || n.toLowerCase().includes("usdt") || n.toLowerCase().includes("p2p"))
+  );
+  if (cryptoEndpoints.length > 0) {
+    seizureDirectives.push({
       targetType: "CRYPTO P2P ESCROW SUBPOENA",
       priority: "HIGH (PRE-WITHDRAWAL FREEZE)",
       statutoryProvision: "Section 91 CrPC & CERT-In Financial Directive (P2P Wallet Freeze)",
       instructions: [
-        `Issue Section 91 CrPC emergency preservation notice to Binance India Compliance Desk for Escrow Reference P2P-ESCROW-99 and UPI handle crypto.escrow@binance.`,
+        `Issue Section 91 CrPC emergency preservation notice to Compliance Desk for: ${cryptoEndpoints.map(c => c.name).join(", ")}.`,
         `Order complete freeze of USDT/INR balance and disclosure of verified KYC, wallet address, and destination blockchain TxHash.`
       ]
-    },
-    {
+    });
+  }
+
+  // Directive 4: Telecom retention (only if telecom artifacts / phone nodes exist)
+  if (phones.length > 0) {
+    seizureDirectives.push({
       targetType: "TELECOM CDR & IPDR RETENTION",
       priority: "HIGH (ISP PRESERVATION)",
       statutoryProvision: "Rule 419A Telegraph Rules & Section 91 CrPC",
       instructions: [
         `Issue statutory preservation directive to TSP (Airtel, Jio, Vi) for mobile numbers: ${phones.slice(0, 4).map(p => p.name).join(", ")}.`,
-        `Requisition Tower BTS dump logs for Cell CGI-MP-462001 and IMEI ${imeis[0]?.name || "358941098765432"} showing hardware SIM-swap records.`
+        `Requisition Tower BTS dump logs for IMEI ${imeis[0]?.name || "linked subscriber hardware"} showing hardware SIM-swap records.`
       ]
-    },
-    {
+    });
+  }
+
+  // Directive 5: CERT-In advisory (only if malware APK or C2 server or phishing email exists)
+  if (malwareApks.length > 0 || c2Servers.length > 0 || phishingEmails.length > 0) {
+    const certInInstructions = [];
+    if (malwareApks.length > 0) {
+      certInInstructions.push(`Submit incident ticket to CERT-In for APK Package signature block: ${malwareApks[0]?.details?.packageName || "Suspicious APK Package"}.`);
+    }
+    if (c2Servers.length > 0) {
+      certInInstructions.push(`Request emergency DNS sinkholing / ISP blocking for suspicious proxy host: ${c2Servers[0]?.name || "Identified Endpoint"}.`);
+    }
+    if (phishingEmails.length > 0) {
+      certInInstructions.push(`Issue phishing takedown request for domain/mailer: ${phishingEmails[0]?.name || "Phishing Sender"}.`);
+    }
+
+    seizureDirectives.push({
       targetType: "CYBER THREAT MITIGATION (CERT-In)",
       priority: "TACTICAL ADVISORY",
       statutoryProvision: "Section 70B Information Technology Act (CERT-In Rules 2013)",
-      instructions: [
-        `Submit incident ticket to CERT-In (incident@cert-in.org.in) for APK Package signature block: ${malwareApks[0]?.details?.packageName || "com.sbi.rewards.update2026"}.`,
-        `Request emergency DNS sinkholing for C2 host: ${c2Servers[0]?.name || "185.220.101.45"} across all Indian ISPs.`
-      ]
-    }
-  ];
+      instructions: certInInstructions
+    });
+  }
 
   return {
     documentId: `SEIZURE-BRIEF-${Date.now().toString(36).toUpperCase()}`,
@@ -201,11 +256,11 @@ export function generateOnePageSeizureBrief(customCaseRef = "FIR/MP/2026/08879",
       }))
     },
     kpis: [
-      { label: "FRAUD VOLUME SIPHONED", value: `₹${totalVolumeINR.toLocaleString("en-IN")}` },
-      { label: "MULE ACCOUNTS IDENTIFIED", value: `${primeSuspectMules.length} Accounts` },
-      { label: "TERMINAL CASHOUT POINTS", value: `${cashouts.length} Endpoints` },
+      { label: "FRAUD VOLUME SIPHONED", value: `₹${totalVolumeINR.toLocaleString("en-IN", { maximumFractionDigits: 0 })}` },
+      { label: "MULE ACCOUNTS IDENTIFIED", value: largeArtifact ? `${largeArtifact.summary.intermediateMulesCount.toLocaleString()} Accounts` : `${primeSuspectMules.length} Accounts` },
+      { label: "TERMINAL CASHOUT POINTS", value: largeArtifact ? `${largeArtifact.summary.terminalCashoutsCount.toLocaleString()} Endpoints` : `${cashouts.length} Endpoints` },
       { label: "SIM-SWAP HARDWARE", value: `${imeis.length} Devices` },
-      { label: "C2 / MALWARE ENDPOINTS", value: `${c2Servers.length + malwareApks.length} Vectors` },
+      { label: "C2 / MALWARE ENDPOINTS", value: largeArtifact ? `${largeArtifact.summary.proxyIPAlerts.toLocaleString()} Vectors` : `${c2Servers.length + malwareApks.length} Vectors` },
       { label: "ANOMALY SEVERITY", value: "CRITICAL (LEVEL 1)" }
     ],
     timeline: rawTimeline,

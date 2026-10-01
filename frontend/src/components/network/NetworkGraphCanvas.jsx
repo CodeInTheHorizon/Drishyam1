@@ -64,53 +64,85 @@ export default function NetworkGraphCanvas({
         };
       }
 
-      // Initial placement heuristic: if forensic, arrange horizontally by layer
-      let initX = width / 2;
-      let initY = height / 2;
+      // Compute per-layer distribution for clean vertical spacing in FORENSIC mode
+      const layerGroups = {
+        VICTIM: [],
+        L1_MULE: [],
+        L2_MULE: [],
+        CASHOUT: [],
+        CYBER: []
+      };
+
+      nodes.forEach((node) => {
+        if (node.type === "VICTIM") layerGroups.VICTIM.push(node.id);
+        else if (node.type === "L1_MULE") layerGroups.L1_MULE.push(node.id);
+        else if (node.type === "L2_MULE") layerGroups.L2_MULE.push(node.id);
+        else if (node.type === "CASHOUT") layerGroups.CASHOUT.push(node.id);
+        else layerGroups.CYBER.push(node.id);
+      });
+
+      const layerIndexMap = new Map();
+      Object.values(layerGroups).forEach((idList) => {
+        idList.forEach((id, idx) => {
+          layerIndexMap.set(id, { idx, total: idList.length });
+        });
+      });
+
+      // Target column coordinates
+      let targetX = width * 0.5;
+      let targetY = height * 0.5;
 
       if (analysisMode === "FORENSIC") {
+        const layerInfo = layerIndexMap.get(node.id) || { idx: 0, total: 1 };
+        const usableHeight = height * 0.68;
+        const topMargin = height * 0.12;
+
         if (node.type === "VICTIM") {
-          initX = width * 0.16;
-          initY = height * 0.35 + (idx % 3) * 80;
+          targetX = width * 0.13;
+          targetY = topMargin + (layerInfo.idx + 0.5) * (usableHeight / Math.max(1, layerInfo.total));
         } else if (node.type === "L1_MULE") {
-          initX = width * 0.38;
-          initY = height * 0.35 + (idx % 3) * 90;
+          targetX = width * 0.37;
+          targetY = topMargin + (layerInfo.idx + 0.5) * (usableHeight / Math.max(1, layerInfo.total));
         } else if (node.type === "L2_MULE") {
-          initX = width * 0.60;
-          initY = height * 0.30 + (idx % 4) * 90;
+          targetX = width * 0.61;
+          targetY = topMargin + (layerInfo.idx + 0.5) * (usableHeight / Math.max(1, layerInfo.total));
         } else if (node.type === "CASHOUT") {
-          initX = width * 0.84;
-          initY = height * 0.35 + (idx % 3) * 90;
-        } else if (node.type === "EMAIL_SPOOF") {
-          initX = width * 0.18;
-          initY = height * 0.72;
-        } else if (node.type === "MALWARE_APK") {
-          initX = width * 0.36;
-          initY = height * 0.75;
-        } else if (node.type === "C2_SERVER") {
-          initX = width * 0.54;
-          initY = height * 0.78;
-        } else if (node.type === "PHONE") {
-          initX = width * 0.72;
-          initY = height * 0.72 + (idx % 3) * 70;
-        } else if (node.type === "IMEI") {
-          initX = width * 0.88;
-          initY = height * 0.72;
+          targetX = width * 0.86;
+          targetY = topMargin + (layerInfo.idx + 0.5) * (usableHeight / Math.max(1, layerInfo.total));
         } else {
-          initX = width * 0.5 + (Math.random() - 0.5) * 200;
-          initY = height * 0.5 + (Math.random() - 0.5) * 200;
+          // Cyber, hardware, and telecom entities placed along bottom corridor
+          const cyberIdx = layerInfo.idx;
+          const cyberTotal = Math.max(1, layerInfo.total);
+          targetX = width * 0.16 + (cyberIdx + 0.5) * ((width * 0.68) / cyberTotal);
+          targetY = height * 0.84;
         }
       } else {
         const angle = (idx / Math.max(1, nodes.length)) * Math.PI * 2;
         const dist = 120 + (idx % 4) * 60;
-        initX = width / 2 + Math.cos(angle) * dist;
-        initY = height / 2 + Math.sin(angle) * dist;
+        targetX = width / 2 + Math.cos(angle) * dist;
+        targetY = height / 2 + Math.sin(angle) * dist;
+      }
+
+      if (existingMap.has(node.id)) {
+        const existing = existingMap.get(node.id);
+        return {
+          ...node,
+          x: existing.x,
+          y: existing.y,
+          vx: existing.vx || 0,
+          vy: existing.vy || 0,
+          targetX,
+          targetY,
+          radius: r
+        };
       }
 
       return {
         ...node,
-        x: initX + (Math.random() - 0.5) * 30,
-        y: initY + (Math.random() - 0.5) * 30,
+        x: targetX + (Math.random() - 0.5) * 20,
+        y: targetY + (Math.random() - 0.5) * 20,
+        targetX,
+        targetY,
         vx: 0,
         vy: 0,
         radius: r
@@ -143,62 +175,97 @@ export default function NetworkGraphCanvas({
         const centerX = width / 2;
         const centerY = height / 2;
 
-        // 1. Center Gravitation
-        for (let i = 0; i < simNodes.length; i++) {
-          const n = simNodes[i];
-          if (n === draggedNode) continue;
-          n.vx += (centerX - n.x) * 0.0006;
-          n.vy += (centerY - n.y) * 0.0006;
-        }
+        if (analysisMode === "FORENSIC") {
+          // 1. Column Magnetic Lock (Prevents Entanglement & Maintains Flow Columns)
+          for (let i = 0; i < simNodes.length; i++) {
+            const n = simNodes[i];
+            if (n === draggedNode) continue;
+            if (n.targetX !== undefined) {
+              n.vx += (n.targetX - n.x) * 0.12;
+            }
+            if (n.targetY !== undefined) {
+              n.vy += (n.targetY - n.y) * 0.04;
+            }
+          }
 
-        // 2. Node Repulsion (Coulomb Force)
-        for (let i = 0; i < simNodes.length; i++) {
-          const n1 = simNodes[i];
-          for (let j = i + 1; j < simNodes.length; j++) {
-            const n2 = simNodes[j];
-            const dx = n2.x - n1.x;
-            const dy = n2.y - n1.y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-            const minDist = (n1.radius + n2.radius) * 2.8;
+          // 2. Vertical-Only Repulsion between nodes in same column to guarantee non-overlap
+          for (let i = 0; i < simNodes.length; i++) {
+            const n1 = simNodes[i];
+            for (let j = i + 1; j < simNodes.length; j++) {
+              const n2 = simNodes[j];
+              const dx = n2.x - n1.x;
+              const dy = n2.y - n1.y;
 
-            if (dist < 320) {
-              const force = (320 - dist) / (dist * 45);
-              const fx = (dx / dist) * force;
-              const fy = (dy / dist) * force;
+              // Only repel vertically if nodes share the same vertical column
+              if (Math.abs(dx) < 70) {
+                const vertDist = Math.abs(dy) || 1;
+                const minVertDist = (n1.radius + n2.radius) * 2.3;
 
-              if (n1 !== draggedNode) {
-                n1.vx -= fx;
-                n1.vy -= fy;
-              }
-              if (n2 !== draggedNode) {
-                n2.vx += fx;
-                n2.vy += fy;
+                if (vertDist < minVertDist) {
+                  const force = (minVertDist - vertDist) / (vertDist * 12);
+                  const dir = dy >= 0 ? 1 : -1;
+
+                  if (n1 !== draggedNode) n1.vy -= dir * force;
+                  if (n2 !== draggedNode) n2.vy += dir * force;
+                }
               }
             }
           }
-        }
 
-        // 3. Link Spring Force (Hooke's Law)
-        for (let i = 0; i < simEdges.length; i++) {
-          const edge = simEdges[i];
-          const n1 = edge.sourceNode;
-          const n2 = edge.targetNode;
-          const dx = n2.x - n1.x;
-          const dy = n2.y - n1.y;
-          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const targetDist = edge.type === "FUNDS_FLOW" ? 130 : edge.type === "CO_ACCUSED" ? 85 : 120;
-          const force = (dist - targetDist) * 0.022;
+          // 3. Subtle vertical alignment along money flow edges
+          for (let i = 0; i < simEdges.length; i++) {
+            const edge = simEdges[i];
+            const n1 = edge.sourceNode;
+            const n2 = edge.targetNode;
+            const dy = n2.y - n1.y;
 
-          const fx = (dx / dist) * force;
-          const fy = (dy / dist) * force;
-
-          if (n1 !== draggedNode) {
-            n1.vx += fx;
-            n1.vy += fy;
+            if (Math.abs(dy) > 40) {
+              const vertPull = dy * 0.0015;
+              if (n1 !== draggedNode) n1.vy += vertPull;
+              if (n2 !== draggedNode) n2.vy -= vertPull;
+            }
           }
-          if (n2 !== draggedNode) {
-            n2.vx -= fx;
-            n2.vy -= fy;
+        } else {
+          // Default CCTNS Circular Radial Simulation
+          // Center Gravitation
+          for (let i = 0; i < simNodes.length; i++) {
+            const n = simNodes[i];
+            if (n === draggedNode) continue;
+            n.vx += (centerX - n.x) * 0.0006;
+            n.vy += (centerY - n.y) * 0.0006;
+          }
+
+          // Coulomb Repulsion
+          for (let i = 0; i < simNodes.length; i++) {
+            const n1 = simNodes[i];
+            for (let j = i + 1; j < simNodes.length; j++) {
+              const n2 = simNodes[j];
+              const dx = n2.x - n1.x;
+              const dy = n2.y - n1.y;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+              if (dist < 300) {
+                const force = (300 - dist) / (dist * 45);
+                const fx = (dx / dist) * force;
+                const fy = (dy / dist) * force;
+                if (n1 !== draggedNode) { n1.vx -= fx; n1.vy -= fy; }
+                if (n2 !== draggedNode) { n2.vx += fx; n2.vy += fy; }
+              }
+            }
+          }
+
+          // Link Springs
+          for (let i = 0; i < simEdges.length; i++) {
+            const edge = simEdges[i];
+            const n1 = edge.sourceNode;
+            const n2 = edge.targetNode;
+            const dx = n2.x - n1.x;
+            const dy = n2.y - n1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = (dist - 120) * 0.02;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            if (n1 !== draggedNode) { n1.vx += fx; n1.vy += fy; }
+            if (n2 !== draggedNode) { n2.vx -= fx; n2.vy -= fy; }
           }
         }
 
@@ -206,8 +273,8 @@ export default function NetworkGraphCanvas({
         for (let i = 0; i < simNodes.length; i++) {
           const n = simNodes[i];
           if (n === draggedNode) continue;
-          n.vx *= 0.86;
-          n.vy *= 0.86;
+          n.vx *= 0.85;
+          n.vy *= 0.85;
           n.x += n.vx;
           n.y += n.vy;
 
@@ -271,10 +338,25 @@ export default function NetworkGraphCanvas({
       const edgeColor = isPathEdge ? "#10b981" : isDirectlyFocused ? "#f59e0b" : edge.config?.color || "#475569";
       const edgeWidth = isEdgeHighlighted ? 3.6 : edge.config?.width || 1.8;
 
+      const isForensic = analysisMode === "FORENSIC";
+      const dx = t.x - s.x;
+      const dy = t.y - s.y;
+      
+      // Calculate control point for smooth non-overlapping Bézier curve
+      let cpX = (s.x + t.x) / 2;
+      let cpY = (s.y + t.y) / 2;
+      const hasCurve = isForensic && Math.abs(dx) > 30;
+
+      if (hasCurve) {
+        // Curve offset varies slightly by edge index to separate multiple edges between layers
+        const curveOffset = (i % 2 === 0 ? 1 : -1) * Math.min(22, 6 + Math.abs(dy) * 0.08);
+        cpY += curveOffset;
+      }
+
       ctx.beginPath();
       ctx.strokeStyle = edgeColor;
       ctx.lineWidth = edgeWidth;
-      ctx.globalAlpha = hasPathHighlight ? (isPathEdge ? 1.0 : 0.15) : (focusedNode ? (isDirectlyFocused ? 1.0 : 0.2) : 0.7);
+      ctx.globalAlpha = hasPathHighlight ? (isPathEdge ? 1.0 : 0.12) : (focusedNode ? (isDirectlyFocused ? 1.0 : 0.18) : 0.65);
 
       if (edge.config?.style === "dashed") {
         ctx.setLineDash([6, 5]);
@@ -282,60 +364,90 @@ export default function NetworkGraphCanvas({
         ctx.setLineDash([]);
       }
 
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(t.x, t.y);
+      if (hasCurve) {
+        ctx.moveTo(s.x, s.y);
+        ctx.quadraticCurveTo(cpX, cpY, t.x, t.y);
+      } else {
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(t.x, t.y);
+      }
       ctx.stroke();
 
       // Draw Directional Arrowhead
       const isDirectional = edge.config?.isDirectional || analysisMode === "FORENSIC";
       if (isDirectional) {
-        const dx = t.x - s.x;
-        const dy = t.y - s.y;
-        const angle = Math.atan2(dy, dx);
-        const arrowLen = 10;
+        // Tangent angle at destination point
+        const arrowAngle = hasCurve ? Math.atan2(t.y - cpY, t.x - cpX) : Math.atan2(dy, dx);
+        const arrowLen = 9;
         const targetRadius = t.radius + 3;
-        const ax = t.x - Math.cos(angle) * targetRadius;
-        const ay = t.y - Math.sin(angle) * targetRadius;
+        const ax = t.x - Math.cos(arrowAngle) * targetRadius;
+        const ay = t.y - Math.sin(arrowAngle) * targetRadius;
 
         ctx.fillStyle = edgeColor;
         ctx.beginPath();
         ctx.moveTo(ax, ay);
         ctx.lineTo(
-          ax - arrowLen * Math.cos(angle - Math.PI / 6),
-          ay - arrowLen * Math.sin(angle - Math.PI / 6)
+          ax - arrowLen * Math.cos(arrowAngle - Math.PI / 6),
+          ay - arrowLen * Math.sin(arrowAngle - Math.PI / 6)
         );
         ctx.lineTo(
-          ax - arrowLen * Math.cos(angle + Math.PI / 6),
-          ay - arrowLen * Math.sin(angle + Math.PI / 6)
+          ax - arrowLen * Math.cos(arrowAngle + Math.PI / 6),
+          ay - arrowLen * Math.sin(arrowAngle + Math.PI / 6)
         );
         ctx.closePath();
         ctx.fill();
       }
 
       // Draw Animated Money Flow Pulses along Funds Flow Edges
-      if (edge.type === "FUNDS_FLOW" && (!hasPathHighlight || isPathEdge)) {
-        const pulseProgress = ((nowTime / 1400 + i * 0.25) % 1.0);
-        const px = s.x + (t.x - s.x) * pulseProgress;
-        const py = s.y + (t.y - s.y) * pulseProgress;
+      // Throttle: only animate if highlighted, or top 16 edges when edge count is high
+      const shouldAnimatePulse = isEdgeHighlighted || i < 16 || simEdges.length <= 25;
+      if (edge.type === "FUNDS_FLOW" && (!hasPathHighlight || isPathEdge) && shouldAnimatePulse) {
+        const pulseProgress = ((nowTime / 1400 + i * 0.22) % 1.0);
+        let px, py;
+        if (hasCurve) {
+          const p = pulseProgress;
+          px = (1 - p) * (1 - p) * s.x + 2 * (1 - p) * p * cpX + p * p * t.x;
+          py = (1 - p) * (1 - p) * s.y + 2 * (1 - p) * p * cpY + p * p * t.y;
+        } else {
+          px = s.x + dx * pulseProgress;
+          py = s.y + dy * pulseProgress;
+        }
 
         ctx.beginPath();
-        ctx.arc(px, py, 4, 0, Math.PI * 2);
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
         ctx.fillStyle = "#34d399";
         ctx.shadowColor = "#10b981";
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 8;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
 
-      // Draw Edge Label for highlighted edges
-      if (isEdgeHighlighted || (analysisMode === "FORENSIC" && edge.type === "FUNDS_FLOW")) {
-        const midX = (s.x + t.x) / 2;
-        const midY = (s.y + t.y) / 2;
-        ctx.font = "bold 9.5px monospace";
-        ctx.fillStyle = isPathEdge ? "#34d399" : isDirectlyFocused ? "#f59e0b" : "#cbd5e1";
+      // Draw Edge Label: Declutter Gating
+      // Only show when edge is highlighted, user is zoomed in (>= 1.35), or edge count is <= 18
+      const shouldShowLabel = isEdgeHighlighted || zoomLevel >= 1.35 || simEdges.length <= 18;
+      if (shouldShowLabel && edge.label) {
+        const midX = hasCurve ? (s.x * 0.25 + cpX * 0.5 + t.x * 0.25) : (s.x + t.x) / 2;
+        const midY = hasCurve ? (s.y * 0.25 + cpY * 0.5 + t.y * 0.25) : (s.y + t.y) / 2;
+
+        ctx.font = "bold 9px monospace";
+        const textWidth = ctx.measureText(edge.label).width;
+        const pillW = textWidth + 10;
+        const pillH = 14;
+
+        // Dark pill background so text never blurs with crossing lines
+        ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
+        ctx.strokeStyle = isDirectlyFocused || isPathEdge ? "#10b981" : "rgba(71, 85, 105, 0.6)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(midX - pillW / 2, midY - pillH / 2, pillW, pillH, 4);
+        else ctx.rect(midX - pillW / 2, midY - pillH / 2, pillW, pillH);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = isPathEdge ? "#34d399" : isDirectlyFocused ? "#fbbf24" : "#e2e8f0";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(edge.label, midX, midY - 7);
+        ctx.fillText(edge.label, midX, midY);
       }
     }
 

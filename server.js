@@ -38,6 +38,7 @@ const insightsHandler = require("./datathon-chatbot/functions/insights/index.js"
 const CrimeRepository = require("./datathon-chatbot/functions/chat/datastore.js");
 const hardwareManager = require("./backend/hardwareManager.js");
 const cloudinaryService = require("./backend/cloudinaryService.js");
+const { process2MTransactions, get2MRecordsChunk, search2MRecords } = require("./backend/fast2MProcessor.js");
 
 // Live Digital Forensic Evidence Store
 let forensicEvidenceStoreBackend = [];
@@ -302,6 +303,54 @@ const server = http.createServer(async (req, res) => {
         forensicEvidenceStoreBackend = [];
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ success: true, message: "Cleared all forensic evidence" }));
+    } else if ((pathname === "/api/forensics/benchmark-2m" || pathname === "/api/forensics/ingest-2m") && (req.method === "GET" || req.method === "POST")) {
+        try {
+            console.log("⚡ [Fast2MProcessor] Initiating 2,000,000 Transaction Stream Benchmark...");
+            const targetFile = path.join(__dirname, "VoidHacks8_MuleAccount_2M_Transactions.csv");
+            const artifact = await process2MTransactions(targetFile, "MPP-2026-IO");
+
+            // Prepend to live server store
+            forensicEvidenceStoreBackend = forensicEvidenceStoreBackend.filter(a => a.id !== artifact.id);
+            forensicEvidenceStoreBackend.unshift(artifact);
+
+            // Sync tamper-proof audit record to Catalyst BiometricAuditTrail table
+            try {
+                await repo.createAuditTrailRecord({
+                    action: "BENCHMARK_2M_INGESTION",
+                    officerName: artifact.officerBadge || "Investigating Officer",
+                    details: `Ingested ${artifact.fileName} (${artifact.recordCount.toLocaleString()} records in ${artifact.summary.executionTimeSec}s @ ${artifact.summary.ingestionVelocity}) | SHA256: ${artifact.sha256}`,
+                    status: "SUCCESS"
+                });
+            } catch (auditErr) {
+                console.warn("Audit trail record failed:", auditErr.message);
+            }
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, data: artifact }));
+        } catch (err) {
+            console.error("2M Processing error:", err);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+    } else if (pathname === "/api/forensics/records" && req.method === "GET") {
+        try {
+            const searchQuery = parsedUrl.query.search || parsedUrl.query.q || "";
+            const limit = parseInt(parsedUrl.query.limit, 10) || 100;
+            if (searchQuery && typeof searchQuery === "string" && searchQuery.trim().length > 0) {
+                const data = await search2MRecords(searchQuery.trim(), limit);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data }));
+            } else {
+                const offset = parseInt(parsedUrl.query.offset, 10) || 0;
+                const data = await get2MRecordsChunk(offset, limit);
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: true, data }));
+            }
+        } catch (err) {
+            console.error("Records query error:", err);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
     } else if (pathname === "/api/chat" && req.method === "POST") {
         let body = "";
         req.on("data", chunk => body += chunk.toString());

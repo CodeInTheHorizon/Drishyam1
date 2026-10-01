@@ -50,7 +50,13 @@ function normalizeEntityKey(val) {
   return String(val).trim().toLowerCase().replace(/[^a-z0-9]/g, "_");
 }
 
-export function getArtifactCorrelationGraph() {
+export function getArtifactCorrelationGraph(options = {}) {
+  const {
+    bigDataMode = "SYNDICATE_HUBS", // "SYNDICATE_HUBS" | "BANK_CORRIDORS" | "FULL_MESH"
+    minVolume = 0,
+    isolateNodeId = null
+  } = options;
+
   const artifacts = forensicEvidenceStore.getArtifacts();
   const nodes = [];
   const edges = [];
@@ -58,6 +64,8 @@ export function getArtifactCorrelationGraph() {
   const edgeSet = new Set();
 
   function addNode(node) {
+    if (!node.label && node.name) node.label = node.name;
+    if (!node.name && node.label) node.name = node.label;
     if (!nodeMap.has(node.id)) {
       node.colorConfig = node.colorConfig || ARTIFACT_NODE_TYPES[node.type] || { base: "#64748b", glow: "rgba(100,116,139,0.3)", border: "#94a3b8", label: node.type, badge: "?" };
       node.inboundFunds = node.inboundFunds || [];
@@ -104,107 +112,543 @@ export function getArtifactCorrelationGraph() {
   // 1. Process Financial Artifacts (Multi-Hop Directional Mule Trail)
   // ==========================================================================
   const financialArtifacts = artifacts.filter((a) => a.sourceType === "FINANCIAL_UPI_BANK");
-  financialArtifacts.forEach((art) => {
-    (art.records || []).forEach((r) => {
-      // Classify Remitter
-      const remitterLower = (r.remitter || "").toLowerCase();
-      let remitterType = "L1_MULE";
-      if (remitterLower.includes("victim") || remitterLower.includes("rajesh")) {
-        remitterType = "VICTIM";
-      } else if (remitterLower.includes("l2") || remitterLower.includes("sunil") || remitterLower.includes("vikas")) {
-        remitterType = "L2_MULE";
+
+  // MODE A: BANK_CORRIDORS (Macro Inter-Bank Institutional Flow)
+  if (bigDataMode === "BANK_CORRIDORS") {
+    const bankStats = new Map();
+    const corridorStats = new Map();
+
+    function getOrInitBank(rawBankName, ifsc) {
+      let clean = (rawBankName || "").trim();
+      if (!clean && ifsc) clean = `${ifsc.slice(0, 4).toUpperCase()} Bank`;
+      if (!clean) clean = "Commercial Bank";
+
+      // Consolidate bank names
+      const upper = clean.toUpperCase();
+      if (upper.includes("STATE BANK") || upper.startsWith("SBIN")) clean = "State Bank of India";
+      else if (upper.includes("HDFC")) clean = "HDFC Bank";
+      else if (upper.includes("ICICI")) clean = "ICICI Bank";
+      else if (upper.includes("AXIS") || upper.startsWith("UTIB")) clean = "Axis Bank";
+      else if (upper.includes("KOTAK") || upper.startsWith("KKBK")) clean = "Kotak Mahindra Bank";
+      else if (upper.includes("PUNJAB") || upper.startsWith("PUNB")) clean = "Punjab National Bank";
+      else if (upper.includes("BARODA") || upper.startsWith("BARB")) clean = "Bank of Baroda";
+      else if (upper.includes("PAYTM") || upper.startsWith("PYTM")) clean = "Paytm Payments Bank";
+      else if (upper.includes("AIRTEL") || upper.startsWith("AIRP")) clean = "Airtel Payments Bank";
+
+      const bankKey = normalizeEntityKey(clean);
+      const bankId = `entity:bank:${bankKey}`;
+
+      if (!bankStats.has(bankKey)) {
+        bankStats.set(bankKey, {
+          id: bankId,
+          key: bankKey,
+          name: clean,
+          inflowTotal: 0,
+          outflowTotal: 0,
+          txnCount: 0,
+          accounts: new Set(),
+          ips: new Set(),
+          devices: new Set()
+        });
+      }
+      return bankStats.get(bankKey);
+    }
+
+    financialArtifacts.forEach((art) => {
+      (art.records || []).forEach((r) => {
+        const amt = Number(r.amount) || 0;
+        if (minVolume > 0 && amt < minVolume) return;
+
+        let remBankName = r.senderBank || r.remitterBank;
+        let benBankName = r.receiverBank || r.beneficiaryBank;
+
+        const narr = (r.narration || "").toLowerCase();
+        if (narr.includes("crypto") || narr.includes("binance") || narr.includes("usdt") || narr.includes("p2p")) {
+          benBankName = "Crypto & P2P Escrow Sinks";
+        } else if (narr.includes("atm") || narr.includes("wdl") || narr.includes("cash")) {
+          benBankName = "ATM Cash Sinks";
+        }
+
+        const remBank = getOrInitBank(remBankName, r.senderIFSC);
+        const benBank = getOrInitBank(benBankName, r.receiverIFSC);
+
+        remBank.outflowTotal += amt;
+        remBank.txnCount++;
+        if (r.senderAccount || r.remitter) remBank.accounts.add(r.senderAccount || r.remitter);
+        if (r.ip) {
+          remBank.ips.add(r.ip);
+          if (!ipToEntities.has(r.ip)) ipToEntities.set(r.ip, new Set());
+          ipToEntities.get(r.ip).add(remBank.id);
+        }
+        if (r.deviceType || r.device) remBank.devices.add(r.deviceType || r.device);
+
+        benBank.inflowTotal += amt;
+        benBank.txnCount++;
+        if (r.receiverAccount || r.beneficiary) benBank.accounts.add(r.receiverAccount || r.beneficiary);
+
+        const corridorKey = `${remBank.id}-->${benBank.id}`;
+        if (!corridorStats.has(corridorKey)) {
+          corridorStats.set(corridorKey, {
+            source: remBank.id,
+            target: benBank.id,
+            totalAmount: 0,
+            txnCount: 0,
+            senderBank: remBank.name,
+            receiverBank: benBank.name
+          });
+        }
+        const cStat = corridorStats.get(corridorKey);
+        cStat.totalAmount += amt;
+        cStat.txnCount++;
+      });
+    });
+
+    // Classify Bank Nodes
+    bankStats.forEach((b) => {
+      let assignedType = "L1_MULE";
+      let roleTitle = "Intermediary Banking Nexus";
+      let riskScore = 75;
+
+      const isTerminal = b.outflowTotal === 0 || b.name.includes("Crypto") || b.name.includes("ATM");
+      const isSource = b.inflowTotal === 0 || (b.outflowTotal > b.inflowTotal * 2.5);
+
+      if (isTerminal) {
+        assignedType = "CASHOUT";
+        roleTitle = "Terminal Cashout Sinks";
+        riskScore = 95;
+      } else if (isSource) {
+        assignedType = "VICTIM";
+        roleTitle = "Source Victim Banking Institution";
+        riskScore = 20;
+      } else if (b.inflowTotal > 1500000 || b.accounts.size > 20) {
+        assignedType = "L1_MULE";
+        roleTitle = "High-Volume Layer-1 Laundering Nexus";
+        riskScore = 88;
+      } else {
+        assignedType = "L2_MULE";
+        roleTitle = "Layer-2 Dispersal Banking Node";
+        riskScore = 80;
       }
 
-      const remitterId = `entity:acc:${normalizeEntityKey(r.remitter)}`;
-      const remitterNode = addNode({
-        id: remitterId,
-        name: r.remitter,
-        type: remitterType,
-        subtitle: r.remitterVPA ? `${r.remitterVPA} (${r.remitterAccount || "Account"})` : "Remitter Entity",
+      const totalVol = b.inflowTotal + b.outflowTotal;
+      const fmtVol = totalVol >= 10000000 
+        ? `₹${(totalVol / 10000000).toFixed(2)} Cr`
+        : `₹${(totalVol / 100000).toFixed(2)} Lakh`;
+
+      addNode({
+        id: b.id,
+        name: b.name,
+        type: assignedType,
+        subtitle: `${fmtVol} Flow | ${b.accounts.size} Suspect Accounts`,
         details: {
-          account: r.remitterAccount,
-          vpa: r.remitterVPA,
-          role: remitterType === "VICTIM" ? "Victim Complainant" : "Mule Account"
+          bank: b.name,
+          inflowTotal: b.inflowTotal,
+          outflowTotal: b.outflowTotal,
+          txnCount: b.txnCount,
+          muleAccountsCount: b.accounts.size,
+          role: roleTitle,
+          devices: Array.from(b.devices),
+          ips: Array.from(b.ips)
         },
-        riskScore: remitterType === "VICTIM" ? 10 : (remitterType === "L1_MULE" ? 75 : 85),
-        anomalyFlags: remitterType === "VICTIM" ? [] : ["Intermediate Layer Relayer", "Rapid Fund Dispersal"],
-        linkedArtifacts: [art.id]
+        riskScore,
+        anomalyFlags: [
+          `Macro Corridor Volume: ${fmtVol}`,
+          `${b.accounts.size} Distinct Accounts Flagged in Laundering Channel`
+        ],
+        recommendedAction: `Serve Section 91 CrPC notice to ${b.name} Nodal Cyber Officer for KYC freeze & IP transaction logs.`
       });
+    });
 
-      // Classify Beneficiary
-      const benLower = (r.beneficiary || "").toLowerCase();
-      let benType = "L1_MULE";
-      if (benLower.includes("atm") || benLower.includes("crypto") || benLower.includes("cashout") || benLower.includes("escrow")) {
-        benType = "CASHOUT";
-      } else if (benLower.includes("l2") || benLower.includes("sunil") || benLower.includes("vikas")) {
-        benType = "L2_MULE";
-      } else if (benLower.includes("l1") || benLower.includes("pawan")) {
-        benType = "L1_MULE";
-      }
+    // Add Corridor Edges
+    corridorStats.forEach((c, key) => {
+      const amtStr = c.totalAmount >= 10000000 
+        ? `₹${(c.totalAmount / 10000000).toFixed(2)} Cr` 
+        : `₹${(c.totalAmount / 100000).toFixed(2)} Lakh`;
 
-      const benId = `entity:acc:${normalizeEntityKey(r.beneficiary)}`;
-      const benNode = addNode({
-        id: benId,
-        name: r.beneficiary,
-        type: benType,
-        subtitle: r.beneficiaryVPA ? `${r.beneficiaryVPA} (${r.beneficiaryBank || "Bank"})` : (r.beneficiaryAccount || "Endpoint"),
-        details: {
-          account: r.beneficiaryAccount,
-          vpa: r.beneficiaryVPA,
-          bank: r.beneficiaryBank,
-          channel: r.mode
-        },
-        riskScore: benType === "CASHOUT" ? 95 : (benType === "L2_MULE" ? 85 : 75),
-        anomalyFlags: benType === "CASHOUT" 
-          ? ["Terminal Cashout Point", "Off-Ramp ATM / Crypto Escrow"] 
-          : (benType === "L2_MULE" ? ["Layer-2 Mule Funnel", "Immediate Sub-Layer Split"] : ["Layer-1 Primary Receiver"]),
-        linkedArtifacts: [art.id]
-      });
-
-      // Track Inbound / Outbound Funds
-      const flowDetails = {
-        txnId: r.txnId,
-        amount: r.amount || 0,
-        mode: r.mode,
-        timestamp: r.timestamp,
-        from: r.remitter,
-        to: r.beneficiary
-      };
-      remitterNode.outboundFunds.push(flowDetails);
-      benNode.inboundFunds.push(flowDetails);
-
-      // Directional Edge: Remitter ➔ Beneficiary
       addEdge({
-        id: `flow:${r.txnId || Math.random()}`,
-        source: remitterId,
-        target: benId,
+        id: `corridor:${key}`,
+        source: c.source,
+        target: c.target,
         type: "FUNDS_FLOW",
-        label: `₹${(r.amount || 0).toLocaleString("en-IN")} (${r.mode || "UPI"})`,
-        amount: r.amount || 0,
-        mode: r.mode,
-        timestamp: r.timestamp
+        label: `${amtStr} (${c.txnCount} txns)`,
+        amount: c.totalAmount,
+        config: {
+          color: "#10b981",
+          width: Math.min(6.5, Math.max(2.4, 2.4 + Math.log10(c.totalAmount / 10000))),
+          style: "solid",
+          isDirectional: true
+        }
       });
+    });
+  } else {
+    // MODES B & C: SYNDICATE_HUBS (Backbone) or FULL_MESH (Granular)
+    // Step 1a: Pre-index all transaction links and calculate in-degree, out-degree & flow metrics
+    const finEntityStats = new Map();
 
-      // Track client IP
-      if (r.ip) {
-        if (!ipToEntities.has(r.ip)) ipToEntities.set(r.ip, new Set());
-        ipToEntities.get(r.ip).add(remitterId);
+    function getOrInitFinStat(name, account, ifsc, bank, vpa, artId, ip, deviceType, narration) {
+      const key = normalizeEntityKey(account || name);
+      if (!finEntityStats.has(key)) {
+        finEntityStats.set(key, {
+          id: `entity:acc:${key}`,
+          key,
+          rawName: name,
+          account: account || "",
+          ifsc: ifsc || "",
+          bank: bank || "",
+          vpa: vpa || "",
+          inDegree: 0,
+          outDegree: 0,
+          inflowTotal: 0,
+          outflowTotal: 0,
+          outboundTargets: new Set(),
+          inboundSources: new Set(),
+          inboundFunds: [],
+          outboundFunds: [],
+          linkedArtifacts: new Set(artId ? [artId] : []),
+          ips: new Set(ip ? [ip] : []),
+          devices: new Set(deviceType ? [deviceType] : []),
+          narrations: narration ? [narration] : []
+        });
+      }
+      const stat = finEntityStats.get(key);
+      if (account && !stat.account) stat.account = account;
+      if (ifsc && !stat.ifsc) stat.ifsc = ifsc;
+      if (bank && !stat.bank) stat.bank = bank;
+      if (vpa && !stat.vpa) stat.vpa = vpa;
+      if (artId) stat.linkedArtifacts.add(artId);
+      if (ip) stat.ips.add(ip);
+      if (deviceType) stat.devices.add(deviceType);
+      if (narration && !stat.narrations.includes(narration)) stat.narrations.push(narration);
+      return stat;
+    }
+
+    const allFilteredRecords = [];
+
+    financialArtifacts.forEach((art) => {
+      (art.records || []).forEach((r) => {
+        const amt = Number(r.amount) || 0;
+        if (minVolume > 0 && amt < minVolume) return;
+
+        allFilteredRecords.push(r);
+
+        const remStat = getOrInitFinStat(
+          r.remitter, 
+          r.senderAccount || r.remitterAccount, 
+          r.senderIFSC, 
+          r.senderBank || r.remitterBank, 
+          r.remitterVPA, 
+          art.id, 
+          r.ip, 
+          r.deviceType || r.device, 
+          r.narration
+        );
+        const benStat = getOrInitFinStat(
+          r.beneficiary, 
+          r.receiverAccount || r.beneficiaryAccount, 
+          r.receiverIFSC, 
+          r.receiverBank || r.beneficiaryBank, 
+          r.beneficiaryVPA, 
+          art.id, 
+          null, 
+          null, 
+          r.narration
+        );
+
+        remStat.outDegree++;
+        remStat.outflowTotal += amt;
+        remStat.outboundTargets.add(benStat.id);
+        const flowDetails = {
+          txnId: r.txnId,
+          amount: amt,
+          mode: r.paymentMode || r.mode || "UPI",
+          narration: r.narration,
+          timestamp: r.timestamp,
+          from: remStat.account || r.remitter,
+          to: benStat.account || r.beneficiary,
+          senderIFSC: r.senderIFSC,
+          receiverIFSC: r.receiverIFSC,
+          deviceType: r.deviceType || r.device,
+          ip: r.ip
+        };
+        remStat.outboundFunds.push(flowDetails);
+
+        benStat.inDegree++;
+        benStat.inflowTotal += amt;
+        benStat.inboundSources.add(remStat.id);
+        benStat.inboundFunds.push(flowDetails);
+
+        // Track client IP for cross-artifact synergy
+        if (r.ip) {
+          if (!ipToEntities.has(r.ip)) ipToEntities.set(r.ip, new Set());
+          ipToEntities.get(r.ip).add(remStat.id);
+        }
+      });
+    });
+
+    // Step 1b: Dynamic Topological Classification (Victim ➔ L1 Mule ➔ L2 Mule ➔ Cashout)
+    const nodeTypeMap = new Map(); // entityId -> "VICTIM" | "L1_MULE" | "L2_MULE" | "CASHOUT"
+
+    // 1. Semantic Cashout & Narration Scam markers
+    finEntityStats.forEach((stat) => {
+      const combinedText = (stat.rawName + " " + stat.bank + " " + stat.vpa + " " + stat.narrations.join(" ")).toLowerCase();
+      const isKeywordCashout = /\b(?:atm|crypto|cashout|escrow|binance|wazirx|withdrawal|usdt|p2p)\b/i.test(combinedText) ||
+        /\bpos\b/i.test(combinedText) || combinedText.includes("atm ") || combinedText.includes("wdl");
+
+      if (stat.outDegree === 0 && (isKeywordCashout || (stat.inDegree > 0 && combinedText.includes("cash")))) {
+        nodeTypeMap.set(stat.id, "CASHOUT");
       }
     });
-  });
 
-  // Assign recommended seizure directives for financial mules
-  nodes.forEach((n) => {
-    if (n.type === "L1_MULE") {
-      const accStr = n.details?.account ? `account ${n.details.account}` : "linked account";
-      const vpaStr = n.details?.vpa ? ` and black-list UPI handle ${n.details.vpa}` : "";
-      n.recommendedAction = `Freeze ${accStr}${vpaStr} via 1930 portal / NPCI immediate lien notice.`;
-    } else if (n.type === "L2_MULE") {
-      n.recommendedAction = `Issue Section 91 CrPC directive to ${n.details.bank || "Nodal Bank"} to freeze balance and furnish KYC documents of account holder.`;
-    } else if (n.type === "CASHOUT") {
-      n.recommendedAction = `Dispatch nearest field patrol unit to inspect CCTV footage of ATM / request Binance P2P transaction hash subpoena.`;
+    // 2. Identify Victims: inDegree === 0 and outDegree > 0, OR explicit victim keyword
+    finEntityStats.forEach((stat) => {
+      const lower = stat.rawName.toLowerCase();
+      const isKeywordVictim = lower.includes("victim") || lower.includes("complainant") || lower.includes("source");
+      if (isKeywordVictim || (stat.inDegree === 0 && stat.outDegree > 0)) {
+        nodeTypeMap.set(stat.id, "VICTIM");
+      }
+    });
+
+    // Fallback: If no victim found, pick node with max net outflow
+    const foundVictim = Array.from(nodeTypeMap.values()).some((t) => t === "VICTIM");
+    if (!foundVictim && finEntityStats.size > 0) {
+      let maxNetOutflowId = null;
+      let maxNet = -Infinity;
+      finEntityStats.forEach((stat) => {
+        const net = stat.outflowTotal - stat.inflowTotal;
+        if (net > maxNet) {
+          maxNet = net;
+          maxNetOutflowId = stat.id;
+        }
+      });
+      if (maxNetOutflowId) nodeTypeMap.set(maxNetOutflowId, "VICTIM");
     }
-  });
+
+    // 3. BFS Shortest Path Traversal from Victim Nodes to determine Mule Layers
+    const queue = [];
+    const hopDistances = new Map();
+
+    finEntityStats.forEach((stat) => {
+      if (nodeTypeMap.get(stat.id) === "VICTIM") {
+        hopDistances.set(stat.id, 0);
+        queue.push({ id: stat.id, hop: 0 });
+      }
+    });
+
+    while (queue.length > 0) {
+      const { id, hop } = queue.shift();
+      const stat = Array.from(finEntityStats.values()).find((s) => s.id === id);
+      if (!stat) continue;
+
+      stat.outboundTargets.forEach((targetId) => {
+        if (!hopDistances.has(targetId)) {
+          const nextHop = hop + 1;
+          hopDistances.set(targetId, nextHop);
+          queue.push({ id: targetId, hop: nextHop });
+
+          const currentType = nodeTypeMap.get(targetId);
+          if (currentType !== "CASHOUT" && currentType !== "VICTIM") {
+            const targetStat = Array.from(finEntityStats.values()).find((s) => s.id === targetId);
+            const isTerminalSink = targetStat && targetStat.outDegree === 0;
+
+            if (isTerminalSink && nextHop >= 2) {
+              nodeTypeMap.set(targetId, "CASHOUT");
+            } else if (nextHop === 1) {
+              nodeTypeMap.set(targetId, "L1_MULE");
+            } else {
+              nodeTypeMap.set(targetId, "L2_MULE");
+            }
+          }
+        }
+      });
+    }
+
+    // 4. Fallback classification for any unclassified nodes
+    finEntityStats.forEach((stat) => {
+      if (!nodeTypeMap.has(stat.id)) {
+        if (stat.outDegree === 0) nodeTypeMap.set(stat.id, "CASHOUT");
+        else if (stat.inDegree === 0) nodeTypeMap.set(stat.id, "VICTIM");
+        else nodeTypeMap.set(stat.id, "L1_MULE");
+      }
+    });
+
+    // 5. Syndicate Hub Selection (Decluttering Engine for Big Data / 2M Records)
+    let selectedEntityKeys = null; // null means keep all
+
+    if (bigDataMode === "SYNDICATE_HUBS" && finEntityStats.size > 28) {
+      selectedEntityKeys = new Set();
+
+      // Top Victims (sources of funds)
+      const victimList = Array.from(finEntityStats.values())
+        .filter((s) => nodeTypeMap.get(s.id) === "VICTIM")
+        .sort((a, b) => (b.outflowTotal - b.inflowTotal) - (a.outflowTotal - a.inflowTotal))
+        .slice(0, 5);
+      victimList.forEach((s) => selectedEntityKeys.add(s.key));
+
+      // Top Terminal Cashouts (crypto/ATM/sinks)
+      const cashoutList = Array.from(finEntityStats.values())
+        .filter((s) => nodeTypeMap.get(s.id) === "CASHOUT")
+        .sort((a, b) => b.inflowTotal - a.inflowTotal)
+        .slice(0, 6);
+      cashoutList.forEach((s) => selectedEntityKeys.add(s.key));
+
+      // Top L1 Mules (highest turnover and in-degree)
+      const l1List = Array.from(finEntityStats.values())
+        .filter((s) => nodeTypeMap.get(s.id) === "L1_MULE")
+        .sort((a, b) => (b.inflowTotal + b.outflowTotal) - (a.inflowTotal + a.outflowTotal))
+        .slice(0, 10);
+      l1List.forEach((s) => selectedEntityKeys.add(s.key));
+
+      // Top L2 Mules (relays connecting to cashouts or top volume)
+      const l2List = Array.from(finEntityStats.values())
+        .filter((s) => nodeTypeMap.get(s.id) === "L2_MULE")
+        .sort((a, b) => (b.inflowTotal + b.outflowTotal) - (a.inflowTotal + a.outflowTotal))
+        .slice(0, 8);
+      l2List.forEach((s) => selectedEntityKeys.add(s.key));
+
+      // Connect bridge nodes: ensure any path from selected L1 to selected cashout is bridged
+      l1List.forEach((l1) => {
+        l1.outboundTargets.forEach((targetId) => {
+          const targetStat = Array.from(finEntityStats.values()).find((s) => s.id === targetId);
+          if (targetStat && selectedEntityKeys.size < 32) {
+            selectedEntityKeys.add(targetStat.key);
+          }
+        });
+      });
+    }
+
+    // Step 1c: Register Nodes into Graph with 11-column Schema Enrichments
+    finEntityStats.forEach((stat) => {
+      // If hub selection active, only register selected hubs
+      if (selectedEntityKeys && !selectedEntityKeys.has(stat.key)) {
+        return;
+      }
+
+      const assignedType = nodeTypeMap.get(stat.id) || "L1_MULE";
+      let riskScore = assignedType === "CASHOUT" ? 95 : (assignedType === "L2_MULE" ? 85 : (assignedType === "L1_MULE" ? 75 : 10));
+      
+      let roleTitle = "Mule Account";
+      let flags = [];
+      if (assignedType === "VICTIM") {
+        roleTitle = "Victim Complainant";
+        flags = [];
+      } else if (assignedType === "L1_MULE") {
+        roleTitle = "Layer-1 Primary Mule";
+        flags = ["Primary Influx Receiver", "Immediate Layering Hop"];
+      } else if (assignedType === "L2_MULE") {
+        roleTitle = "Layer-2 Mule Relayer";
+        flags = ["Layer-2 Mule Funnel", "Rapid Sub-Layer Dispersal"];
+      } else if (assignedType === "CASHOUT") {
+        roleTitle = "Terminal Cashout Endpoint";
+        flags = ["Terminal Cashout Point", "Off-Ramp ATM / Crypto Escrow"];
+      }
+
+      // Heuristic Enrichments
+      stat.devices.forEach((dev) => {
+        if (dev === "Web_Emulator" || dev.toLowerCase().includes("emulator")) {
+          flags.push("Synthetic Client (Web_Emulator Sandbox)");
+          riskScore = Math.min(100, riskScore + 20);
+        } else if (dev === "Linux_Script" || dev.toLowerCase().includes("script") || dev.toLowerCase().includes("bot")) {
+          flags.push("Automated Script Botnet (Linux_Script)");
+          riskScore = Math.min(100, riskScore + 25);
+        }
+      });
+
+      stat.ips.forEach((ip) => {
+        if (ip.startsWith("185.220.") || ip.startsWith("103.21.") || ip.startsWith("45.") || ip.startsWith("194.") || ip.startsWith("195.")) {
+          flags.push(`Foreign Proxy / Tor Anomaly (${ip})`);
+          riskScore = Math.min(100, riskScore + 15);
+        }
+      });
+
+      stat.narrations.forEach((narr) => {
+        const lowerNarr = narr.toLowerCase();
+        if (lowerNarr.includes("crypto") || lowerNarr.includes("binance") || lowerNarr.includes("usdt") || lowerNarr.includes("p2p")) {
+          flags.push(`Narration Crypto Marker: "${narr}"`);
+        } else if (lowerNarr.includes("atm") || lowerNarr.includes("cash") || lowerNarr.includes("wdl")) {
+          flags.push(`Narration ATM Cashout Marker: "${narr}"`);
+        } else if (lowerNarr.includes("task") || lowerNarr.includes("lottery") || lowerNarr.includes("loan")) {
+          flags.push(`Narration Social Engineering Marker: "${narr}"`);
+        }
+      });
+
+      const displayName = stat.bank && stat.account 
+        ? `${stat.bank} (A/C ${stat.account})` 
+        : (stat.rawName.startsWith("A/C") ? stat.rawName : `A/C ${stat.account || stat.rawName}`);
+
+      const displaySubtitle = stat.bank 
+        ? `${stat.bank} • ${stat.ifsc || "IFSC"} | ${stat.vpa || stat.account}`
+        : (stat.vpa ? `${stat.vpa} (${stat.account || "Account"})` : roleTitle);
+
+      const node = addNode({
+        id: stat.id,
+        name: displayName,
+        label: displayName,
+        type: assignedType,
+        subtitle: displaySubtitle,
+        details: {
+          account: stat.account,
+          ifsc: stat.ifsc,
+          bank: stat.bank,
+          vpa: stat.vpa,
+          role: roleTitle,
+          devices: Array.from(stat.devices),
+          ips: Array.from(stat.ips),
+          narrations: stat.narrations
+        },
+        riskScore,
+        anomalyFlags: flags,
+        linkedArtifacts: Array.from(stat.linkedArtifacts)
+      });
+
+      node.inboundFunds = stat.inboundFunds;
+      node.outboundFunds = stat.outboundFunds;
+    });
+
+    // Step 1d: Register Directional Edges
+    allFilteredRecords.forEach((r) => {
+      const remKey = normalizeEntityKey(r.senderAccount || r.remitter);
+      const benKey = normalizeEntityKey(r.receiverAccount || r.beneficiary);
+      const remId = `entity:acc:${remKey}`;
+      const benId = `entity:acc:${benKey}`;
+
+      // Only add edge if both endpoints exist in active graph
+      if (!nodeMap.has(remId) || !nodeMap.has(benId)) {
+        return;
+      }
+      
+      const labelMode = r.paymentMode || r.mode || "UPI";
+      const narrationSnippet = r.narration ? ` • "${r.narration.slice(0, 15)}"` : "";
+      
+      addEdge({
+        id: `flow:${r.txnId || (r.recordId || Math.random())}`,
+        source: remId,
+        target: benId,
+        type: "FUNDS_FLOW",
+        label: `₹${(Number(r.amount) || 0).toLocaleString("en-IN")} (${labelMode})${narrationSnippet}`,
+        amount: Number(r.amount) || 0,
+        mode: labelMode,
+        timestamp: r.timestamp,
+        narration: r.narration,
+        senderIFSC: r.senderIFSC,
+        receiverIFSC: r.receiverIFSC,
+        deviceType: r.deviceType || r.device,
+        ip: r.ip
+      });
+    });
+
+    // Assign recommended seizure directives for financial nodes
+    nodes.forEach((n) => {
+      if (n.type === "L1_MULE") {
+        const accStr = n.details?.account ? `account ${n.details.account}` : "linked account";
+        const vpaStr = n.details?.vpa ? ` and black-list UPI handle ${n.details.vpa}` : "";
+        n.recommendedAction = `Freeze ${accStr}${vpaStr} via 1930 portal / NPCI immediate lien notice.`;
+      } else if (n.type === "L2_MULE") {
+        n.recommendedAction = `Issue Section 91 CrPC directive to ${n.details?.bank || "Nodal Bank"} to freeze balance and furnish KYC documents of account holder.`;
+      } else if (n.type === "CASHOUT") {
+        n.recommendedAction = `Dispatch nearest field patrol unit to inspect CCTV footage of ATM / request crypto exchange P2P subpoena.`;
+      }
+    });
+  }
 
   // ==========================================================================
   // 2. Process Telecom Artifacts (CDR / IPDR: Shared Hardware & Suspect Calls)
@@ -431,31 +875,38 @@ export function getArtifactCorrelationGraph() {
   // 5. Cross-Artifact IP Synergy (Connects Email, CDR, UPI & C2)
   // ==========================================================================
   ipToEntities.forEach((entitySet, ip) => {
-    if (entitySet.size >= 1) {
+    // Check if proxy / bulletproof / C2
+    const isProxy = ip.startsWith("185.") || ip.startsWith("103.21.") || ip.startsWith("45.") || ip.startsWith("194.") || ip.startsWith("195.");
+    const isCrossLinked = entitySet.size > 1;
+
+    // Prune domestic residential IPs used by only 1 entity!
+    // They are preserved inside that account's dossier details without creating floating graph clutter.
+    if (isCrossLinked || isProxy) {
       const ipNodeId = `entity:ip:${ip}`;
-      const isCrossLinked = entitySet.size > 1;
 
       addNode({
         id: ipNodeId,
         name: `IP: ${ip}`,
         type: "C2_SERVER",
-        subtitle: isCrossLinked ? `🚨 Shared Cross-Artifact IP (${entitySet.size} Endpoints)` : "Transaction / Gateway IP",
+        subtitle: isCrossLinked ? `🚨 Shared Cross-Artifact IP (${entitySet.size} Endpoints)` : "Foreign Proxy / Bulletproof Host",
         details: { ip, linkedEntitiesCount: entitySet.size },
-        riskScore: isCrossLinked ? 95 : 80,
+        riskScore: isCrossLinked ? 95 : 85,
         anomalyFlags: isCrossLinked 
           ? ["Multi-Artifact Infrastructure Anchor", "Used Across Email, Telecom & Banking"] 
-          : ["Network Gateway"],
+          : ["Foreign Bulletproof Proxy Infrastructure"],
         recommendedAction: `Query ASN/ISP for subscriber IPDR logs and issue preservation notice under Section 91 CrPC.`
       });
 
       entitySet.forEach((entId) => {
-        addEdge({
-          id: `cross_ip:${ip}:${entId}`,
-          source: entId,
-          target: ipNodeId,
-          type: "CROSS_ARTIFACT_IP",
-          label: "Connected via IP Infrastructure"
-        });
+        if (nodeMap.has(entId)) {
+          addEdge({
+            id: `cross_ip:${ip}:${entId}`,
+            source: entId,
+            target: ipNodeId,
+            type: "CROSS_ARTIFACT_IP",
+            label: "Connected via IP Infrastructure"
+          });
+        }
       });
     }
   });
@@ -532,6 +983,47 @@ export function getArtifactCorrelationGraph() {
       node.velocityDisplay = triage.velocityDisplay;
     }
   });
+
+  // Optional: Single-Click Trail Isolation Filter
+  if (isolateNodeId && nodeMap.has(isolateNodeId)) {
+    const keepNodeIds = new Set([isolateNodeId]);
+    let currentHop = new Set([isolateNodeId]);
+
+    for (let hop = 0; hop < 2; hop++) {
+      const nextHop = new Set();
+      edges.forEach((e) => {
+        if (currentHop.has(e.source) && !keepNodeIds.has(e.target)) {
+          keepNodeIds.add(e.target);
+          nextHop.add(e.target);
+        }
+        if (currentHop.has(e.target) && !keepNodeIds.has(e.source)) {
+          keepNodeIds.add(e.source);
+          nextHop.add(e.source);
+        }
+      });
+      currentHop = nextHop;
+    }
+
+    const isolatedNodes = nodes.filter((n) => keepNodeIds.has(n.id));
+    const isolatedEdges = edges.filter((e) => keepNodeIds.has(e.source) && keepNodeIds.has(e.target));
+
+    return {
+      nodes: isolatedNodes,
+      edges: isolatedEdges,
+      metrics: {
+        totalNodes: isolatedNodes.length,
+        totalEdges: isolatedEdges.length,
+        muleNodesCount: isolatedNodes.filter((n) => n.type === "L1_MULE" || n.type === "L2_MULE").length,
+        cashoutNodesCount: isolatedNodes.filter((n) => n.type === "CASHOUT").length,
+        sharedDevicesCount: isolatedNodes.filter((n) => n.type === "IMEI").length,
+        c2ServersCount: isolatedNodes.filter((n) => n.type === "C2_SERVER").length,
+        criticalRiskNodesCount: isolatedNodes.filter((n) => n.triageTier === "CRITICAL" || n.riskScore >= 85).length,
+        highRiskNodesCount: isolatedNodes.filter((n) => n.triageTier === "HIGH" || (n.riskScore >= 70 && n.riskScore < 85)).length,
+        isIsolated: true,
+        isolatedRootId: isolateNodeId
+      }
+    };
+  }
 
   return {
     nodes,

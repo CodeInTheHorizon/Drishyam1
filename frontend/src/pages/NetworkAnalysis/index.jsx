@@ -68,6 +68,11 @@ export default function NetworkAnalysis() {
   const [dbVersion, setDbVersion] = useState(0);
   const [forensicArtifactsCount, setForensicArtifactsCount] = useState(0);
 
+  // Big-Data Clutter Reduction Controls
+  const [bigDataMode, setBigDataMode] = useState("SYNDICATE_HUBS");
+  const [minVolume, setMinVolume] = useState(0);
+  const [isTrailIsolated, setIsTrailIsolated] = useState(false);
+
   // Subscribe to real-time changes
   useEffect(() => {
     const unsubRecords = recordService.subscribe(() => {
@@ -92,7 +97,11 @@ export default function NetworkAnalysis() {
   // Compute live graph data based on active analysis mode
   const { allNodes, allEdges, metrics, crossDistrictSuspects } = useMemo(() => {
     if (analysisMode === "FORENSIC") {
-      const forensicData = getArtifactCorrelationGraph();
+      const forensicData = getArtifactCorrelationGraph({
+        bigDataMode,
+        minVolume,
+        isolateNodeId: isTrailIsolated ? selectedNodeId : null
+      });
       return {
         allNodes: forensicData.nodes,
         allEdges: forensicData.edges,
@@ -103,7 +112,9 @@ export default function NetworkAnalysis() {
           syndicatesCount: forensicData.metrics.sharedDevicesCount,
           stationsCount: forensicData.metrics.c2ServersCount,
           criticalCount: forensicData.metrics.criticalRiskNodesCount,
-          totalConnections: forensicData.metrics.totalEdges
+          totalConnections: forensicData.metrics.totalEdges,
+          isIsolated: forensicData.metrics.isIsolated,
+          isolatedRootId: forensicData.metrics.isolatedRootId
         },
         crossDistrictSuspects: []
       };
@@ -196,6 +207,9 @@ export default function NetworkAnalysis() {
     setSearchTerm("");
     setSelectedScope("ALL");
     setSelectedRiskFilter("ALL");
+    setIsTrailIsolated(false);
+    setMinVolume(0);
+    setBigDataMode("SYNDICATE_HUBS");
   };
 
   const handleSelectSuspect = (suspectId) => {
@@ -483,7 +497,32 @@ export default function NetworkAnalysis() {
           setIsSimulationActive={setIsSimulationActive}
           onResetView={handleResetView}
           totalEntitiesCount={allNodes.length}
+          bigDataMode={bigDataMode}
+          setBigDataMode={setBigDataMode}
+          minVolume={minVolume}
+          setMinVolume={setMinVolume}
+          isTrailIsolated={isTrailIsolated}
+          setIsTrailIsolated={setIsTrailIsolated}
+          selectedNodeId={selectedNodeId}
         />
+      )}
+
+      {/* Trail Isolation Active Banner */}
+      {analysisMode === "FORENSIC" && isTrailIsolated && selectedNode && (
+        <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-emerald-950/90 via-slate-900/90 to-emerald-950/90 border border-emerald-500/60 rounded-xl text-xs font-mono text-emerald-300 shadow-xl">
+          <div className="flex items-center gap-2.5">
+            <span className="text-base animate-pulse">🎯</span>
+            <span>
+              Isolated 2-Hop Money Conduits for: <strong>{selectedNode.name || selectedNodeId}</strong> ({filteredNodes.length} Nodes, {filteredEdges.length} Flows)
+            </span>
+          </div>
+          <button 
+            onClick={() => setIsTrailIsolated(false)}
+            className="px-3 py-1 rounded-md bg-emerald-800/70 hover:bg-emerald-700 text-white font-bold cursor-pointer transition-colors shadow-sm"
+          >
+            Clear Trail Isolation
+          </button>
+        </div>
       )}
 
       {/* Cross-Jurisdiction Connection Finder Banner (Only in CCTNS mode) */}
