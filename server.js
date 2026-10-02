@@ -38,7 +38,13 @@ const insightsHandler = require("./datathon-chatbot/functions/insights/index.js"
 const CrimeRepository = require("./datathon-chatbot/functions/chat/datastore.js");
 const hardwareManager = require("./backend/hardwareManager.js");
 const cloudinaryService = require("./backend/cloudinaryService.js");
-const { process2MTransactions, get2MRecordsChunk, search2MRecords } = require("./backend/fast2MProcessor.js");
+const { 
+    process2MTransactions, 
+    get2MRecordsChunk, 
+    search2MRecords,
+    getVictimsList,
+    traceVictimMultiHop
+} = require("./backend/fast2MProcessor.js");
 
 // Live Digital Forensic Evidence Store
 let forensicEvidenceStoreBackend = [];
@@ -348,6 +354,34 @@ const server = http.createServer(async (req, res) => {
             }
         } catch (err) {
             console.error("Records query error:", err);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+    } else if (pathname === "/api/forensics/victims" && req.method === "GET") {
+        try {
+            const limit = parseInt(parsedUrl.query.limit, 10) || 300;
+            const data = await getVictimsList(limit);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(data));
+        } catch (err) {
+            console.error("Victims query error:", err);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+    } else if (pathname === "/api/forensics/victim-trace" && req.method === "GET") {
+        try {
+            const account = parsedUrl.query.account || parsedUrl.query.victim || "";
+            const depth = parseInt(parsedUrl.query.depth || parsedUrl.query.hops, 10) || 4;
+            if (!account) {
+                res.writeHead(400, { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ success: false, error: "Missing required 'account' query parameter." }));
+                return;
+            }
+            const data = await traceVictimMultiHop(account, depth);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify(data));
+        } catch (err) {
+            console.error("Victim trace error:", err);
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ success: false, error: err.message }));
         }

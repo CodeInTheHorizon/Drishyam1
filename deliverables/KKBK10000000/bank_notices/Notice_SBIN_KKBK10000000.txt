@@ -1,0 +1,62 @@
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/SBIN-9258
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+State Bank of India, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in State Bank of India: ₹6,98,321.29 (Rupees Six Lakh Ninety Eight Thousand Three Hundred Twenty One Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: SBIN10000880 | IFSC: SBIN0001880 | Amount: ₹9,788.08 | Txn UTR: TXN126073141 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:38:20
+2. Account: SBIN10000774 | IFSC: SBIN0001774 | Amount: ₹15,052.48 | Txn UTR: TXN179781597 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:10:42
+3. Account: SBIN10000971 | IFSC: SBIN0001971 | Amount: ₹41,700.85 | Txn UTR: TXN734598950 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:09:01
+4. Account: SBIN10001231 | IFSC: SBIN0002231 | Amount: ₹96,805.87 | Txn UTR: TXN566591796 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-21 17:02:10
+5. Account: SBIN10001260 | IFSC: SBIN0002260 | Amount: ₹9,396.55 | Txn UTR: TXN773525321 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 18:59:42
+6. Account: SBIN10001285 | IFSC: SBIN0002285 | Amount: ₹86,406.18 | Txn UTR: TXN713065456 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:39:04
+7. Account: SBIN10001488 | IFSC: SBIN0002488 | Amount: ₹86,762.49 | Txn UTR: TXN674861416 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-29 20:52:46
+8. Account: SBIN10001359 | IFSC: SBIN0002359 | Amount: ₹22,877.76 | Txn UTR: TXN755314052 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 19:39:30
+9. Account: SBIN10001332 | IFSC: SBIN0002332 | Amount: ₹8,473.2 | Txn UTR: TXN891491682 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:42:54
+10. Account: SBIN10001168 | IFSC: SBIN0002168 | Amount: ₹1,785.23 | Txn UTR: TXN240625592 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-15 21:15:26
+11. Account: SBIN10001222 | IFSC: SBIN0002222 | Amount: ₹73,918.8 | Txn UTR: TXN720953011 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 14:01:45
+12. Account: SBIN10001416 | IFSC: SBIN0002416 | Amount: ₹53,809.09 | Txn UTR: TXN108867314 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 05:23:26
+13. Account: SBIN10001406 | IFSC: SBIN0002406 | Amount: ₹27,273.82 | Txn UTR: TXN241852050 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 13:50:07
+14. Account: SBIN10001124 | IFSC: SBIN0002124 | Amount: ₹28,542.81 | Txn UTR: TXN712112386 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 07:35:48
+15. Account: SBIN10001299 | IFSC: SBIN0002299 | Amount: ₹9,758.29 | Txn UTR: TXN935991417 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-16 05:40:21
+16. Account: SBIN10001459 | IFSC: SBIN0002459 | Amount: ₹75,257.92 | Txn UTR: TXN753445158 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-26 19:00:03
+17. Account: SBIN10001280 | IFSC: SBIN0002280 | Amount: ₹50,711.87 | Txn UTR: TXN175652811 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 09:19:41
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...

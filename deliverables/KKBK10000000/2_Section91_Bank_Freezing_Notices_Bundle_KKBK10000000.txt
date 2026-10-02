@@ -1,0 +1,579 @@
+====================================================================================================
+BANK REQUISITION NOTICE #1 — ICICI Bank (Disputed: ₹9,22,695.89)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/ICIC-5003
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+ICICI Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in ICICI Bank: ₹9,22,695.89 (Rupees Nine Lakh Twenty Two Thousand Six Hundred Ninety Five Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: ICIC10000335 | IFSC: ICIC0001335 | Amount: ₹4,55,541.61 | Txn UTR: TXN401119292 | Role: Collector Mule (Primary Siphoned Influx Receiver) | Time: 2026-09-22 01:13:51
+2. Account: ICIC10001095 | IFSC: ICIC0002095 | Amount: ₹81,480.25 | Txn UTR: TXN214780864 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:17:24
+3. Account: ICIC10001316 | IFSC: ICIC0002316 | Amount: ₹2,57,470.06 | Txn UTR: TXN681592637 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-29 09:32:57
+4. Account: ICIC10001309 | IFSC: ICIC0002309 | Amount: ₹78,221.04 | Txn UTR: TXN588978512 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 01:30:05
+5. Account: ICIC10001248 | IFSC: ICIC0002248 | Amount: ₹1,188.18 | Txn UTR: TXN507230109 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-25 20:03:35
+6. Account: ICIC10001429 | IFSC: ICIC0002429 | Amount: ₹25,386.05 | Txn UTR: TXN605825784 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-27 03:49:51
+7. Account: ICIC10001361 | IFSC: ICIC0002361 | Amount: ₹14,450.38 | Txn UTR: TXN142609906 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 09:35:09
+8. Account: ICIC10001408 | IFSC: ICIC0002408 | Amount: ₹8,958.32 | Txn UTR: TXN259156926 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-20 16:40:45
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #2 — Paytm Payments Bank (Disputed: ₹7,19,908.81)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/PYTM-4834
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Paytm Payments Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Paytm Payments Bank: ₹7,19,908.81 (Rupees Seven Lakh Nineteen Thousand Nine Hundred Eight Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: PYTM10000679 | IFSC: PYTM0001679 | Amount: ₹21,910.87 | Txn UTR: TXN953843067 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:23:51
+2. Account: PYTM10000639 | IFSC: PYTM0001639 | Amount: ₹1,85,205.36 | Txn UTR: TXN195086983 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:20:43
+3. Account: PYTM10000977 | IFSC: PYTM0001977 | Amount: ₹1,34,555.88 | Txn UTR: TXN396194426 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:43:11
+4. Account: PYTM10000990 | IFSC: PYTM0001990 | Amount: ₹1,12,906.68 | Txn UTR: TXN598277834 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-19 13:33:20
+5. Account: PYTM10000952 | IFSC: PYTM0001952 | Amount: ₹37,866.9 | Txn UTR: TXN366563733 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:12:11
+6. Account: PYTM10001258 | IFSC: PYTM0002258 | Amount: ₹1,08,390.42 | Txn UTR: TXN362666100 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:47:51
+7. Account: PYTM10001455 | IFSC: PYTM0002455 | Amount: ₹13,671.95 | Txn UTR: TXN425327822 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-20 18:34:00
+8. Account: PYTM10001417 | IFSC: PYTM0002417 | Amount: ₹1,05,400.75 | Txn UTR: TXN480275762 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 01:10:10
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #3 — HDFC Bank (Disputed: ₹4,20,264.89)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/HDFC-3859
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+HDFC Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in HDFC Bank: ₹4,20,264.89 (Rupees Four Lakh Twenty Thousand Two Hundred Sixty Four Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: HDFC10000815 | IFSC: HDFC0001815 | Amount: ₹88,737.26 | Txn UTR: TXN892472963 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:21:08
+2. Account: HDFC10000745 | IFSC: HDFC0001745 | Amount: ₹47,580.09 | Txn UTR: TXN217164637 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:37:32
+3. Account: HDFC10001048 | IFSC: HDFC0002048 | Amount: ₹50,516.34 | Txn UTR: TXN609728874 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:16:20
+4. Account: HDFC10001339 | IFSC: HDFC0002339 | Amount: ₹40,042.97 | Txn UTR: TXN699853455 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-26 10:51:02
+5. Account: HDFC10001313 | IFSC: HDFC0002313 | Amount: ₹2,034.4 | Txn UTR: TXN558214554 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-25 11:52:45
+6. Account: HDFC10001382 | IFSC: HDFC0002382 | Amount: ₹64,589.63 | Txn UTR: TXN852999272 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:51:29
+7. Account: HDFC10001105 | IFSC: HDFC0002105 | Amount: ₹99,710.28 | Txn UTR: TXN836852142 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 10:50:42
+8. Account: HDFC10001292 | IFSC: HDFC0002292 | Amount: ₹27,053.92 | Txn UTR: TXN589168640 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-26 05:10:29
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #4 — Axis Bank (Disputed: ₹5,65,006.79)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/AXIS-5967
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Axis Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Axis Bank: ₹5,65,006.79 (Rupees Five Lakh Sixty Five Thousand Six Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: AXIS10000585 | IFSC: AXIS0001585 | Amount: ₹69,097.04 | Txn UTR: TXN806422153 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:24:15
+2. Account: AXIS10000657 | IFSC: AXIS0001657 | Amount: ₹67,280.87 | Txn UTR: TXN433742576 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-19 13:32:34
+3. Account: AXIS10001196 | IFSC: AXIS0002196 | Amount: ₹54,832.43 | Txn UTR: TXN147920703 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-16 17:58:37
+4. Account: AXIS10001206 | IFSC: AXIS0002206 | Amount: ₹14,735.93 | Txn UTR: TXN794087686 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-29 11:15:20
+5. Account: AXIS10001221 | IFSC: AXIS0002221 | Amount: ₹1,65,270.14 | Txn UTR: TXN720209271 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-27 06:22:09
+6. Account: AXIS10001289 | IFSC: AXIS0002289 | Amount: ₹65,009.7 | Txn UTR: TXN970104780 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 20:21:25
+7. Account: AXIS10001378 | IFSC: AXIS0002378 | Amount: ₹1,28,780.68 | Txn UTR: TXN521477299 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-27 06:40:39
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #5 — State Bank of India (Disputed: ₹6,98,321.29)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/SBIN-9258
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+State Bank of India, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in State Bank of India: ₹6,98,321.29 (Rupees Six Lakh Ninety Eight Thousand Three Hundred Twenty One Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: SBIN10000880 | IFSC: SBIN0001880 | Amount: ₹9,788.08 | Txn UTR: TXN126073141 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:38:20
+2. Account: SBIN10000774 | IFSC: SBIN0001774 | Amount: ₹15,052.48 | Txn UTR: TXN179781597 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:10:42
+3. Account: SBIN10000971 | IFSC: SBIN0001971 | Amount: ₹41,700.85 | Txn UTR: TXN734598950 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:09:01
+4. Account: SBIN10001231 | IFSC: SBIN0002231 | Amount: ₹96,805.87 | Txn UTR: TXN566591796 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-21 17:02:10
+5. Account: SBIN10001260 | IFSC: SBIN0002260 | Amount: ₹9,396.55 | Txn UTR: TXN773525321 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 18:59:42
+6. Account: SBIN10001285 | IFSC: SBIN0002285 | Amount: ₹86,406.18 | Txn UTR: TXN713065456 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:39:04
+7. Account: SBIN10001488 | IFSC: SBIN0002488 | Amount: ₹86,762.49 | Txn UTR: TXN674861416 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-29 20:52:46
+8. Account: SBIN10001359 | IFSC: SBIN0002359 | Amount: ₹22,877.76 | Txn UTR: TXN755314052 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 19:39:30
+9. Account: SBIN10001332 | IFSC: SBIN0002332 | Amount: ₹8,473.2 | Txn UTR: TXN891491682 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:42:54
+10. Account: SBIN10001168 | IFSC: SBIN0002168 | Amount: ₹1,785.23 | Txn UTR: TXN240625592 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-15 21:15:26
+11. Account: SBIN10001222 | IFSC: SBIN0002222 | Amount: ₹73,918.8 | Txn UTR: TXN720953011 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 14:01:45
+12. Account: SBIN10001416 | IFSC: SBIN0002416 | Amount: ₹53,809.09 | Txn UTR: TXN108867314 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 05:23:26
+13. Account: SBIN10001406 | IFSC: SBIN0002406 | Amount: ₹27,273.82 | Txn UTR: TXN241852050 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 13:50:07
+14. Account: SBIN10001124 | IFSC: SBIN0002124 | Amount: ₹28,542.81 | Txn UTR: TXN712112386 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 07:35:48
+15. Account: SBIN10001299 | IFSC: SBIN0002299 | Amount: ₹9,758.29 | Txn UTR: TXN935991417 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-16 05:40:21
+16. Account: SBIN10001459 | IFSC: SBIN0002459 | Amount: ₹75,257.92 | Txn UTR: TXN753445158 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-26 19:00:03
+17. Account: SBIN10001280 | IFSC: SBIN0002280 | Amount: ₹50,711.87 | Txn UTR: TXN175652811 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 09:19:41
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #6 — Airtel Payments Bank (Disputed: ₹10,20,187.36)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/AIRP-3440
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Airtel Payments Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Airtel Payments Bank: ₹10,20,187.36 (Rupees Ten Lakh Twenty Thousand One Hundred Eighty Seven Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: AIRP10000936 | IFSC: AIRP0001936 | Amount: ₹2,12,952.99 | Txn UTR: TXN408818640 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:42:24
+2. Account: AIRP10000765 | IFSC: AIRP0001765 | Amount: ₹76,998.75 | Txn UTR: TXN151501998 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-19 13:39:55
+3. Account: AIRP10001372 | IFSC: AIRP0002372 | Amount: ₹21,034.44 | Txn UTR: TXN515751130 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 01:29:41
+4. Account: AIRP10001422 | IFSC: AIRP0002422 | Amount: ₹66,333.16 | Txn UTR: TXN968195900 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 01:49:21
+5. Account: AIRP10001252 | IFSC: AIRP0002252 | Amount: ₹24,723.74 | Txn UTR: TXN832359973 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 16:42:17
+6. Account: AIRP10001367 | IFSC: AIRP0002367 | Amount: ₹2,04,434.87 | Txn UTR: TXN750185777 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 18:47:26
+7. Account: AIRP10001257 | IFSC: AIRP0002257 | Amount: ₹99,943.8 | Txn UTR: TXN485769434 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 16:34:49
+8. Account: AIRP10001423 | IFSC: AIRP0002423 | Amount: ₹3,13,765.61 | Txn UTR: TXN360245660 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-15 19:30:59
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #7 — Kotak Mahindra Bank (Disputed: ₹4,23,841.65)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/KKBK-9549
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Kotak Mahindra Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Kotak Mahindra Bank: ₹4,23,841.65 (Rupees Four Lakh Twenty Three Thousand Eight Hundred Forty One Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: KKBK10001079 | IFSC: KKBK0002079 | Amount: ₹90,006.44 | Txn UTR: TXN841989631 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-19 13:32:10
+2. Account: KKBK10000734 | IFSC: KKBK0001734 | Amount: ₹52,824.86 | Txn UTR: TXN600623437 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:10:17
+3. Account: KKBK10001330 | IFSC: KKBK0002330 | Amount: ₹1,77,797.14 | Txn UTR: TXN583175063 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 01:45:16
+4. Account: KKBK10001356 | IFSC: KKBK0002356 | Amount: ₹26,836.68 | Txn UTR: TXN291158114 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 04:50:43
+5. Account: KKBK10001203 | IFSC: KKBK0002203 | Amount: ₹40,024.3 | Txn UTR: TXN917190020 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-29 00:23:35
+6. Account: KKBK10001495 | IFSC: KKBK0002495 | Amount: ₹36,352.23 | Txn UTR: TXN411279924 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 09:18:36
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #8 — Bank of Baroda (Disputed: ₹9,65,603.52)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/BARB-3523
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Bank of Baroda, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Bank of Baroda: ₹9,65,603.52 (Rupees Nine Lakh Sixty Five Thousand Six Hundred Three Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: BARB10000590 | IFSC: BARB0001590 | Amount: ₹8,826.25 | Txn UTR: TXN394322081 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-19 13:34:42
+2. Account: BARB10001377 | IFSC: BARB0002377 | Amount: ₹85,187.77 | Txn UTR: TXN195243830 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-22 01:40:24
+3. Account: BARB10001302 | IFSC: BARB0002302 | Amount: ₹50,170.88 | Txn UTR: TXN863525350 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-17 00:29:12
+4. Account: BARB10001269 | IFSC: BARB0002269 | Amount: ₹1,66,911.18 | Txn UTR: TXN129636340 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-24 17:50:55
+5. Account: BARB10001157 | IFSC: BARB0002157 | Amount: ₹1,57,735.3 | Txn UTR: TXN247248902 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 22:41:00
+6. Account: BARB10001224 | IFSC: BARB0002224 | Amount: ₹1,29,173.64 | Txn UTR: TXN561421959 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 19:03:44
+7. Account: BARB10001162 | IFSC: BARB0002162 | Amount: ₹27,658.5 | Txn UTR: TXN273752709 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-28 15:38:11
+8. Account: BARB10001255 | IFSC: BARB0002255 | Amount: ₹59,342.8 | Txn UTR: TXN250243436 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-28 13:23:16
+9. Account: BARB10001358 | IFSC: BARB0002358 | Amount: ₹14,524.25 | Txn UTR: TXN649472830 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-21 01:05:41
+10. Account: BARB10001121 | IFSC: BARB0002121 | Amount: ₹21,899.13 | Txn UTR: TXN111320176 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-28 15:39:05
+11. Account: BARB10001207 | IFSC: BARB0002207 | Amount: ₹27,704.15 | Txn UTR: TXN322431130 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-21 02:09:17
+12. Account: BARB10001142 | IFSC: BARB0002142 | Amount: ₹44,695.18 | Txn UTR: TXN174391678 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 09:33:45
+13. Account: BARB10001287 | IFSC: BARB0002287 | Amount: ₹1,71,774.49 | Txn UTR: TXN404715717 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-29 08:23:53
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #9 — Punjab National Bank (Disputed: ₹95,053.16)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/PUNB-3795
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Punjab National Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Punjab National Bank: ₹95,053.16 (Rupees Ninety Five Thousand Fifty Three Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: PUNB10000508 | IFSC: PUNB0001508 | Amount: ₹46,557.48 | Txn UTR: TXN358626121 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:09:17
+2. Account: PUNB10001374 | IFSC: PUNB0002374 | Amount: ₹48,495.68 | Txn UTR: TXN339697174 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 09:38:18
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...
+
+
+====================================================================================================
+BANK REQUISITION NOTICE #10 — IPOS Bank (Disputed: ₹3,60,690.51)
+====================================================================================================
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/IPOS-9073
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+IPOS Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in IPOS Bank: ₹3,60,690.51 (Rupees Three Lakh Sixty Thousand Six Hundred Ninety Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: IPOS10001227 | IFSC: IPOS0002227 | Amount: ₹2,81,686.03 | Txn UTR: TXN129168602 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-27 07:50:24
+2. Account: IPOS10001205 | IFSC: IPOS0002205 | Amount: ₹3,241.51 | Txn UTR: TXN749469779 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-17 16:27:45
+3. Account: IPOS10001253 | IFSC: IPOS0002253 | Amount: ₹45,676.89 | Txn UTR: TXN162506994 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-18 19:00:13
+4. Account: IPOS10001296 | IFSC: IPOS0002296 | Amount: ₹30,086.08 | Txn UTR: TXN963697719 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-20 16:03:50
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...

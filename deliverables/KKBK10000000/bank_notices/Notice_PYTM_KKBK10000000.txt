@@ -1,0 +1,53 @@
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/PYTM-4834
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+Paytm Payments Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in Paytm Payments Bank: ₹7,19,908.81 (Rupees Seven Lakh Nineteen Thousand Nine Hundred Eight Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: PYTM10000679 | IFSC: PYTM0001679 | Amount: ₹21,910.87 | Txn UTR: TXN953843067 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:23:51
+2. Account: PYTM10000639 | IFSC: PYTM0001639 | Amount: ₹1,85,205.36 | Txn UTR: TXN195086983 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:20:43
+3. Account: PYTM10000977 | IFSC: PYTM0001977 | Amount: ₹1,34,555.88 | Txn UTR: TXN396194426 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:43:11
+4. Account: PYTM10000990 | IFSC: PYTM0001990 | Amount: ₹1,12,906.68 | Txn UTR: TXN598277834 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-19 13:33:20
+5. Account: PYTM10000952 | IFSC: PYTM0001952 | Amount: ₹37,866.9 | Txn UTR: TXN366563733 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:12:11
+6. Account: PYTM10001258 | IFSC: PYTM0002258 | Amount: ₹1,08,390.42 | Txn UTR: TXN362666100 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:47:51
+7. Account: PYTM10001455 | IFSC: PYTM0002455 | Amount: ₹13,671.95 | Txn UTR: TXN425327822 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-20 18:34:00
+8. Account: PYTM10001417 | IFSC: PYTM0002417 | Amount: ₹1,05,400.75 | Txn UTR: TXN480275762 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 01:10:10
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...

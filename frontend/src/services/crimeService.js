@@ -5,7 +5,7 @@
  * Transforms live FIR records into map pins, district heatmaps, and spatial intelligence.
  */
 
-import { recordService } from "./recordService";
+import { recordService } from "./recordService.js";
 
 const districtsList = [
   "Bhopal",

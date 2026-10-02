@@ -1,0 +1,373 @@
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+POLICE CASE DIARY (PART-II) — UNDER SECTION 172 CrPC / SECTION 192 BNSS, 2023
+====================================================================================================
+CASE PARTICULARS:
+FIR Reference       : FIR/IND/CYBER/2026/0419
+Police Station      : Cyber Crime Police Station, Indore Police Commissionerate, M.P.
+Case Diary Ref No.  : CD/2026/0419/P-32
+Date of Entry       : 02 October 2026
+Statutory Sections  : Sec. 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Complainant Victim  : KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Funds Siphoned: ₹4,55,541.61 (Rupees Four Lakh Fifty Five Thousand Five Hundred Forty One Only)
+Total Funds Offramped: ₹42,84,186.54 (Rupees Forty Two Lakh Eighty Four Thousand One Hundred Eighty Six Only)
+Syndicate Topology  : 82 Accounts / 87 Flow Conduits
+Traversal Latency   : 7065.19 ms (In-Memory BFS Graph Traversal)
+Cryptographic Hash  : SHA256:2334c2680dcd34730221f7a468f27b95f7e16b8a541e81eb24acfba535974dda
+----------------------------------------------------------------------------------------------------
+
+CHRONOLOGICAL MODUS OPERANDI & MULTI-TIER DISPERSION TRAIL:
+[PHASE 1] Initial Cyber Siphoning (Victim Origin)
+Timestamp: 2026-09-22 01:13:51
+Layer    : Layer 0 -> Layer 1
+Details  : Complainant victim account KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000) suffered an unauthorized financial breach. A sum of ₹4,55,541.61 (Rupees Four Lakh Fifty Five Thousand Five Hundred Forty One Only) was siphoned via IMPS with narration marker "UPI/REF/TASK_EARNING_REFUND_37961" into Primary Collector Mule.
+
+[PHASE 2] Layer-1 Collector Influx & Rapid Turnaround
+Timestamp: 2026-09-22 01:13:51
+Layer    : Layer 1 Conduit
+Details  : Stolen capital entered Layer-1 Collector Mule account(s) ICIC10000335 [ICICI Bank]. Influx was rapidly turned around with an automated velocity pass-through ratio of 98% within 10 minutes to frustrate recall mechanisms.
+
+[PHASE 3] Layer-2 Smurfing & Fan-Out Dispersion
+Timestamp: 2026-09-22 01:23:51
+Layer    : Layer 2 Conduits
+Details  : Capital was fragmented across 20 distinct Layer-2 Distributor accounts across multiple scheduled commercial banks (structured micro-smurfing) specifically calibrated below automated AML threshold alerts.
+
+[PHASE 4] Layer-3 Terminal Cash-Out & Exfiltration
+Timestamp: 2026-09-22 01:29:41
+Layer    : Layer 3 Terminal Sinks
+Details  : Final siphoned capital of ₹42,84,186.54 (Rupees Forty Two Lakh Eighty Four Thousand One Hundred Eighty Six Only) was off-ramped across 60 Terminal Cashout Nodes via P2P crypto escrows, digital wallets, and automated ATM cash withdrawals using automated headless scripts and foreign proxy IP infrastructure.
+
+----------------------------------------------------------------------------------------------------
+CURRENT HOLDING ACCOUNTS RECOMMENDED FOR IMMEDIATE FREEZING (SEC 106 BNSS):
+1. [CRITICAL] Account: AIRP10001372 | Bank: Airtel Payments Bank | IFSC: AIRP0002372
+   Disputed Amount: ₹21,034.44 | Txn UTR: TXN515751130
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+2. [CRITICAL] Account: IPOS10001227 | Bank: IPOS Bank | IFSC: IPOS0002227
+   Disputed Amount: ₹2,81,686.03 | Txn UTR: TXN129168602
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+3. [CRITICAL] Account: BARB10001377 | Bank: Bank of Baroda | IFSC: BARB0002377
+   Disputed Amount: ₹85,187.77 | Txn UTR: TXN195243830
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+4. [CRITICAL] Account: BARB10001302 | Bank: Bank of Baroda | IFSC: BARB0002302
+   Disputed Amount: ₹50,170.88 | Txn UTR: TXN863525350
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+5. [CRITICAL] Account: BARB10001269 | Bank: Bank of Baroda | IFSC: BARB0002269
+   Disputed Amount: ₹1,66,911.18 | Txn UTR: TXN129636340
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+6. [CRITICAL] Account: AIRP10001422 | Bank: Airtel Payments Bank | IFSC: AIRP0002422
+   Disputed Amount: ₹66,333.16 | Txn UTR: TXN968195900
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+7. [CRITICAL] Account: ICIC10001316 | Bank: ICICI Bank | IFSC: ICIC0002316
+   Disputed Amount: ₹2,57,470.06 | Txn UTR: TXN681592637
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+8. [CRITICAL] Account: ICIC10001309 | Bank: ICICI Bank | IFSC: ICIC0002309
+   Disputed Amount: ₹78,221.04 | Txn UTR: TXN588978512
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+9. [CRITICAL] Account: KKBK10001330 | Bank: Kotak Mahindra Bank | IFSC: KKBK0002330
+   Disputed Amount: ₹1,77,797.14 | Txn UTR: TXN583175063
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+10. [CRITICAL] Account: SBIN10001231 | Bank: State Bank of India | IFSC: SBIN0002231
+   Disputed Amount: ₹96,805.87 | Txn UTR: TXN566591796
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+11. [CRITICAL] Account: IPOS10001205 | Bank: IPOS Bank | IFSC: IPOS0002205
+   Disputed Amount: ₹3,241.51 | Txn UTR: TXN749469779
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+12. [CRITICAL] Account: IPOS10001253 | Bank: IPOS Bank | IFSC: IPOS0002253
+   Disputed Amount: ₹45,676.89 | Txn UTR: TXN162506994
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+13. [CRITICAL] Account: AIRP10001252 | Bank: Airtel Payments Bank | IFSC: AIRP0002252
+   Disputed Amount: ₹24,723.74 | Txn UTR: TXN832359973
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+14. [CRITICAL] Account: SBIN10001260 | Bank: State Bank of India | IFSC: SBIN0002260
+   Disputed Amount: ₹9,396.55 | Txn UTR: TXN773525321
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+15. [CRITICAL] Account: AIRP10001367 | Bank: Airtel Payments Bank | IFSC: AIRP0002367
+   Disputed Amount: ₹2,04,434.87 | Txn UTR: TXN750185777
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+16. [CRITICAL] Account: BARB10001157 | Bank: Bank of Baroda | IFSC: BARB0002157
+   Disputed Amount: ₹1,57,735.3 | Txn UTR: TXN247248902
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+17. [CRITICAL] Account: AXIS10001196 | Bank: Axis Bank | IFSC: AXIS0002196
+   Disputed Amount: ₹54,832.43 | Txn UTR: TXN147920703
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+18. [CRITICAL] Account: HDFC10001339 | Bank: HDFC Bank | IFSC: HDFC0002339
+   Disputed Amount: ₹40,042.97 | Txn UTR: TXN699853455
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+19. [CRITICAL] Account: ICIC10001248 | Bank: ICICI Bank | IFSC: ICIC0002248
+   Disputed Amount: ₹1,188.18 | Txn UTR: TXN507230109
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+20. [CRITICAL] Account: BARB10001224 | Bank: Bank of Baroda | IFSC: BARB0002224
+   Disputed Amount: ₹1,29,173.64 | Txn UTR: TXN561421959
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+21. [CRITICAL] Account: BARB10001162 | Bank: Bank of Baroda | IFSC: BARB0002162
+   Disputed Amount: ₹27,658.5 | Txn UTR: TXN273752709
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+22. [CRITICAL] Account: AXIS10001206 | Bank: Axis Bank | IFSC: AXIS0002206
+   Disputed Amount: ₹14,735.93 | Txn UTR: TXN794087686
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+23. [CRITICAL] Account: SBIN10001285 | Bank: State Bank of India | IFSC: SBIN0002285
+   Disputed Amount: ₹86,406.18 | Txn UTR: TXN713065456
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+24. [CRITICAL] Account: SBIN10001488 | Bank: State Bank of India | IFSC: SBIN0002488
+   Disputed Amount: ₹86,762.49 | Txn UTR: TXN674861416
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+25. [CRITICAL] Account: PYTM10001258 | Bank: Paytm Payments Bank | IFSC: PYTM0002258
+   Disputed Amount: ₹1,08,390.42 | Txn UTR: TXN362666100
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+26. [CRITICAL] Account: HDFC10001313 | Bank: HDFC Bank | IFSC: HDFC0002313
+   Disputed Amount: ₹2,034.4 | Txn UTR: TXN558214554
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+27. [CRITICAL] Account: SBIN10001359 | Bank: State Bank of India | IFSC: SBIN0002359
+   Disputed Amount: ₹22,877.76 | Txn UTR: TXN755314052
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+28. [CRITICAL] Account: BARB10001255 | Bank: Bank of Baroda | IFSC: BARB0002255
+   Disputed Amount: ₹59,342.8 | Txn UTR: TXN250243436
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+29. [CRITICAL] Account: SBIN10001332 | Bank: State Bank of India | IFSC: SBIN0002332
+   Disputed Amount: ₹8,473.2 | Txn UTR: TXN891491682
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+30. [CRITICAL] Account: SBIN10001168 | Bank: State Bank of India | IFSC: SBIN0002168
+   Disputed Amount: ₹1,785.23 | Txn UTR: TXN240625592
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+31. [CRITICAL] Account: SBIN10001222 | Bank: State Bank of India | IFSC: SBIN0002222
+   Disputed Amount: ₹73,918.8 | Txn UTR: TXN720953011
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+32. [CRITICAL] Account: BARB10001358 | Bank: Bank of Baroda | IFSC: BARB0002358
+   Disputed Amount: ₹14,524.25 | Txn UTR: TXN649472830
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+33. [CRITICAL] Account: KKBK10001356 | Bank: Kotak Mahindra Bank | IFSC: KKBK0002356
+   Disputed Amount: ₹26,836.68 | Txn UTR: TXN291158114
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+34. [CRITICAL] Account: KKBK10001203 | Bank: Kotak Mahindra Bank | IFSC: KKBK0002203
+   Disputed Amount: ₹40,024.3 | Txn UTR: TXN917190020
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+35. [CRITICAL] Account: PYTM10001455 | Bank: Paytm Payments Bank | IFSC: PYTM0002455
+   Disputed Amount: ₹13,671.95 | Txn UTR: TXN425327822
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+36. [CRITICAL] Account: HDFC10001382 | Bank: HDFC Bank | IFSC: HDFC0002382
+   Disputed Amount: ₹64,589.63 | Txn UTR: TXN852999272
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+37. [CRITICAL] Account: ICIC10001429 | Bank: ICICI Bank | IFSC: ICIC0002429
+   Disputed Amount: ₹25,386.05 | Txn UTR: TXN605825784
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+38. [CRITICAL] Account: AXIS10001221 | Bank: Axis Bank | IFSC: AXIS0002221
+   Disputed Amount: ₹1,65,270.14 | Txn UTR: TXN720209271
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+39. [CRITICAL] Account: PYTM10001417 | Bank: Paytm Payments Bank | IFSC: PYTM0002417
+   Disputed Amount: ₹1,05,400.75 | Txn UTR: TXN480275762
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+40. [CRITICAL] Account: ICIC10001361 | Bank: ICICI Bank | IFSC: ICIC0002361
+   Disputed Amount: ₹14,450.38 | Txn UTR: TXN142609906
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+41. [CRITICAL] Account: HDFC10001105 | Bank: HDFC Bank | IFSC: HDFC0002105
+   Disputed Amount: ₹99,710.28 | Txn UTR: TXN836852142
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+42. [CRITICAL] Account: BARB10001121 | Bank: Bank of Baroda | IFSC: BARB0002121
+   Disputed Amount: ₹21,899.13 | Txn UTR: TXN111320176
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+43. [CRITICAL] Account: BARB10001207 | Bank: Bank of Baroda | IFSC: BARB0002207
+   Disputed Amount: ₹27,704.15 | Txn UTR: TXN322431130
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+44. [CRITICAL] Account: SBIN10001416 | Bank: State Bank of India | IFSC: SBIN0002416
+   Disputed Amount: ₹53,809.09 | Txn UTR: TXN108867314
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+45. [CRITICAL] Account: AIRP10001257 | Bank: Airtel Payments Bank | IFSC: AIRP0002257
+   Disputed Amount: ₹99,943.8 | Txn UTR: TXN485769434
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+46. [CRITICAL] Account: KKBK10001495 | Bank: Kotak Mahindra Bank | IFSC: KKBK0002495
+   Disputed Amount: ₹36,352.23 | Txn UTR: TXN411279924
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+47. [CRITICAL] Account: AIRP10001423 | Bank: Airtel Payments Bank | IFSC: AIRP0002423
+   Disputed Amount: ₹3,13,765.61 | Txn UTR: TXN360245660
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+48. [CRITICAL] Account: IPOS10001296 | Bank: IPOS Bank | IFSC: IPOS0002296
+   Disputed Amount: ₹30,086.08 | Txn UTR: TXN963697719
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+49. [CRITICAL] Account: HDFC10001292 | Bank: HDFC Bank | IFSC: HDFC0002292
+   Disputed Amount: ₹27,053.92 | Txn UTR: TXN589168640
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+50. [CRITICAL] Account: ICIC10001408 | Bank: ICICI Bank | IFSC: ICIC0002408
+   Disputed Amount: ₹8,958.32 | Txn UTR: TXN259156926
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+51. [CRITICAL] Account: PUNB10001374 | Bank: Punjab National Bank | IFSC: PUNB0002374
+   Disputed Amount: ₹48,495.68 | Txn UTR: TXN339697174
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+52. [CRITICAL] Account: SBIN10001406 | Bank: State Bank of India | IFSC: SBIN0002406
+   Disputed Amount: ₹27,273.82 | Txn UTR: TXN241852050
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+53. [CRITICAL] Account: SBIN10001124 | Bank: State Bank of India | IFSC: SBIN0002124
+   Disputed Amount: ₹28,542.81 | Txn UTR: TXN712112386
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+54. [CRITICAL] Account: AXIS10001289 | Bank: Axis Bank | IFSC: AXIS0002289
+   Disputed Amount: ₹65,009.7 | Txn UTR: TXN970104780
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+55. [CRITICAL] Account: BARB10001142 | Bank: Bank of Baroda | IFSC: BARB0002142
+   Disputed Amount: ₹44,695.18 | Txn UTR: TXN174391678
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+56. [CRITICAL] Account: SBIN10001299 | Bank: State Bank of India | IFSC: SBIN0002299
+   Disputed Amount: ₹9,758.29 | Txn UTR: TXN935991417
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+57. [CRITICAL] Account: AXIS10001378 | Bank: Axis Bank | IFSC: AXIS0002378
+   Disputed Amount: ₹1,28,780.68 | Txn UTR: TXN521477299
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+58. [CRITICAL] Account: BARB10001287 | Bank: Bank of Baroda | IFSC: BARB0002287
+   Disputed Amount: ₹1,71,774.49 | Txn UTR: TXN404715717
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+59. [CRITICAL] Account: SBIN10001459 | Bank: State Bank of India | IFSC: SBIN0002459
+   Disputed Amount: ₹75,257.92 | Txn UTR: TXN753445158
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+60. [CRITICAL] Account: SBIN10001280 | Bank: State Bank of India | IFSC: SBIN0002280
+   Disputed Amount: ₹50,711.87 | Txn UTR: TXN175652811
+   Action: Immediate Section 106 BNSS Freeze & Lien Mark. Issue P2P Crypto / ATM Gateway subpoena.
+
+61. [CRITICAL] Account: ICIC10000335 | Bank: ICICI Bank | IFSC: ICIC0001335
+   Disputed Amount: ₹4,55,541.61 | Txn UTR: TXN401119292
+   Action: Serve Emergency Freeze Order to Bank Nodal Desk. Demand KYC & beneficiary audit.
+
+62. [HIGH] Account: PYTM10000679 | Bank: Paytm Payments Bank | IFSC: PYTM0001679
+   Disputed Amount: ₹21,910.87 | Txn UTR: TXN953843067
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+63. [HIGH] Account: HDFC10000815 | Bank: HDFC Bank | IFSC: HDFC0001815
+   Disputed Amount: ₹88,737.26 | Txn UTR: TXN892472963
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+64. [HIGH] Account: AXIS10000585 | Bank: Axis Bank | IFSC: AXIS0001585
+   Disputed Amount: ₹69,097.04 | Txn UTR: TXN806422153
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+65. [HIGH] Account: ICIC10001095 | Bank: ICICI Bank | IFSC: ICIC0002095
+   Disputed Amount: ₹81,480.25 | Txn UTR: TXN214780864
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+66. [HIGH] Account: PYTM10000639 | Bank: Paytm Payments Bank | IFSC: PYTM0001639
+   Disputed Amount: ₹1,85,205.36 | Txn UTR: TXN195086983
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+67. [HIGH] Account: HDFC10000745 | Bank: HDFC Bank | IFSC: HDFC0001745
+   Disputed Amount: ₹47,580.09 | Txn UTR: TXN217164637
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+68. [HIGH] Account: SBIN10000880 | Bank: State Bank of India | IFSC: SBIN0001880
+   Disputed Amount: ₹9,788.08 | Txn UTR: TXN126073141
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+69. [HIGH] Account: AIRP10000936 | Bank: Airtel Payments Bank | IFSC: AIRP0001936
+   Disputed Amount: ₹2,12,952.99 | Txn UTR: TXN408818640
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+70. [HIGH] Account: PYTM10000977 | Bank: Paytm Payments Bank | IFSC: PYTM0001977
+   Disputed Amount: ₹1,34,555.88 | Txn UTR: TXN396194426
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+71. [HIGH] Account: KKBK10001079 | Bank: Kotak Mahindra Bank | IFSC: KKBK0002079
+   Disputed Amount: ₹90,006.44 | Txn UTR: TXN841989631
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+72. [HIGH] Account: PYTM10000990 | Bank: Paytm Payments Bank | IFSC: PYTM0001990
+   Disputed Amount: ₹1,12,906.68 | Txn UTR: TXN598277834
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+73. [HIGH] Account: BARB10000590 | Bank: Bank of Baroda | IFSC: BARB0001590
+   Disputed Amount: ₹8,826.25 | Txn UTR: TXN394322081
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+74. [HIGH] Account: AIRP10000765 | Bank: Airtel Payments Bank | IFSC: AIRP0001765
+   Disputed Amount: ₹76,998.75 | Txn UTR: TXN151501998
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+75. [HIGH] Account: AXIS10000657 | Bank: Axis Bank | IFSC: AXIS0001657
+   Disputed Amount: ₹67,280.87 | Txn UTR: TXN433742576
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+76. [HIGH] Account: SBIN10000774 | Bank: State Bank of India | IFSC: SBIN0001774
+   Disputed Amount: ₹15,052.48 | Txn UTR: TXN179781597
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+77. [HIGH] Account: PYTM10000952 | Bank: Paytm Payments Bank | IFSC: PYTM0001952
+   Disputed Amount: ₹37,866.9 | Txn UTR: TXN366563733
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+78. [HIGH] Account: SBIN10000971 | Bank: State Bank of India | IFSC: SBIN0001971
+   Disputed Amount: ₹41,700.85 | Txn UTR: TXN734598950
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+79. [HIGH] Account: HDFC10001048 | Bank: HDFC Bank | IFSC: HDFC0002048
+   Disputed Amount: ₹50,516.34 | Txn UTR: TXN609728874
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+80. [HIGH] Account: PUNB10000508 | Bank: Punjab National Bank | IFSC: PUNB0001508
+   Disputed Amount: ₹46,557.48 | Txn UTR: TXN358626121
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+81. [HIGH] Account: KKBK10000734 | Bank: Kotak Mahindra Bank | IFSC: KKBK0001734
+   Disputed Amount: ₹52,824.86 | Txn UTR: TXN600623437
+   Action: Secondary Layer Debit Freeze to interdict downstream dispersal.
+
+----------------------------------------------------------------------------------------------------
+INVESTIGATION OFFICER STATUTORY CERTIFICATION:
+"I, Inspector R. K. Sharma, Cyber Crime PS Indore, hereby certify that the aforesaid fund dispersal sequence has been mechanically extracted from the 2,000,000 banking ledger using deterministic BFS graph traversal without generative AI hallucination or manual extrapolation."
+
+(Shri R. K. Sharma)
+Investigating Officer / Cyber Crime Police Station
+Indore Police Commissionerate, Madhya Pradesh
+Badge: MPP-2026-IO

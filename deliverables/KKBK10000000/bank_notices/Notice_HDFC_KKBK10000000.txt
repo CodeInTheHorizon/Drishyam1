@@ -1,0 +1,53 @@
+OFFICE OF THE SUPERINTENDENT OF POLICE (CYBER CRIME)
+INDORE POLICE COMMISSIONERATE, MADHYA PRADESH
+Police Station Cyber Crime, Old SP Office Campus, Indore - 452001
+Email: cybercrime-indore@mp.gov.in | Control Room: +91-731-2527100
+----------------------------------------------------------------------------------------------------
+MEMORANDUM / STATUTORY REQUISITION NOTICE
+Reference No.: REQ/BNSS-106/IND-CYBER/2026/HDFC-3859
+Date: 02 October 2026
+
+UNDER SECTION 91 OF CODE OF CRIMINAL PROCEDURE (CrPC), 1973
+READ WITH SECTION 94 & SECTION 106 OF BHARATIYA NAGARIK SURAKSHA SANHITA (BNSS), 2023
+(Statutory Power to Summon Production of Electronic Records & Immediate Freezing of Proceeds of Crime)
+
+TO:
+The Chief Compliance Officer & Nodal Cyber Crime Cell Officer,
+HDFC Bank, Central Legal & Law Enforcement Liaison Department.
+
+IN RE:
+Case FIR No.: FIR/IND/CYBER/2026/0419
+Under Sections: 318(4), 319(2), 61(2) BNS, 2023 r/w Sec. 66C, 66D IT Act, 2000 (Sec. 420, 120-B, 419 IPC)
+Matter: Organized Financial Cyber Fraud Syndicate — Operation Abhedya-Chakra
+Victim Complainant A/C: KKBK10000000 (Kotak Mahindra Bank, IFSC: KKBK0001000)
+Total Disputed Amount in HDFC Bank: ₹4,20,264.89 (Rupees Four Lakh Twenty Thousand Two Hundred Sixty Four Only)
+
+WHEREAS, the Cyber Crime Police Station, Indore Commissionerate is actively investigating the above-referenced cyber fraud involving unauthorized multi-hop digital fund siphoning;
+
+AND WHEREAS, forensic topological graph analysis has established that proceeds of cybercrime were routed directly into the following beneficiary accounts maintained with your esteemed bank:
+
+DISPUTED BENEFICIARY ACCOUNTS REQUIRING IMMEDIATE LIEN & DEBIT FREEZE:
+1. Account: HDFC10000815 | IFSC: HDFC0001815 | Amount: ₹88,737.26 | Txn UTR: TXN892472963 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-22 01:21:08
+2. Account: HDFC10000745 | IFSC: HDFC0001745 | Amount: ₹47,580.09 | Txn UTR: TXN217164637 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-18 18:37:32
+3. Account: HDFC10001048 | IFSC: HDFC0002048 | Amount: ₹50,516.34 | Txn UTR: TXN609728874 | Role: Distributor Mule (Smurfing & Layering Fan-Out) | Time: 2026-09-23 09:16:20
+4. Account: HDFC10001339 | IFSC: HDFC0002339 | Amount: ₹40,042.97 | Txn UTR: TXN699853455 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-26 10:51:02
+5. Account: HDFC10001313 | IFSC: HDFC0002313 | Amount: ₹2,034.4 | Txn UTR: TXN558214554 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-25 11:52:45
+6. Account: HDFC10001382 | IFSC: HDFC0002382 | Amount: ₹64,589.63 | Txn UTR: TXN852999272 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-19 13:51:29
+7. Account: HDFC10001105 | IFSC: HDFC0002105 | Amount: ₹99,710.28 | Txn UTR: TXN836852142 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-23 10:50:42
+8. Account: HDFC10001292 | IFSC: HDFC0002292 | Amount: ₹27,053.92 | Txn UTR: TXN589168640 | Role: Terminal Cash-Out Point (Off-Ramp Exit) | Time: 2026-09-26 05:10:29
+
+NOW THEREFORE, under the powers vested in the undersigned under Section 91 CrPC and Section 94 & Section 106 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023, you are hereby ORDERED to:
+
+1. IMMEDIATE DEBIT FREEZE: Put an immediate 100% DEBIT FREEZE and LIEN-MARK on the full disputed balance in all the above-mentioned accounts within TWO (2) HOURS of receipt of this notice.
+2. PRODUCTION OF SUBSCRIBER & KYC RECORDS: Provide certified copies of Account Opening Forms (AOF), KYC Documents (Aadhaar, PAN), linked mobile numbers, alternate contact details, and current balance certificates within TWENTY-FOUR (24) HOURS.
+3. DIGITAL AUDIT TRAIL: Furnish IP address login history, MAC addresses, device fingerprints, and CCTV footage of any ATM / Branch cash withdrawals corresponding to the disputed transactions.
+4. REVERSAL HOLD: Ensure that no funds are permitted to be withdrawn or transferred out of these accounts until further written instructions from this investigating agency or the competent court.
+
+TAKE NOTE: Non-compliance, wilful delay, or unauthorized tipping-off shall invite legal penal proceedings under Section 223 / Section 249 of Bharatiya Nagarik Suraksha Sanhita (BNSS), 2023 (Punishment for disobedience to order duly promulgated by public servant / omission to produce document) and Section 61(2) BNS for abetment of cybercrime.
+
+Issued under my Hand and Official Seal of Cyber Crime Police Station, Indore Commissionerate.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Police Commissionerate
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95...

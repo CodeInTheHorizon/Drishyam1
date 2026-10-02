@@ -1,0 +1,35 @@
+====================================================================================================
+CERTIFICATE OF ELECTRONIC EVIDENCE
+UNDER SECTION 63 OF BHARATIYA SAKSHYA ADHINIYAM (BSA), 2023
+READ WITH SECTION 65B OF INDIAN EVIDENCE ACT, 1872
+====================================================================================================
+Certificate Ref  : BSA63/IND/CYBER/2026/KKBK10000000
+Issuing Authority: Indore Police Commissionerate, Madhya Pradesh
+Police Station   : Cyber Crime Police Station, Indore
+Case FIR Ref     : FIR No. 0419/2026, PS Cyber Crime Indore, u/s 318(4), 319(2), 61(2) BNS & 66C/66D IT Act
+Date & Timestamp : 2026-10-02T01:03:33.152Z
+
+ELECTRONIC SOURCE PARTICULARS:
+Source File      : VoidHacks8_MuleAccount_2M_Transactions.csv (2,000,000 Records)
+Extraction Engine: Abhedya-Chakra Forensic Topological Indexer v2.0 (Zero-LLM Math Exact)
+System Specs     : Node.js v20.x, In-Memory Stream Engine, Darwin ARM64
+Verified Records : 87 Directed Flows
+Total Volume     : ₹4,55,541.61
+Evidence SHA-256 : 2334c2680dcd34730221f7a468f27b95f7e16b8a541e81eb24acfba535974dda
+
+STATUTORY ATTESTATION & DECLARATION:
+1. The electronic output comprising the funds dispersion trail, beneficiary accounts, IFSC codes, transaction IDs, and timestamps was generated through a computer program operating under lawful control of the Cyber Crime Police Station, Indore Commissionerate.
+
+2. The computer system during the period in question was operating properly and at no time was there any malfunction affecting the accuracy or mathematical integrity of the records.
+
+3. All entities, account numbers, amounts, and flows are verbatim mathematical derivations from the raw banking transaction records without generative interpolation, manual alteration, or artificial intelligence hallucination.
+
+4. The digital fingerprint of this evidentiary extract is cryptographically sealed under SHA-256 digest: 2334c2680dcd34730221f7a468f27b95f7e16b8a541e81eb24acfba535974dda
+
+I hereby depose and verify that the above contents are true and correct to my official knowledge as derived mechanically through lawful computer processing.
+
+(Shri R. K. Sharma)
+Inspector of Police / Investigating Officer
+Cyber Crime Police Station, Indore Commissionerate
+Badge: MPP-2026-IO
+Digital Seal Hash (SHA-256): 2334c2680dcd34730221f7a468f27b95f7e16b8a541e81eb24acfba535974dda
